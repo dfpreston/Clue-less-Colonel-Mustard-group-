@@ -1,0 +1,30 @@
+{% block content %}
+    <h2>Homepage</h2>
+    <body>This is the homepage!</body>
+
+    <br><br>
+
+    <h3>The user should be able to create a new game</h3>
+    <br>
+    <form action="/customize/?game=create">
+        <input type="submit" value="Create New Game" />
+    </form>
+
+    <br>
+
+    <h3>If there are any open games, the user should be able to join them</h3>
+    <br>
+    <form action="/customize/?game=join">
+        <input type="submit" value="Join Game" />
+    </form>
+
+    <br>
+    <h3>Current data, per user:</h3><br>
+    {{ first_val }}
+    {{ second_val }}
+
+this is another test!!!
+
+
+
+{% endblock %}
