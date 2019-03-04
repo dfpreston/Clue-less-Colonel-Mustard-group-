@@ -1,19 +1,32 @@
 from django.shortcuts import render
 
-from workers.game_creator import GameCreator
+from workers.game_manager import GameManager
 
+# Will convert theses to classes once done
 def Home(request):
+    user_ip = request.META.get('REMOTE_ADDR')
+    user_name = request.META.get('USERNAME')
 
-    gc = GameCreator()
+    gm = GameManager()
 
-    #print('Current Info: ')
-    #for x in request.META:
-    #    gc.print_val('{}: {}'.format(x, request.META.get(x)))
+    gm.delete_completed_games()  # Cleaning for testing
+
+    gm.initialize_new_game(client_ip=user_ip, client_name=user_name)
+    gm.start_game(client_ip=user_ip, client_name=user_name)
+
+    #gm.delete_completed_games()
 
     context = {'first_val':'worked', 'second_val':'worked too'}
+
     return render(request, 'home.html', context)
 
 def GameCustiomize(request):
+    """
+    Can potentially be call the waiting room
+
+    :param request:
+    :return:
+    """
 
     user_ip = request.META.get('REMOTE_ADDR')
     user_name = request.META.get('USERNAME')
