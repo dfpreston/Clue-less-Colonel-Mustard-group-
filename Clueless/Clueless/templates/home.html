@@ -6,31 +6,16 @@
 
     <h3>The user should be able to create a new game</h3>
     <br>
-    <form action="/customize/?game=create">
-        <input type="submit" value="Create New Game" />
-    </form>
+    <input type="button" value="Create Game" onclick="location.href='/customize/?game=create';" />
 
     <br>
 
     <h3>If there are any open games, the user should be able to join them</h3>
     <br>
-    <form action="/customize/?game=join">
-        <input type="submit" value="Join Game" />
-    </form>
-
+    <h3>Open games: {{ games_pending }}</h3>
     <br>
-    <h3>Current data, per user:</h3><br>
-    Player Location: {{ player_location }}
+    <h3>Games In Progress: {{ games_in_progress }}</h3>
     <br>
-    Others Locations: {{ others_locations }}
-    <br>
-    Player Hand: {{ player_hand }}
-    <br>
-    All Available Cards: {{ available_cards }}
-
-
-this is another test!!!
-
-
+    <input type="button" value="Join Game" onclick="location.href='/customize/?game=join';" />
 
 {% endblock %}

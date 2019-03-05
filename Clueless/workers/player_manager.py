@@ -53,3 +53,12 @@ class PlayerManager:
                 available[card.card_type].append(card.name)
 
         return available
+
+    def get_game_id(self):
+        return self.game_id
+
+    def get_is_creator(self):
+        return self.player.game_creator
+
+    def get_is_player_turn(self):
+        return self.player.their_turn

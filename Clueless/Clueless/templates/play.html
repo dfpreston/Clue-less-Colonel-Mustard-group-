@@ -2,7 +2,20 @@
     <h2>Game</h2>
     <body>This is the game play page!</body>
 
-    {{ first_val }}
-    {{ second_val }}
+    <br>
+    <h3>Current data, per user:</h3><br>
+    Game Id: {{ game_id }}
+    <br>
+    Is Player Game Creator: {{ is_creator }}
+    <br>
+    Is it Players turn: {{ player_turn }}
+    <br>
+    Player Location: {{ player_location }}
+    <br>
+    Others Locations: {{ others_locations }}
+    <br>
+    Player Hand: {{ player_hand }}
+    <br>
+    All Available Cards: {{ available_cards }}
 
 {% endblock %}
