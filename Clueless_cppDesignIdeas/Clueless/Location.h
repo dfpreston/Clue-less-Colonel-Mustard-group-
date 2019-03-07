@@ -31,11 +31,30 @@ class Room;
 class Location
 {
 	//--------------------------------------------------------------------------
+	// Class-Scoped Enumerated Types
+	//--------------------------------------------------------------------------
+protected:
+	enum LocationType
+	{
+		ROOM,
+		HALLWAY,
+		HOME //starting space
+
+	}; //end enum LocationType defn
+
+	//--------------------------------------------------------------------------
 	// Constructors / Destructor
 	//--------------------------------------------------------------------------
-public:
+private:
 	/// \brief Default constructor
 	Location()
+	{
+	}
+
+public:
+	/// \brief Extended constructor
+	Location( LocationType type )
+		: _type( type )
 	{
 	}
 
@@ -48,18 +67,31 @@ public:
 	// Accessors and Mutators
 	//--------------------------------------------------------------------------
 	std::string getName() const;
+
+	bool isRoom() const;
+	bool isHallway() const;
+	bool isHome() const;
+
 	virtual bool isOccupied() const = 0;
+	virtual bool canAcceptAnotherOccupant() const = 0;
+	virtual bool addOccupant(const GamePiece* occupant);
+	virtual void recognizeOccupantLeft(const GamePiece* previousOccupant) = 0;
+
+	virtual bool isAccusationAllowedHere() const;
 
 	//--------------------------------------------------------------------------
 	// Additional Member Functions
 	//--------------------------------------------------------------------------
 	virtual std::ostringstream report() const;
 
+	virtual std::set<Location*> getMoveOptions() const = 0;
+
 	//--------------------------------------------------------------------------
 	// Data Members
 	//--------------------------------------------------------------------------
 protected:
 	std::string _name;
+	LocationType _type;
 
 }; //end class Location defn
 
@@ -73,7 +105,8 @@ class Hallway : public Location
 private:
 	/// \brief Default constructor
 	Hallway()
-		: _connectingRoom1( nullptr )
+		: Location( HALLWAY )
+		, _connectingRoom1( nullptr )
 		, _connectingRoom2( nullptr )
 		, _occupant( nullptr )
 	{
@@ -91,9 +124,17 @@ public:
 	// Accessors and Mutators
 	//--------------------------------------------------------------------------
 	virtual bool isOccupied() const override;
+	virtual bool canAcceptAnotherOccupant() const override;
+	virtual bool addOccupant(const GamePiece* occupant) override;
+	virtual void recognizeOccupantLeft(const GamePiece* previousOccupant) override;
+
 	const GamePiece* getOccupant() const;
 	bool setOccupant(const GamePiece* occupant);
-	void recognizeOccupantLeft();
+
+	//--------------------------------------------------------------------------
+	// Additional Member Functions
+	//--------------------------------------------------------------------------
+	virtual std::set<Location*> getMoveOptions() const override;
 
 	//--------------------------------------------------------------------------
 	// Data Members
@@ -116,7 +157,8 @@ class HomeLocation : public Location
 private:
 	/// \brief Default constructor
 	HomeLocation()
-		: _personToken( nullptr )
+		: Location( HOME )
+		, _personToken( nullptr )
 		, _adjacentHallway( nullptr )
 		, _occupant( nullptr )
 	{
@@ -134,8 +176,15 @@ public:
 	// Accessors and Mutators
 	//--------------------------------------------------------------------------
 	virtual bool isOccupied() const override;
+	virtual bool canAcceptAnotherOccupant() const override;
+	virtual void recognizeOccupantLeft(const GamePiece* previousOccupant) override;
+
 	const PersonPiece* getOccupant() const;
-	void recognizeOccupantLeft();
+
+	//--------------------------------------------------------------------------
+	// Additional Member Functions
+	//--------------------------------------------------------------------------
+	virtual std::set<Location*> getMoveOptions() const override;
 
 	//--------------------------------------------------------------------------
 	// Data Members
@@ -160,6 +209,46 @@ const
 	return _name;
 
 } //end routine getName()
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+Location::isRoom()
+const
+{
+	return( ROOM == _type );
+
+} //end routine isRoom()
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+Location::isHallway()
+const
+{
+	return( HALLWAY == _type );
+
+} //end routine isHallway()
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+Location::isHome()
+const
+{
+	return( HOME == _type );
+
+} //end routine isHome()
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+Location::isAccusationAllowedHere()
+const
+{
+	return false; //probably not
+
+} //end routine isAccusationAllowedHere()
 
 
 #endif //Location_h

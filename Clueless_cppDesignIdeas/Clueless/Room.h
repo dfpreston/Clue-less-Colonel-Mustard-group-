@@ -23,6 +23,8 @@
 
 //forward declarations
 struct GamePiece;
+class Hallway;
+struct RoomCard;
 
 
 class Room : public Location
@@ -33,16 +35,20 @@ class Room : public Location
 private:
 	/// \brief Default constructor
 	Room()
-		: _type( clueless::UNKNOWN_ROOM )
+		: Location( ROOM )
+		, _type( clueless::UNKNOWN_ROOM )
 		, _roomAccessedBySecretPassage( nullptr )
+		, _assocCard( nullptr )
 	{
 	}
 
 public:
 	/// \brief Extended constructor
 	Room(clueless::RoomType type)
-		: _type(type)
+		: Location( ROOM )
+		, _type(type)
 		, _roomAccessedBySecretPassage( nullptr )
+		, _assocCard( nullptr )
 	{
 		_name = clueless::translateRoomTypeToText( _type );
 	}
@@ -52,6 +58,8 @@ public:
 	{
 		_occupants.clear(); //not responsible for deleting occupant objects
 
+		_adjacentHallways.clear(); //do not delete hallways owned by board
+
 		_roomAccessedBySecretPassage = nullptr;
 	}
 
@@ -59,17 +67,30 @@ public:
 	// Accessors and Mutators
 	//--------------------------------------------------------------------------
 	virtual bool isOccupied() const override;
+	virtual bool canAcceptAnotherOccupant() const override;
+	virtual bool addOccupant(const GamePiece* occupant) override;
+	virtual void recognizeOccupantLeft(const GamePiece* previousOccupant) override;
+
+	virtual bool isAccusationAllowedHere() const override;
+
 	bool doesPieceResideInRoom(const GamePiece* occupant) const;
-	bool addOccupant(const GamePiece* occupant);
-	void recognizeOccupantLeft(const GamePiece* previousOccupant);
+
+	void acceptAdjacentHallway(Hallway* adjacentHallway);
 
 	bool hasSecretPassage() const;
 	void createSecretPassageTo(Room* destination);
 
+protected:
+	bool areMoreThanTwoHallwaysExpected() const;
+	bool areMoreThanThreeHallwaysExpected() const;
+
 	//--------------------------------------------------------------------------
 	// Additional Member Functions
 	//--------------------------------------------------------------------------
+public:
 	virtual std::ostringstream report() const override;
+
+	virtual std::set<Location*> getMoveOptions() const override;
 
 	//--------------------------------------------------------------------------
 	// Data Members
@@ -77,9 +98,26 @@ public:
 	clueless::RoomType _type;
 	std::set<const GamePiece*> _occupants;
 
+	std::set<Hallway*> _adjacentHallways;
+
 	Room* _roomAccessedBySecretPassage;
 
+	RoomCard* _assocCard;
+
 }; //end class Room defn
+
+
+//------------------------------------------------------------------------------
+// Inlined Methods
+//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+Room::isAccusationAllowedHere()
+const
+{
+	return true;
+
+} //end routine isAccusationAllowedHere()
 
 
 #endif //Room_h defn

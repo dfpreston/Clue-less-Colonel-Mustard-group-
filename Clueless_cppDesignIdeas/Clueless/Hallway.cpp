@@ -35,7 +35,8 @@
 Hallway::Hallway(
 	Room* firstConnectingRoom,  //i - 
 	Room* secondConnectingRoom) //i - 
-	: _occupant( nullptr )
+	: Location( HALLWAY )
+	, _occupant( nullptr )
 	, _connectingRoom1( firstConnectingRoom )
 	, _connectingRoom2( secondConnectingRoom )
 {
@@ -51,6 +52,9 @@ Hallway::Hallway(
 	std::ostringstream name;
 	name << "hallway " << _connectingRoom1->getName() << "-" << _connectingRoom2->getName();
 	_name = name.str();
+
+	firstConnectingRoom->acceptAdjacentHallway( this );
+	secondConnectingRoom->acceptAdjacentHallway( this );
 
 } //end routine extended constructor
 
@@ -69,9 +73,55 @@ bool
 Hallway::isOccupied()
 const
 {
-	return( nullptr == _occupant );
+	return( nullptr != _occupant );
 
 } //end routine isOccupied()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns whether can accept another occupant.
+/// \param None
+/// \return bool: whether can accept another occupant
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+bool
+Hallway::canAcceptAnotherOccupant()
+const
+{
+	bool can_accept_another( true );
+
+	if( isOccupied() )
+	{
+		//only one occupant allowed
+		can_accept_another = false;
+	}
+
+	return can_accept_another;
+
+} //end routine canAcceptAnotherOccupant()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Adds specified occupant to location, if allowed.
+/// \param GamePiece: potential occupant
+/// \return bool: whether occupant added to room
+/// \throw
+/// - INSUFFICIENT_DATA when occupant object does not exist.
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+bool
+Hallway::addOccupant(
+	const GamePiece* piece)
+{
+	//prompt base class logic (primarily for error handling)
+	Location::addOccupant( piece );
+
+	//child class logic
+	_occupant = piece;
+	return true; //occupant set
+
+} //end routine addOccupant()
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,14 +193,48 @@ Hallway::setOccupant(
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Empties hallway, clearing occupant reference.
-/// \param None
+/// \param GamePiece: previous occupant
 /// \return None
 /// \throw None
 /// \note  None
 ////////////////////////////////////////////////////////////////////////////////
 void
-Hallway::recognizeOccupantLeft()
+Hallway::recognizeOccupantLeft(
+	const GamePiece* prev_occupant) //i - person who left room
 {
 	_occupant = nullptr;
 
 } //end routine recognizeOccupantLeft()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns collection of possible move destinations based on specified
+///  starting point.
+/// \param Location: starting point
+/// \return set<Location*>: possible destinations
+/// \throw
+/// - INSUFFICIENT_DATA when missing connecting room reference.
+/// \note
+/// - Adjacent rooms accept an unlimited number of occupants.
+////////////////////////////////////////////////////////////////////////////////
+std::set<Location*>
+Hallway::getMoveOptions()
+const
+{
+	if( ! _connectingRoom1 || ! _connectingRoom2 )
+	{
+		std::ostringstream msg;
+		msg << "Hallway::getMoveOptions()\n"
+			<< "  INSUFFICIENT_DATA\n"
+			<< "  " << getName() << " missing connecting room reference";
+		throw std::logic_error( msg.str() );
+	}
+
+	std::set<Location*> destinations;
+
+	destinations.insert( _connectingRoom1 );
+	destinations.insert( _connectingRoom2 );
+
+	return destinations;
+
+} //end routine getMoveOptions()

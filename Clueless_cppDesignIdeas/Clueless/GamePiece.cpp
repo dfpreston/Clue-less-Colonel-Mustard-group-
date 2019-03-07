@@ -74,8 +74,6 @@ PersonPiece::setAssociatedPlayer(
 
 	_assocPlayer = player;
 
-	std::cout << player->getName() << " will use " << getName() << " character token.\n";
-
 } //end routine setAssociatedPlayer()
 
 

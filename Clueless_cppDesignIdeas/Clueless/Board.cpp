@@ -15,6 +15,7 @@
 
 #include "Board.h"
 
+#include "Card.h"			//for RoomCard use
 #include "GamePiece.h"
 #include "Location.h"
 #include "Room.h"
@@ -59,8 +60,6 @@ Board::Board()
 	, _revolver( nullptr )
 	, _wrench( nullptr )
 {
-	std::cout << "Creating Clue-less game board...\n";
-
 	createRooms();
 
 	createPersonTokens();
@@ -70,6 +69,7 @@ Board::Board()
 	randomlyDistributeWeapons(); //amongst rooms
 
 } //end routine constructor
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Destructor
@@ -81,8 +81,8 @@ Board::Board()
 Board::~Board()
 {
 	//delete all room objects
-	std::set<Room*>::iterator room_iter( _rooms.begin() );
-	Room* curr_room( nullptr );
+	std::set<Location*>::iterator room_iter( _rooms.begin() );
+	Location* curr_room( nullptr );
 
 	while( room_iter != _rooms.end() )
 	{
@@ -112,7 +112,7 @@ const
 {
 	std::cout << _rooms.size() << " Rooms: ";
 
-	std::set<Room*>::const_iterator room_iter( _rooms.begin() );
+	std::set<Location*>::const_iterator room_iter( _rooms.begin() );
 	if( 0 < _rooms.size() ) //at least one room
 	{
 		std::cout << (*room_iter)->getName();
@@ -129,6 +129,57 @@ const
 	std::cout << "\n";
 
 } //end routine listRooms()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns room of type specified.
+/// \param None
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+Room*
+Board::fetchRoom(
+	clueless::RoomType type) //i - room type
+const
+{
+	switch( type )
+	{
+	case clueless::STUDY:
+		return _study;
+
+	case clueless::HALL:
+		return _hall;
+
+	case clueless::LOUNGE:
+		return _lounge;
+
+	case clueless::LIBRARY:
+		return _library;
+
+	case clueless::BILLIARD_ROOM:
+		return _billiardRoom;
+
+	case clueless::DINING_ROOM:
+		return _diningRoom;
+
+	case clueless::CONSERVATORY:
+		return _conservatory;
+
+	case clueless::BALLROOM:
+		return _ballroom;
+
+	case clueless::KITCHEN:
+		return _kitchen;
+
+	default:
+		;
+		
+	} //end switch (on room type)
+
+	return nullptr;
+
+} //end routine fetchRoom()
 
 
 //------------------------------------------------------------------------------
@@ -377,17 +428,18 @@ void
 Board::randomlyDistributeWeapons()
 {
 	//local copy of rooms so can remove as place weapons
-	std::set<Room*> rooms = _rooms;
-	std::set<Room*>::iterator room_iter( rooms.begin() );
-	Room* chosen_room( nullptr );
+	std::set<Location*> rooms = _rooms;
+	std::set<Location*>::iterator room_iter( rooms.begin() );
+	Location* chosen_room( nullptr );
 	
 	std::map<clueless::WeaponType, GamePiece*>::iterator wpn_iter( _weaponTokens.begin() );
 	GamePiece* wpn_token( nullptr );
 	while( _weaponTokens.end() != wpn_iter )
 	{
-		chosen_room = chooseRoom(&rooms);
+		chosen_room = chooseLocation(&rooms);
 		wpn_token = wpn_iter->second;
 
+		//update room occupants and game piece location
 		chosen_room->addOccupant( wpn_token );
 		wpn_token->_location = chosen_room;
 
@@ -409,12 +461,12 @@ Board::randomlyDistributeWeapons()
 /// - INSUFFICIENT_DATA when empty collection of rooms
 /// \note  None
 ////////////////////////////////////////////////////////////////////////////////
-Room*
-Board::chooseRoom(
-	std::set<Room*>* rooms) //i - rooms to choose amongst
+Location* const
+Board::chooseLocation(
+	std::set<Location*>* rooms) //i - rooms to choose amongst
 const
 {
-	Room* choice( nullptr );
+	Location* choice( nullptr );
 
 	if( rooms->empty() ) //no rooms from which to choose
 	{
@@ -434,7 +486,7 @@ const
 		//create position based on floor of random draw in [0, num cards)
 		size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, rooms->size()) )) );
 
-		std::set<Room*>::const_iterator room_iter( rooms->begin() );
+		std::set<Location*>::const_iterator room_iter( rooms->begin() );
 		for(size_t pos_index(0);
 			pos_index < zero_based_pos;
 			++pos_index)
@@ -451,8 +503,157 @@ const
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/// \brief Build associations between players and board characters.
+/// \param set<Player*>: all players
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+void
+Board::recognizePlayerCharacterAssignments(
+	std::list<Player*>* players) //i - all players
+{
+	std::list<Player*>::iterator player_iter( (*players).begin() );
+	while( (*players).end() != player_iter )
+	{
+		//build relationship between board character and player
+		assignCharacterToPlayer(*player_iter, (*player_iter)->getCharacter());
+
+		++player_iter; //next player
+
+	} //end while (more players)
+
+} //end routine recognizePlayerCharacterAssignments()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Build associations between rooms and room cards.
+/// \param set<Card*>: all room cards
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+void
+Board::buildRoomRelationshipsWithCards(
+	const std::set<Card*> cards) //i - room cards
+{
+	std::set<Card*>::const_iterator card_iter( cards.begin() );
+	RoomCard* room_card( nullptr );
+	Room* room( nullptr );
+
+	while( cards.end() != card_iter )
+	{
+		//hold card as room card
+		room_card = (RoomCard*)(*card_iter);
+
+		//find room for card's room type
+		room = fetchRoom( room_card->_room );
+
+		if( room )
+		{
+			room->_assocCard = room_card;
+		}
+
+		++card_iter; //next card
+
+	} //end while (more cards)
+	
+} //end routine buildRoomRelationshipsWithCards()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns collection of possible move destinations based on specified
+///  starting point.
+/// \param Location: starting point
+/// \return set<Location*>: possible destinations
+/// \throw
+/// - INSUFFICIENT_DATA when starting point object dne
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+//std::set<Location*>
+//Board::getMoveOptionsFrom(
+//	const Location* const startingPoint) //i - starting location
+//const
+//{
+//	if( ! startingPoint )
+//	{
+//		std::ostringstream msg;
+//		msg << "Board::getMoveOptionsFrom()\n"
+//			<< "  INSUFFICIENT_DATA\n"
+//			<< "  starting point obj dne";
+//		throw std::logic_error( msg.str() );
+//	}
+//
+//	std::cout << "STUB: add logic to Board::getMoveOptionsFrom(startingPoint)\n";
+//
+//} //end routine getMoveOptionsFrom()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Moves player to specified location.
+/// \param Location: starting point
+/// \return set<Location*>: possible destinations
+/// \throw
+/// - INSUFFICIENT_DATA when player or location object does not exist.
+/// - LOGIC_ERROR when destination cannot accept another occupant.
+/// \note
+/// - Assumes destination is valid.
+////////////////////////////////////////////////////////////////////////////////
+bool
+Board::movePlayerTo(
+	Player* const player,
+	Location* const destination)
+{
+	if( ! player )
+	{
+		std::ostringstream msg;
+		msg << "Board::movePlayerTo()\n"
+			<< "  INSUFFICIENT_DATA\n"
+			<< "  player object dne";
+		throw std::logic_error( msg.str() );
+	}
+	else if( ! destination )
+	{
+		std::ostringstream msg;
+		msg << "Board::movePlayerTo()\n"
+			<< "  INSUFFICIENT_DATA\n"
+			<< "  location object dne";
+		throw std::logic_error( msg.str() );
+	}
+
+	//retrieve associated character token
+	PersonPiece* player_token( player->_assocGameToken );
+	Location* curr_location( player_token->_location );
+
+	//if destination differs from current location  AND
+	//   destination cannot accept another occupant
+	if( (curr_location != destination) &&
+		! destination->canAcceptAnotherOccupant() )
+	{
+		std::ostringstream msg;
+		msg << "Board::movePlayerTo()\n"
+			<< "  LOGIC_ERROR\n"
+			<< "  location object dne";
+		throw std::logic_error( msg.str() );
+	}
+
+	//update room occupants and game piece location
+	destination->addOccupant( player_token );
+	player_token->_location = destination;
+
+	//vacate current location
+	curr_location->recognizeOccupantLeft( player_token );
+
+	return true; //successful move
+
+} //end routine movePlayerTo()
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 /// \brief Associates specified character game token with player.
-/// \param 
+/// \param Player: player
+/// \param PersonType: character
 /// \return None
 /// \throw
 /// - INSUFFICIENT_DATA when player object dne
@@ -474,5 +675,8 @@ Board::assignCharacterToPlayer(
 
 	//associate Player with person token
 	_personTokens[character]->setAssociatedPlayer( player );
+
+	//update Player reference to token
+	player->_assocGameToken = _personTokens[character];
 
 } //end routine assignCharacterToPlayer()

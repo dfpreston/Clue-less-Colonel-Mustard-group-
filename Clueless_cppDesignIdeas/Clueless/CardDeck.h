@@ -19,10 +19,12 @@
 
 #include "Card.h"
 
-#include <set>
+#include <list>		//for std::list use
+#include <set>		//for std::set use
 
 
 //forward declarations
+class Player;
 struct SolutionCardSet;
 
 
@@ -37,29 +39,41 @@ public:
 	virtual ~CardDeck();
 
 	//--------------------------------------------------------------------------
+	// Accessors and Mutators
+	//--------------------------------------------------------------------------
+	const std::set<Card*> getRoomCards() const;
+
+protected:
+	bool areAnyCardsUndealt() const;
+
+	//--------------------------------------------------------------------------
 	// Game Setup Methods
 	//--------------------------------------------------------------------------
-protected:
 	void createPersonCards();
 	void createWeaponCards();
 	void createRoomCards();
 
 	void chooseCaseFileSet();
-	Card* dealCard();
-
-	//--------------------------------------------------------------------------
-	// Accessors and Mutators
-	//--------------------------------------------------------------------------
-	bool areAnyCardsUndealt() const;
+	const Card* dealCard(Player* receivingPlayer);
 
 	//--------------------------------------------------------------------------
 	// Additional Member Functions
 	//--------------------------------------------------------------------------
+public:
+	void setup(std::list<Player*>* allPlayers);
+
 	bool doesAccusationMatchCaseFile(const SolutionCardSet& accusation) const;
 
 protected:
-	const Card* chooseCard(std::set<Card*>* cards) const;
-	void removeCardFromUndealt(Card* card);
+	Card* chooseCard(std::set<Card*>* cards) const;
+	const Card* chooseCard(std::set<const Card*>* cards) const;
+
+	void removeCardFromUndealt(const Card* card);
+
+private:
+	std::list<Player*>::const_iterator determineNextPlayer(
+		const std::list<Player*>* const players,
+		std::list<Player*>::const_iterator currPlayerIter);
 
 	//--------------------------------------------------------------------------
 	// Data Members
@@ -73,7 +87,7 @@ protected:
 	SolutionCardSet* _caseFile; //solution to crime
 
 private:
-	std::set<Card*> _undealtCards;
+	std::set<const Card*> _undealtCards;
 
 }; //end class CardDeck defn
 
@@ -89,6 +103,16 @@ const
 	return( 0 < _undealtCards.size() );
 
 } //end routine areAnyCardsUndealt()
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline const std::set<Card*>
+CardDeck::getRoomCards()
+const
+{
+	return( _roomCards );
+
+} //end routine getRoomCards()
 
 
 #endif //CardDeck_h

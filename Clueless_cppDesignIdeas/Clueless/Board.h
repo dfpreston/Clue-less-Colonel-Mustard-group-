@@ -23,11 +23,14 @@
 
 #include "CluelessEnums.h"	//for PersonType, WeaponType use
 
+#include <list>		//for std::list use
 #include <map>		//for std::map use
+#include <set>		//for std::set use
 #include <string>	//for std::string use
 
 
 //forward declarations
+struct Card;
 struct PersonPiece;
 struct WeaponPiece;
 class Player;
@@ -53,10 +56,21 @@ public:
 	//--------------------------------------------------------------------------
 	std::ostringstream report() const;
 
-	void assignCharacterToPlayer(Player* player, clueless::PersonType character);
+	void recognizePlayerCharacterAssignments(std::list<Player*>* allPlayers);
+	void buildRoomRelationshipsWithCards(const std::set<Card*> roomCards);
+
+	//std::set<Location*> getMoveOptionsFrom(const Location* const startingPoint) const;
+	bool movePlayerTo(Player* const player, Location* const destination);
+
+	//--------------------------------------------------------------------------
+	// Accessors and Mutators - Protected Scope
+	//--------------------------------------------------------------------------
+protected:
+	Room* fetchRoom(clueless::RoomType) const;
 
 protected:
 	void randomlyDistributeWeapons(); //uniquely amongst rooms
+	void assignCharacterToPlayer(Player* player, clueless::PersonType character);
 
 private:
 	//locations
@@ -67,14 +81,15 @@ private:
 	void createPersonTokens();
 	void createWeaponTokens();
 
-	Room* chooseRoom(std::set<Room*>* rooms) const;
+public: /// \resolve Should scope be private? -- 07 Mar 2019, mem
+	Location* const chooseLocation(std::set<Location*>* rooms) const;
 
 	//--------------------------------------------------------------------------
 	// Data Members
 	//--------------------------------------------------------------------------
 public:
-	std::set<Room*> _rooms;
-	std::set<Hallway*> _hallways;
+	std::set<Location*> _rooms;
+	std::set<Location*> _hallways;
 	std::set<Location*> _personHomes;
 
 	std::map<clueless::PersonType, PersonPiece*> _personTokens;

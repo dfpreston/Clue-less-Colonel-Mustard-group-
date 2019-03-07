@@ -40,6 +40,23 @@ const
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns whether can accept another occupant.
+/// \param None
+/// \return bool: whether can accept another occupant
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+bool
+Room::canAcceptAnotherOccupant()
+const
+{
+	//unlimited occupancy allowed
+	return true; //can_accept_another;
+
+} //end routine canAcceptAnotherOccupant()
+
+
+////////////////////////////////////////////////////////////////////////////////
 /// \brief Returns whether specified piece resides in room.
 /// \param GamePiece: piece of interest
 /// \return bool: whether piece occupies room
@@ -71,25 +88,10 @@ bool
 Room::addOccupant(
 	const GamePiece* piece) //i - new occupant
 {
-	std::set<const GamePiece*>::iterator occupant( _occupants.find(piece) );
+	//prompt base class logic (primarily for error handling)
+	Location::addOccupant( piece );
 
-	if( occupant != _occupants.end() ) //already an occupant
-	{
-		std::ostringstream msg;
-		msg << "Room::addOccupant()\n"
-			<< "  LOGIC_ERROR\n"
-			<< "  \'" << piece->_name << "\' already occupies Room; must move into an adjacent hallway";
-
-		if( hasSecretPassage() )
-		{
-			msg << " or secret passage";
-		}
-
-		throw std::logic_error( msg.str() );
-
-		return false; //new occupant not set -- will not reach due to throw
-	}
-
+	//child class logic
 	_occupants.insert( piece );
 	return true; //occupant set
 
@@ -98,7 +100,7 @@ Room::addOccupant(
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Recognizes that specified person left room and clears occupant reference.
-/// \param None
+/// \param GamePiece: previous occupant
 /// \return None
 /// \throw None
 /// \note  None
@@ -115,6 +117,63 @@ Room::recognizeOccupantLeft(
 	}
 
 } //end routine recognizeOccupantLeft()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Populates a reference to adjacent hallway with specified hallway.
+/// \param Hallway: adjacent hallway
+/// \return None
+/// \throw
+/// - LOGIC_ERROR when already have references to two adjacent hallways.
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+void
+Room::acceptAdjacentHallway(
+	Hallway* hallway) //i - adjacent hallway
+{
+	bool can_accept_another_hallway( false );
+
+	if( 2 > _adjacentHallways.size() )
+	{
+		//all rooms have at least 2 adjacent hallways
+		can_accept_another_hallway = true;
+	}
+	else if(
+		(2 == _adjacentHallways.size()) &&
+		areMoreThanTwoHallwaysExpected() )
+	{
+		can_accept_another_hallway = true;
+	}
+	else if(
+		(3 == _adjacentHallways.size()) &&
+		areMoreThanThreeHallwaysExpected() )
+	{
+		can_accept_another_hallway = true;
+	}
+
+	if( can_accept_another_hallway )
+	{
+		_adjacentHallways.insert( hallway );
+	}
+	else //already have reference to max number hallways for room type
+	{
+		std::ostringstream msg;
+		msg << "Room::acceptAdjacentHallway()\n"
+			<< "  LOGIC_ERROR\n"
+			<< "  " << getName() << " already has references to " << _adjacentHallways.size() << " hallways...\n";
+		
+		std::set<Hallway*>::const_iterator hallway_iter( _adjacentHallways.begin() );
+		while( _adjacentHallways.end() != hallway_iter )
+		{
+			msg << "    " << (*hallway_iter)->getName() << "\n";
+			++hallway_iter;
+
+		} //end while (more hallways)
+
+		throw std::logic_error( msg.str() );
+	}
+
+} //end routine acceptAdjacentHallway()
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -175,9 +234,57 @@ Room::createSecretPassageTo(
 
 	_roomAccessedBySecretPassage = destination;
 
-	std::cout << "created secret passage from \'" << getName() << "\' to \'" << _roomAccessedBySecretPassage->getName() << "\'\n";
-
 } //end routine createSecretPassageTo()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns whether room expects egress to more than two or three
+///  hallways depending on room type.
+/// \param none
+/// \return bool: whether expects more than two or three hallways
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+bool
+Room::areMoreThanTwoHallwaysExpected()
+const
+{
+	bool does_expect_more_than_two( false );
+
+	switch( _type )
+	{
+	case clueless::HALL:
+	case clueless::LIBRARY:
+	case clueless::BILLIARD_ROOM:
+	case clueless::DINING_ROOM:
+	case clueless::BALLROOM:
+		does_expect_more_than_two = true;
+		break;
+
+	default:
+		; //still does not expect more than two
+
+	} //end switch (on room type)
+
+	return does_expect_more_than_two;
+
+} //end routine areMoreThanTwoHallwaysExpected()
+
+
+bool
+Room::areMoreThanThreeHallwaysExpected()
+const
+{
+	bool does_expect_more_than_three( false );
+
+	if( clueless::BILLIARD_ROOM == _type )
+	{
+		does_expect_more_than_three = true;
+	}
+
+	return does_expect_more_than_three;
+
+} //end routine areMoreThanThreeHallwaysExpected()
 
 
 //------------------------------------------------------------------------------
@@ -223,3 +330,52 @@ const
 	return report;
 
 } //end routine report()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns collection of possible move destinations based on specified
+///  starting point.
+/// \param Location: starting point
+/// \return set<Location*>: possible destinations
+/// \throw None
+/// \note
+/// - Does not include adjacent hallway if occupied.
+/// - Room connected via secret passage is assumed to have unlimited capacity.
+////////////////////////////////////////////////////////////////////////////////
+std::set<Location*>
+Room::getMoveOptions()
+const
+{
+	if( _adjacentHallways.empty() )
+	{
+		std::ostringstream msg;
+		msg << "Hallway::getMoveOptions()\n"
+			<< "  INSUFFICIENT_DATA\n"
+			<< "  " << getName() << " missing adjacent hallway references";
+		throw std::logic_error( msg.str() );
+	}
+
+	std::set<Location*> destinations;
+
+	std::set<Hallway*>::const_iterator hallway_iter( _adjacentHallways.begin() );
+	while( _adjacentHallways.end() != hallway_iter )
+	{
+		if( ! (*hallway_iter)->isOccupied() ) //not occupied
+		{
+			destinations.insert( *hallway_iter );
+		}
+
+		++hallway_iter; //next hallway
+
+	} //end while (more hallways)
+
+	//if has secret passage
+	if( _roomAccessedBySecretPassage )
+	{
+		//include room accessable by secret passage
+		destinations.insert( _roomAccessedBySecretPassage );
+	}
+
+	return destinations;
+
+} //end routine getMoveOptions()
