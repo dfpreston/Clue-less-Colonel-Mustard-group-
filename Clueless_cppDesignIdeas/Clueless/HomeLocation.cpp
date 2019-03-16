@@ -36,7 +36,8 @@
 HomeLocation::HomeLocation(
 	PersonPiece* person_token, //i - person token who starts in location
 	Hallway* adjacent_hallway) //i - hallway into which character enters from home
-	: _personToken( person_token )
+	: Location( HOME )
+	, _personToken( person_token )
 	, _adjacentHallway( adjacent_hallway )
 	, _occupant( person_token )
 {
@@ -81,9 +82,26 @@ bool
 HomeLocation::isOccupied()
 const
 {
-	return( nullptr == _occupant );
+	return( nullptr != _occupant );
 
 } //end routine isOccupied()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns whether can accept another occupant.
+/// \param None
+/// \return bool: whether can accept another occupant
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+bool
+HomeLocation::canAcceptAnotherOccupant()
+const
+{
+	//except for inital board laydown, never accept occupant (even one who started here)
+	return false; //can_accept_another;
+
+} //end routine canAcceptAnotherOccupant()
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,14 +123,47 @@ const
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Empties starting place, clearing occupant reference.
-/// \param None
+/// \param GamePiece: previous occupant
 /// \return None
 /// \throw None
 /// \note  None
 ////////////////////////////////////////////////////////////////////////////////
 void
-HomeLocation::recognizeOccupantLeft()
+HomeLocation::recognizeOccupantLeft(
+	const GamePiece* prev_occupant) //i - person who left room
 {
 	_occupant = nullptr;
 
 } //end routine recognizeOccupantLeft()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns collection of possible move destinations based on specified
+///  starting point.
+/// \param Location: starting point
+/// \return set<Location*>: possible destinations
+/// \throw
+/// - INSUFFICIENT_DATA when missing connecting room reference.
+/// \note
+/// - Adjacent rooms accept an unlimited number of occupants.
+////////////////////////////////////////////////////////////////////////////////
+std::set<Location*>
+HomeLocation::getMoveOptions()
+const
+{
+	if( ! _adjacentHallway )
+	{
+		std::ostringstream msg;
+		msg << "HomeLocation::getMoveOptions()\n"
+			<< "  INSUFFICIENT_DATA\n"
+			<< "  " << getName() << " missing adjacent hallway reference";
+		throw std::logic_error( msg.str() );
+	}
+
+	std::set<Location*> destinations;
+
+	destinations.insert( _adjacentHallway );
+
+	return destinations;
+
+} //end routine getMoveOptions()

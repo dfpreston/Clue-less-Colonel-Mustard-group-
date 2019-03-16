@@ -16,6 +16,7 @@
 #include "CardDeck.h"
 
 #include "Card.h"
+#include "Player.h"
 #include "SolutionCardSet.h"
 
 #include "CluelessEnums.h"	//for PersonType, WeaponType, RoomType enum use
@@ -38,8 +39,6 @@
 CardDeck::CardDeck()
 	: _caseFile( nullptr )
 {
-	std::cout << "\nCard Deck:\n";
-
 	createPersonCards();
 	createWeaponCards();
 	createRoomCards();
@@ -130,8 +129,6 @@ CardDeck::createPersonCards()
 
 	} //end while (more room cards)
 
-	std::cout << "created " << _personCards.size() <<  " Person cards\n";
-
 } //end routine createPersonCards()
 
 
@@ -162,8 +159,6 @@ CardDeck::createWeaponCards()
 		++card_iter;
 
 	} //end while (more room cards)
-
-	std::cout << "created " << _weaponCards.size() << " Weapon cards\n";
 
 } //end routine createWeaponCards()
 
@@ -199,8 +194,6 @@ CardDeck::createRoomCards()
 
 	} //end while (more room cards)
 
-	std::cout << "created " << _roomCards.size() << " Room cards\n";
-
 } //end routine createRoomCards()
 
 
@@ -222,7 +215,7 @@ CardDeck::chooseCaseFileSet()
 	//copy into case file
 	_caseFile = new SolutionCardSet(*person, *weapon, *room);
 
-	std::cout << "\nCase File... " << _caseFile->report().str() << "\n";
+	std::cout << "Case File... " << _caseFile->report().str() << "\n\n";
 
 	//remove from undealt collection
 	removeCardFromUndealt( person );
@@ -240,7 +233,35 @@ CardDeck::chooseCaseFileSet()
 /// - INSUFFICIENT_DATA when empty collection of cards
 /// \note  None
 ////////////////////////////////////////////////////////////////////////////////
-const Card*
+void
+CardDeck::setup(
+	std::list<Player*>* players)
+{
+	std::list<Player*>::const_iterator player_iter( (*players).begin() );
+	Card* chosen_card( nullptr );
+
+	while( areAnyCardsUndealt() )
+	{
+		//deal card from undealt to receiving player (incl remove card from undealt)
+		dealCard( *player_iter );
+
+		//cycle to next player
+		player_iter = determineNextPlayer(players, player_iter);
+
+	} //end while (undealt cards)
+
+} //end routine setup()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Chooses card from specified container with uniform random draw.
+/// \param set<Card>: collection of cards
+/// \return Card: choosen card
+/// \throw
+/// - INSUFFICIENT_DATA when empty collection of cards
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+Card*
 CardDeck::chooseCard(
 	std::set<Card*>* cards) //i - cards to choose amongst
 const
@@ -281,6 +302,47 @@ const
 } //end routine chooseCard()
 
 
+const Card*
+CardDeck::chooseCard(
+	std::set<const Card*>* cards) //i - cards to choose amongst
+const
+{
+	const Card* choice( nullptr );
+
+	if( cards->empty() ) //no cards from which to choose
+	{
+		std::ostringstream msg;
+		msg << "CardDeck::chooseCard()\n"
+			<< "  INSUFFICIENT_DATA\n"
+			<< "  no cards from which to choose";
+		throw std::logic_error( msg.str() );
+	}
+	else if( 1 == cards->size() )
+	{
+		//only one choice
+		choice = *(cards->begin());
+	}
+	else //more than one card
+	{
+		//create position based on floor of random draw in [0, num cards)
+		size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, cards->size()) )) );
+
+		std::set<const Card*>::const_iterator card_iter( cards->begin() );
+		for(size_t pos_index(0);
+			pos_index < zero_based_pos;
+			++pos_index)
+		{
+			++card_iter;
+		}
+
+		choice = *card_iter;
+	}
+
+	return choice;
+
+} //end routine chooseCard()
+
+
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Removes specified card from undealt cards collection.
 /// \param Card: card to remove
@@ -291,9 +353,9 @@ const
 ////////////////////////////////////////////////////////////////////////////////
 void
 CardDeck::removeCardFromUndealt(
-	Card* card) //i - card to remove
+	const Card* card) //i - card to remove
 {
-	std::set<Card*>::iterator card_iter( _undealtCards.find(card) );
+	std::set<const Card*>::iterator card_iter( _undealtCards.find(card) );
 	
 	if( _undealtCards.end() != card_iter ) //found card
 	{
@@ -318,28 +380,73 @@ CardDeck::removeCardFromUndealt(
 /// \throw None
 /// \note  None
 ////////////////////////////////////////////////////////////////////////////////
-Card*
-CardDeck::dealCard()
+const Card*
+CardDeck::dealCard(
+	Player* player) //io- player to whom card will be dealt
 {
-	Card* card( nullptr );
+	const Card* card( nullptr );
 
 	if( 0 == _undealtCards.size() )
 	{
-
+		std::ostringstream msg;
+		msg << "CardDeck::dealCard()\n"
+			<< "  INSUFFICIENT_DATA\n"
+			<< "  no undealt cards in deck";
+		throw std::logic_error( msg.str() );
 	}
 	
 	//uniform random draw of card
+	card = chooseCard( &_undealtCards );
+	player->addCardToHand( card );
 
 	//remove reference from undealt card collection
+	removeCardFromUndealt( card );
 
 	return card; //dealt
 
 } //end routine dealCard()
 
 
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Determines next player given collection of players and current player.
+/// \param set<Player*>: all players
+/// \param set<Player*>::iterator: current player
+/// \return set<Player*>::iterator: next player
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+std::list<Player*>::const_iterator
+CardDeck::determineNextPlayer(
+	const std::list<Player*>* const players, //i - 
+	std::list<Player*>::const_iterator curr_player_iter)
+{
+	std::list<Player*>::const_iterator next_player_iter( curr_player_iter );
+
+	//increment iterator
+	++next_player_iter;
+
+	//if iterator represents end of collection
+	if( (*players).end() == next_player_iter )
+	{
+		//cycle back to first player
+		next_player_iter = (*players).begin();
+	}
+	
+	return next_player_iter;
+
+} //end routine determineNextPlayer()
+
+
 //------------------------------------------------------------------------------
 // Additional Member Functions
 //------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+/// \brief 
+/// \param None
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
 bool
 CardDeck::doesAccusationMatchCaseFile(
 	const SolutionCardSet& accusation) //i - accusation to compare with case file

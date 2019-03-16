@@ -117,6 +117,7 @@
     <ClInclude Include="Card.h" />
     <ClInclude Include="CardDeck.h" />
     <ClInclude Include="CluelessEnums.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="GamePiece.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="mersenneTwister.h" />
@@ -127,12 +128,14 @@
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="CardDeck.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GamePiece.cpp" />
     <ClCompile Include="Hallway.cpp" />
     <ClCompile Include="HomeLocation.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="mersenneTwister.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Room.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
