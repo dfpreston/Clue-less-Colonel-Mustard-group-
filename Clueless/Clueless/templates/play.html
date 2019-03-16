@@ -1,4 +1,11 @@
 {% block content %}
+    <!--<meta http-equiv="refresh" content="1">-->
+
+    <script>
+        setInterval(function(){
+        }, 5000);
+    </script>
+
     <h2>Game</h2>
     <body>This is the game play page!</body>
 
@@ -17,5 +24,7 @@
     Player Hand: {{ player_hand }}
     <br>
     All Available Cards: {{ available_cards }}
+    <br>
+    Solution Cards: {{ solution_cards }}
 
 {% endblock %}

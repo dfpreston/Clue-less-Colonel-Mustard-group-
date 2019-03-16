@@ -64,6 +64,9 @@ def GameCustiomize(request):
             gm = GameManager(game_id=Games.objects.filter(status='PENDING')[0])
             gm.add_player(client_ip=user_ip, client_name=user_name, is_creator=False)
 
+        else:
+            return render(request, 'customize.html')
+
     # Post Request
     elif request.method == 'POST':
         pass
@@ -73,8 +76,6 @@ def GameCustiomize(request):
 
     context = {'msg':msg,
                'game_id':pm.get_game_id(),
-               'player_location':pm.get_player_location(),
-               'others_locations':pm.get_other_player_locations(),
                'player_hand':pm.get_hand(),
                'available_cards':pm.get_unused_cards(),
                'is_creator': pm.get_is_creator()}
@@ -106,7 +107,8 @@ def GameRoom(request):
                    'others_locations': pm.get_other_player_locations(),
                    'player_hand': pm.get_hand(),
                    'available_cards': pm.get_unused_cards(),
-                   'is_creator':pm.get_is_creator()}
+                   'is_creator':pm.get_is_creator(),
+                   'solution_cards':gm.get_solution_cards()}
 
     elif request.method == 'POST':
         print('Post Request!')
