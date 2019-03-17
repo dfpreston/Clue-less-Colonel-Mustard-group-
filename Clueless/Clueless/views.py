@@ -117,6 +117,8 @@ def GameRoom(request):
         print(request.GET.get('used_card', ''))
         print(request.GET.get('new_location', ''))
 
+        gm.update_player_turn()
+
     context = {'game_id': pm.get_game_id(),
                'player_turn': pm.get_is_player_turn(),
                'player_location': pm.get_player_location(),

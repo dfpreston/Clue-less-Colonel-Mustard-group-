@@ -110,12 +110,48 @@ class GameManager:
             else:
                 break
 
+    def set_player_order(self):
+        turn_order = []
+
+        for player in Players.objects.filter(game=self.game_id).order_by('?'):
+            turn_order.append(player.id)
+
+        Players.objects.filter(id=turn_order[0]).update(their_turn=True)
+        Games.objects.filter(id=self.game_id).update(turn_order=turn_order)
+
+    def update_player_turn(self):
+        turn_order = []
+
+        temp = (Games.objects.filter(id=self.game_id)[0].turn_order)\
+            .replace('[','').replace(']','').replace(' ','').split(',')
+
+        for player_id in temp:
+            turn_order.append(int(player_id))
+
+        # Get current player turn id
+        curr_id = Players.objects.filter(game=self.game_id, their_turn=True)[0].id
+
+        # Go to the front of the list, if current player is last
+        if len(turn_order)-1 == turn_order.index(curr_id):
+            next_id = turn_order[0]
+        # Else, go to next player
+        else:
+            next_id = turn_order[turn_order.index(curr_id)+1]
+
+        # Update player turns
+        Players.objects.filter(id=curr_id).update(their_turn=False)
+        Players.objects.filter(id=next_id).update(their_turn=True)
+
+        print(turn_order.index(curr_id))
+
     def start_game(self):
 
         # Randomly picks solution cards and player hands
         self.sort_out_cards()
         # Set starting location for all players
         self.place_players()
+        # Set payer order for game
+        self.set_player_order()
         # Mark game in progress
         Games.objects.filter(id=self.game_id).update(status=self.game_status[1])
 

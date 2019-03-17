@@ -4,6 +4,7 @@ from django.db import models
 class Games(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=200, default='')
+    turn_order = models.CharField(max_length=200, default='')
 
 
 class Locations(models.Model):
