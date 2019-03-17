@@ -40,24 +40,78 @@
     </script>
 
     <h2>Game</h2>
-    <body>This is the game play page!</body>
+    <body>
+        <h3>Game Board</h3>
+        <img src="../assets/board.png" alt="game board picture">
+        <h3>Your Hand</h3>
+        <ul id="player-hand">
+        </ul>
+        <h3 class="is-players-turn">Turn Options</h3>
+        <ul id="turn-options" class="is-players-turn">
+            <li>Move</li>
+            <li>Make a Suggestion</li>
+            <li>Make an Accusation</li>
+        </ul>
+    </body>
 
-    <br>
-    <h3>Current data, per user:</h3><br>
-    Game Id: {{ game_id }}
-    <br>
-    Is Player Game Creator: {{ is_creator }}
-    <br>
-    Is it Players turn: {{ player_turn }}
-    <br>
-    Player Location: {{ player_location }}
-    <br>
-    Others Locations: {{ others_locations }}
-    <br>
-    Player Hand: {{ player_hand }}
-    <br>
-    All Available Cards: {{ available_cards }}
-    <br>
-    Solution Cards: {{ solution_cards }}
+    <script
+      src="http://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        console.log("Current data, per user:");
+        console.log("Game Id:", "{{ game_id }}");
+        console.log("Is Player Game Creator:", "{{ is_creator }}");
+        console.log("Is it Players turn:", "{{ player_turn }}");
+        console.log("Player Location:", "{{ player_location }}");
+        console.log("Others Locations:", "{{ others_locations }}")
+        console.log("Player Hand:", "{{ player_hand }}");
+        console.log("All Available Cards:", "{{ available_cards }}");
+
+        // Construct player hand
+        const cardMappings = {
+            weapon1: "Candlestick",
+            weapon2: "Knife",
+            weapon3: "Lead Pipe",
+            weapon4: "Revolver",
+            weapon5: "Rope",
+            weapon6: "Wrench",
+            room1: "Ballroom",
+            room2: "Billiard Room",
+            room3: "Conservatory",
+            room4: "Dining Room",
+            room5: "Hall",
+            room6: "Kitchen",
+            room7: "Library",
+            room8: "Lounge",
+            room9: "Study",
+            suspect1: "Colonel Mustard",
+            suspect2: "Miss Scarlet",
+            suspect2: "Mr. Green",
+            suspect4: "Mrs. Peacock",
+            suspect5: "Mrs. White",
+            suspect6: "Professor Plum"
+        }
+
+        // convert player_hand to JSON. Globally replace &#39; with quotes
+        const playerHand = JSON.parse("{{ player_hand }}".replace(/&#39;/g, "\""));
+
+        Object.keys(playerHand).forEach(cardType => {
+            playerHand[cardType].forEach(card => {
+                $("#player-hand").append(
+                    "<li>" + cardMappings[card] + "</li>"
+                );
+            });
+        });
+
+        // Player's turn options
+        var isPlayersTurn = "{{ player_turn }}";
+        if (isPlayersTurn) {
+            $(".is-players-turn").hide();
+        }
+        else {
+            $(".is-players-turn").show();
+        }
+    </script>
 
 {% endblock %}
