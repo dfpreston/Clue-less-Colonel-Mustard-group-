@@ -1,17 +1,21 @@
 {% block content %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     <h2>Entry Way</h2>
+    <h3>Hello {{player_name}}</h3>
     <body>
         <p>The victim: John Boddy, 37, millionaire inventor of sliced bread</p>
         <p>Boddy was hosting a dinner party for you and several other guests, and after some hubbub you found his corpse here in the entryway. It seems to have been dragged here... but from where? How did he die? And most importantly, who killed him?</p>
         <p>Several people in this room stand to gain from his death, but who would have stooped so low as to murder their host in his own home?</p>
         <p>The suspects:</p>
         <ul>
-            <li><button>Choose</button> Colonel Mustard</li>
-            <li><button>Choose</button> Mrs. White </li>
-            <li><button>Choose</button> Professor Plum</li>
-            <li><button>Choose</button> Mrs. Peacock</li>
-            <li><button>Choose</button> Mr. Green</li>
-            <li><button>Choose</button> Miss Scarlet</li>
+            <li><button onclick="set_player_token('Colonel Mustard')">Choose</button> Colonel Mustard</li>
+            <li><button onclick="set_player_token('Mrs. White')">Choose</button> Mrs. White </li>
+            <li><button onclick="set_player_token('Professor Plum')">Choose</button> Professor Plum</li>
+            <li><button onclick="set_player_token('Mrs. Peacock')">Choose</button> Mrs. Peacock</li>
+            <li><button onclick="set_player_token('Mr. Green')">Choose</button> Mr. Green</li>
+            <li><button onclick="set_player_token('Miss Scarlet')">Choose</button> Miss Scarlet</li>
         </ul>
         <br />
         <h3>Waiting for other players to join the game...</h3>
@@ -27,6 +31,17 @@
         console.log("Message:", "{{ msg }}");
         console.log("Game ID:", "{{ game_id }}");
         console.log("Is Player Game Creator:", "{{ is_creator }}");
+
+        function set_player_token(name){
+            url = "/customize/?token="+name;
+            $.ajax({
+                type: "POST",
+                url: url,
+                success: function(){
+                    location.replace("/customize/")
+                }
+            });
+        }
     </script>
 
 {% endblock %}

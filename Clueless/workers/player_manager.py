@@ -22,6 +22,14 @@ class PlayerManager:
         new_location = Locations.objects.filter(game=self.game_id, name=location_name)[0]
         self.player.update(location=new_location)
 
+    def update_player_name(self, player_name):
+        if player_name is not '':
+            self.player.name=player_name
+            self.player.save()
+
+    def get_player_name(self):
+        return self.player.name
+
     def get_other_player_locations(self):
         other_locations = {}
 

@@ -31,6 +31,7 @@ def Home(request):
 
     return render(request, 'home.html', context)
 
+@csrf_exempt
 def GameCustiomize(request):
     """
     Can potentially be call the waiting room
@@ -39,15 +40,15 @@ def GameCustiomize(request):
     :return:
     """
 
+    # Get Client information
+    if 'HTTP_X_REAL_IP' in (request.META).keys():
+        user_ip = request.META.get('HTTP_X_REAL_IP')
+    else:
+        user_ip = request.META.get('REMOTE_ADDR')
+    user_name = request.META.get('USERNAME')
+
     # GET Request
     if request.method == 'GET':
-
-        # Get Client information
-        if 'HTTP_X_REAL_IP' in (request.META).keys():
-            user_ip = request.META.get('HTTP_X_REAL_IP')
-        else:
-            user_ip = request.META.get('REMOTE_ADDR')
-        user_name = request.META.get('USERNAME')
 
         # User create new game
         if request.GET.get('game') == 'create':
@@ -67,17 +68,25 @@ def GameCustiomize(request):
             gm.add_player(client_ip=user_ip, client_name=user_name, is_creator=False)
 
         else:
-            return render(request, 'customize.html')
+            msg = 'Room has been updated with new info!'
+            pm = PlayerManager(client_ip=user_ip, client_name=user_name)
+            gm = GameManager(game_id=pm.get_game_id())
 
     # Post Request
     elif request.method == 'POST':
-        pass
+        msg = 'You are updating player info for game!'
+        pm = PlayerManager(client_ip=user_ip, client_name=user_name)
+        gm = GameManager(game_id=pm.get_game_id())
+
+        player_token = request.GET.get('token', '')
+        pm.update_player_name(player_token)
 
     # PLAYER STATUS TESTING
     pm = PlayerManager(client_ip=user_ip, client_name=user_name)
 
     context = {'msg':msg,
                'game_id':pm.get_game_id(),
+               'player_name':pm.get_player_name(),
                'player_hand':pm.get_hand(),
                'available_cards':pm.get_unused_cards(),
                'is_creator': pm.get_is_creator()}
