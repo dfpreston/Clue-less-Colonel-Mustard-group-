@@ -1,9 +1,42 @@
 {% block content %}
     <!--<meta http-equiv="refresh" content="1">-->
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
-        setInterval(function(){
-        }, 5000);
+    $(document).ready(function() {
+
+        // Listen for game updates if not player's turn
+        if( !{{player_turn | yesno:"true,false"}}){
+            setInterval(function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/play/",
+                    success: function() {
+                        location.reload();
+                    }
+                });
+                rebuke_suggestion();
+            }, 5000);
+        };
+
+    });
+
+    function make_suggestion(){
+        };
+
+    function rebuke_suggestion(){
+        $.ajax({
+            type: "POST",
+            url: "/play/?used_card=foo"
+        });
+    };
+
+    function update_player_location(){
+        $.ajax({
+            type: "POST",
+            url: "/play/?new_location=foo"
+        });
+    };
     </script>
 
     <h2>Game</h2>

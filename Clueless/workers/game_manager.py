@@ -106,6 +106,7 @@ class GameManager:
                 player = Players.objects.filter(game=self.game_id, location__isnull=True)[0]
                 player.location = location
                 player.save()
+                print('Player location at game start: {}'.format(player.location.name))
             else:
                 break
 
@@ -113,9 +114,10 @@ class GameManager:
 
         # Randomly picks solution cards and player hands
         self.sort_out_cards()
-
         # Set starting location for all players
         self.place_players()
+        # Mark game in progress
+        Games.objects.filter(id=self.game_id).update(status=self.game_status[1])
 
     def get_solution_cards(self):
         solution = {}
@@ -128,6 +130,9 @@ class GameManager:
                 solution[card.card_type].append(card.name)
 
         return solution
+
+    def get_game_status(self):
+        return (Games.objects.filter(id=self.game_id)[0]).status
 
     def get_games_pending(self):
         return Games.objects.filter(status=self.game_status[0]).count()

@@ -55,7 +55,7 @@ class PlayerManager:
         return available
 
     def get_game_id(self):
-        return self.game_id
+        return self.game_id.id
 
     def get_is_creator(self):
         return self.player.game_creator

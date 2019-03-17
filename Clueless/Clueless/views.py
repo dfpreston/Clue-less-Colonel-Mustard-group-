@@ -1,5 +1,7 @@
 from django.shortcuts import render
 
+from django.views.decorators.csrf import csrf_exempt
+
 from workers.game_manager import GameManager
 from workers.player_manager import PlayerManager
 
@@ -82,35 +84,46 @@ def GameCustiomize(request):
 
     return render(request, 'customize.html', context)
 
-
+@csrf_exempt
 def GameRoom(request):
 
+    # Get Client information
+    if 'HTTP_X_REAL_IP' in (request.META).keys():
+        user_ip = request.META.get('HTTP_X_REAL_IP')
+    else:
+        user_ip = request.META.get('REMOTE_ADDR')
+    user_name = request.META.get('USERNAME')
+
+    pm = PlayerManager(client_ip=user_ip, client_name=user_name)
+    gm = GameManager(game_id=pm.get_game_id())
+
     if request.method == 'GET':
-        # Get Client information
-        if 'HTTP_X_REAL_IP' in (request.META).keys():
-            user_ip = request.META.get('HTTP_X_REAL_IP')
-        else:
-            user_ip = request.META.get('REMOTE_ADDR')
-        user_name = request.META.get('USERNAME')
+        """
+        Update waiting player
+        """
+        print('Get Request!')
 
-        # TESTING
-        # start_game will not run if status is in progress
-        # status will update to in progress within start_game
-        gm = GameManager(game_id=Games.objects.filter(status='PENDING')[0])
-        gm.start_game()
-
-        pm = PlayerManager(client_ip=user_ip, client_name=user_name)
-
-        context = {'game_id': pm.get_game_id(),
-                   'player_turn': pm.get_is_player_turn(),
-                   'player_location': pm.get_player_location(),
-                   'others_locations': pm.get_other_player_locations(),
-                   'player_hand': pm.get_hand(),
-                   'available_cards': pm.get_unused_cards(),
-                   'is_creator':pm.get_is_creator(),
-                   'solution_cards':gm.get_solution_cards()}
+        # Start game if new
+        if gm.get_game_status() == 'PENDING':
+            # Start game and update player with new info
+            gm.start_game()
+            pm = PlayerManager(client_ip=user_ip, client_name=user_name)
 
     elif request.method == 'POST':
+        """
+        Update Player information during turn 
+        """
         print('Post Request!')
+        print(request.GET.get('used_card', ''))
+        print(request.GET.get('new_location', ''))
+
+    context = {'game_id': pm.get_game_id(),
+               'player_turn': pm.get_is_player_turn(),
+               'player_location': pm.get_player_location(),
+               'others_locations': pm.get_other_player_locations(),
+               'player_hand': pm.get_hand(),
+               'available_cards': pm.get_unused_cards(),
+               'is_creator': pm.get_is_creator(),
+               'solution_cards': gm.get_solution_cards()}
 
     return render(request, 'play.html', context)
