@@ -1,6 +1,8 @@
 from django.shortcuts import render
 
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+from django.shortcuts import redirect
 
 from workers.game_manager import GameManager
 from workers.player_manager import PlayerManager
@@ -61,6 +63,9 @@ def GameCustiomize(request):
 
         # User joins pending game
         elif request.GET.get('game') == 'join':
+            if not Games.objects.filter(status='PENDING').exists():
+                return redirect('/')
+
             msg = 'You have joined an existing game!'
 
             # Game tracker
