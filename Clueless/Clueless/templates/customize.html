@@ -1,24 +1,32 @@
 {% block content %}
-    <h2>Customize</h2>
-    <br>
-    <body>This is the game custiomize page!</body>
+    <h2>Entry Way</h2>
+    <body>
+        <p>The victim: John Boddy, 37, millionaire inventor of sliced bread</p>
+        <p>Boddy was hosting a dinner party for you and several other guests, and after some hubbub you found his corpse here in the entryway. It seems to have been dragged here... but from where? How did he die? And most importantly, who killed him?</p>
+        <p>Several people in this room stand to gain from his death, but who would have stooped so low as to murder their host in his own home?</p>
+        <p>The suspects:</p>
+        <ul>
+            <li><button>Choose</button> Colonel Mustard</li>
+            <li><button>Choose</button> Mrs. White </li>
+            <li><button>Choose</button> Professor Plum</li>
+            <li><button>Choose</button> Mrs. Peacock</li>
+            <li><button>Choose</button> Mr. Green</li>
+            <li><button>Choose</button> Miss Scarlet</li>
+        </ul>
+        <br />
+        <h3>Waiting for other players to join the game...</h3>
+        <p>Only the game creator can start the game, if there are 2-6 people waiting</p>
+        <form action="/play">
+            <input type="submit" value="Start Game" />
+        </form>
 
-    <h3>If the game creator hasnt started the game yet, any play can update the game customizations</h3>
+    </body>
 
-    <h3>Only the game creator can start the game, if theres 2-6 people waiting</h3>
-    <br>
-    <form action="/play">
-        <input type="submit" value="Start Game" />
-    </form>
-
-
-    <br>
-    <h3>Current data, per user:</h3><br>
-    Message: {{ msg }}
-    <br>
-    Game Id: {{ game_id }}
-    <br>
-    Is Player Game Creator: {{ is_creator }}
-
+    <script type="text/javascript">
+        console.log("Current data, per user:");
+        console.log("Message:", "{{ msg }}");
+        console.log("Game ID:", "{{ game_id }}");
+        console.log("Is Player Game Creator:", "{{ is_creator }}");
+    </script>
 
 {% endblock %}

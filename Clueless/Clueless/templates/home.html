@@ -1,21 +1,18 @@
 {% block content %}
-    <h2>Homepage</h2>
-    <body>This is the homepage!</body>
-
-    <br><br>
-
-    <h3>The user should be able to create a new game</h3>
-    <br>
-    <input type="button" value="Create Game" onclick="location.href='/customize/?game=create';" />
-
-    <br>
-
-    <h3>If there are any open games, the user should be able to join them</h3>
-    <br>
-    <h3>Open games: {{ games_pending }}</h3>
-    <br>
-    <h3>Games In Progress: {{ games_in_progress }}</h3>
-    <br>
-    <input type="button" value="Join Game" onclick="location.href='/customize/?game=join';" />
+    <body>
+    	<h2>ClueLess</h2>
+    	<p>Welcome to Boddy Manor! It would seem we have a murder on our hands...</p>
+	    <br>
+	    <h3>Start a new investigation</h3>
+	    <input type="button" value="Create Game" onclick="location.href='/customize/?game=create';" />
+	    <br>
+	    <h3>Join an existing investigation ({{ games_pending }} open)</h3>
+	    <input type="button" value="Join Game" onclick="location.href='/customize/?game=join';" />
+    </body>
+    <script type="text/javascript">
+        console.log("Current data, per user:");
+        console.log("Open games:", "{{ games_pending }}");
+        console.log("Games In Progress:", "{{ games_in_progress }}");
+    </script>
 
 {% endblock %}
