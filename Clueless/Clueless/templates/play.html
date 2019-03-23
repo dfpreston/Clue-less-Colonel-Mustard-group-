@@ -2,75 +2,19 @@
     <!--<meta http-equiv="refresh" content="1">-->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script>
-    $(document).ready(function() {
-
-        // Listen for game updates if not player's turn
-        if( !{{player_turn | yesno:"true,false"}}){
-            setInterval(function(){
-                $.ajax({
-                    type: "GET",
-                    url: "/play/",
-                    success: function() {
-                        location.reload();
-                    }
-                });
-                rebuke_suggestion();
-            }, 5000);
-        };
-
-    });
-
-    function make_suggestion(){
-        };
-
-    function rebuke_suggestion(){
-        $.ajax({
-            type: "POST",
-            url: "/play/?used_card=foo"
-        });
-    };
-
-    function update_player_location(){
-        $.ajax({
-            type: "POST",
-            url: "/play/?new_location=foo"
-        });
-    };
-    </script>
-
-    <h2>Game</h2>
-    <body>
-        <h3>Game Board</h3>
-        <img src="..\assets\board.png" alt="game board picture">
-        <h3>Your Hand</h3>
-        <ul id="player-hand">
-        </ul>
-        <h3 class="is-players-turn">Turn Options</h3>
-        <ul id="turn-options" class="is-players-turn">
-            <li>Move</li>
-            <li>Make a Suggestion</li>
-            <li>Make an Accusation</li>
-        </ul>
-    </body>
-
-    <script
-      src="http://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-      crossorigin="anonymous"></script>
-    <script type="text/javascript">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script  type="text/javascript">        
         console.log("Current data, per user:");
         console.log("Game Id:", "{{ game_id }}");
         console.log("Is Player Game Creator:", "{{ is_creator }}");
         console.log("Is it Players turn:", "{{ player_turn }}");
         console.log("Player Location:", "{{ player_location }}");
         console.log("Others Locations:", "{{ others_locations }}")
-        console.log("Player Hand:", "{{ player_hand }}");
-        console.log("All Available Cards:", "{{ available_cards }}");
-        console.log("Solution Cards:", "{{ solution_cards }}");
+        console.log("Player Hand:", "{{ player_hand | safe}}");
+        console.log("All Available Cards:", "{{ available_cards | safe}}");
+        console.log("Solution Cards:", "{{ solution_cards | safe}}");
 
-        // Construct player hand
-        const cardMappings = {
+        const idToText = {
             weapon1: "Candlestick",
             weapon2: "Knife",
             weapon3: "Lead Pipe",
@@ -88,31 +32,294 @@
             room9: "Study",
             suspect1: "Colonel Mustard",
             suspect2: "Miss Scarlet",
-            suspect2: "Mr. Green",
+            suspect3: "Mr. Green",
             suspect4: "Mrs. Peacock",
             suspect5: "Mrs. White",
             suspect6: "Professor Plum"
         }
 
-        // convert player_hand to JSON. Globally replace &#39; with quotes
-        const playerHand = JSON.parse("{{ player_hand }}".replace(/&#39;/g, "\""));
+        const textToId = {
+            "Candlestick": "weapon1",
+            "Knife": "weapon2",
+            "Lead Pipe": "weapon3",
+            "Revolver": "weapon4",
+            "Rope": "weapon5",
+            "Wrench": "weapon6",
+            "Ballroom": "room1",
+            "Billiard Room": "room2",
+            "Conservatory": "room3",
+            "Dining Room": "room4",
+            "Hall": "room5",
+            "Kitchen": "room6",
+            "Library": "room7",
+            "Lounge": "room8",
+            "Study": "room9",
+            "Colonel Mustard": "suspect1",
+            "Miss Scarlet": "suspect2",
+            "Mr. Green": "suspect3",
+            "Mrs. Peacock": "suspect4",
+            "Mrs. White": "suspect5",
+            "Professor Plum": "suspect6"
+        }
 
-        Object.keys(playerHand).forEach(cardType => {
-            playerHand[cardType].forEach(card => {
-                $("#player-hand").append(
-                    "<li>" + cardMappings[card] + "</li>"
-                );
+        // Each key is the current location, and the values are possible 
+        // locations to move to from that location. Hallways are in the
+        // format "hallway##" where the two numbers are two rooms that
+        // are connected by the hallway.
+        const possibleMoves = {
+            // Ballroom
+            room1: [
+                "hallway12", 
+                "hallway13",
+                "hallway16"
+            ],
+            // Billiard room
+            room2: [
+                "hallway12",
+                "hallway24",
+                "hallway25",
+                "hallway27"
+            ],
+            // Conservatory
+            room3: [
+                "hallway13",
+                "hallway37",
+                "room8"
+            ],
+            // Dining Room
+            room4: [
+                "hallway24",
+                "hallway46",
+                "hallway48"
+            ],
+            // Hall
+            room5: [
+                "hallway25",
+                "hallway58",
+                "hallway59"
+            ],
+            // Kitchen
+            room6: [
+                "hallway16",
+                "hallway46",
+                "room9"
+            ],
+            // Library
+            room7: [
+                "hallway27",
+                "hallway37",
+                "hallway79"
+            ],
+            // Lounge
+            room8: [
+                "hallway48",
+                "hallway58",
+                "room3"
+            ],
+            // Study
+            room9: [
+                "hallway59",
+                "hallway79",
+                "room6"
+            ],
+            // Colonel Mustard
+            suspect1: [ "hallway48" ],
+            // Miss Scarlet
+            suspect2: [ "hallway58" ],
+            // Mr. Green
+            suspect3: [ "hallway13" ],
+            // Mrs. Peacock
+            suspect4: [ "hallway37" ],
+            // Mrs. White
+            suspect5: [ "hallway16" ],
+            // Professor Plum
+            suspect6: [ "hallway79" ]
+        }
+
+        $(document).ready(function() {
+            // construct player's hand
+
+            // convert player_hand to JSON. Globally replace &#39; with quotes
+            const playerHand = JSON.parse("{{ player_hand }}".replace(/&#39;/g, "\""));
+
+            Object.keys(playerHand).forEach(cardType => {
+                playerHand[cardType].forEach(card => {
+                    $("#player-hand").append(
+                        "<li>" + idToText[card] + "</li>"
+                    );
+                });
             });
+
+            // Player's turn options
+            if (!"{{ player_turn }}") {
+                $(".is-players-turn").hide();
+            } else {
+                $(".is-players-turn").hide();
+                $("#turn-options-menu").show();
+            }
+
+            // Notify player of current location
+            $("#player-location-msg").text("You are in the " + idToText["{{ player_location }}"]);
+
+            // initialize suspect, weapon, and location options
+            Object.keys(idToText).forEach(id => {
+                if (id.includes("room")) {
+                    $(".location-options").append(
+                        "<li>" + idToText[id] + "</li>"
+                    );
+                } else if (id.includes("suspect")) {
+                    $(".suspect-options").append(
+                        "<li>" + idToText[id] + "</li>"
+                    );
+                } else {
+                    $(".weapon-options").append(
+                        "<li>" + idToText[id] + "</li>"
+                    );
+                }
+            });
+
+            // Listen for game updates if not player's turn
+            if( !{{player_turn | yesno:"true,false"}}) {
+                setInterval(function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/play/",
+                        success: function() {
+                            location.reload();
+                        }
+                    });
+                    rebukeSuggestion();
+                }, 5000);
+            };
         });
 
-        // Player's turn options
-        var isPlayersTurn = "{{ player_turn }}";
-        if (isPlayersTurn) {
+        function showTurnOptions() {
             $(".is-players-turn").hide();
+            $("#turn-options-menu").show();
         }
-        else {
-            $(".is-players-turn").show();
+
+        function move() {
+            $("#turn-options-menu").hide();
+            $("#move-options-menu").show();
+            let moveOptions;
+            // if player_location is a room or suspect starting location
+            if (possibleMoves.hasOwnProperty("{{ player_location }}")) {
+                moveOptions = possibleMoves["{{ player_location }}"];
+            } else {
+                moveOptions = "{{ player_location }}".replace("hallway","").split();
+                moveOptions.forEach(room => {
+                    room = idToText["room" + room];
+                });
+            }
+            moveOptions.forEach(option => {
+                $("#move-options").append(
+                    '<li class="move-location">' + option + "</li>"
+                );
+            });
         }
+
+        function suggest() {
+            $("#turn-options-menu").hide();
+            $("#make-suggestion-menu").show();
+        }
+
+        function accuse() {
+            $("#turn-options-menu").hide();
+            $("#make-accusation-menu").show();
+        }
+
+        $(".move-location").click(function() {
+            const newLocation = cardToId[$(this).text()];
+            console.log(newLocation);
+            updatePlayerLocation(location);
+        })
+
+        function updatePlayerLocation(newLocation) {
+            const url = "/play/?new_location=" + new_location;
+            $.ajax({
+                type: "POST",
+                url: url
+            });
+        };
+
+        function makeAccusation(location, suspect, weapon) {
+            $.ajax({
+                type: "POST",
+                url: "/play/"
+            });
+        }
+
+        function makeSuggestion(location, suspect, weapon) {
+            $.ajax({
+                type: "POST",
+                url: "/play/"
+            });
+        };
+
+        function rebukeSuggestion() {
+            $.ajax({
+                type: "POST",
+                url: "/play/?used_card=foo"
+            });
+        };
+
     </script>
+
+    <h2>Game</h2>
+    <body>
+        <h3>Game Board</h3>
+        <img src="..\assets\board.png" alt="game board picture">
+        <h3 id="player-location-msg"></h3>
+
+        <!-- Turn handling -->
+        <div class="is-players-turn" id="turn-options-menu">
+            <h3>Turn Options</h3>
+            <ul id="turn-options">
+                <li onclick="move()">Move</li>
+                <li onclick="suggest()">Make a Suggestion</li>
+                <li onclick="accuse()">Make an Accusation</li>
+            </ul>
+        </div>
+
+        <div class="is-players-turn" id="move-options-menu">
+            <h3>Move Options</h3>
+            <button onclick="showTurnOptions()">Back to Turn Options</button>
+            <ul id="move-options">
+            </ul>
+        </div>
+
+        <div class="is-players-turn" id="make-suggestion-menu">
+            <h3>Make a Suggestion</h3>
+            <button onclick="showTurnOptions()">Back to Turn Options</button>
+            <p>Choose one Weapon</p>
+            <ul class="weapon-options"></ul>
+            <p>Choose one Suspect</p>
+            <ul class="suspect-options"></ul>
+            <button onclick="makeSuggestion('{{ player_location }}', selectedWeapon, selectedSuspect)">Suggest</button>
+        </div>
+
+        <div class="is-players-turn" id="make-accusation-menu">
+            <h3>Make an Accusation</h3>
+            <button onclick="showTurnOptions()">Back to Turn Options</button>
+            <p><em>NOTE: if you make an incorrect Accusation, you automatically lose the game.</em></p>
+            <p>Choose one Weapon</p>
+            <ul class="weapon-options"></ul>
+            <p>Choose one Suspect</p>
+            <ul class="suspect-options"></ul>
+            <p>Choose one Room</p>
+            <ul class="location-options"></ul>
+            <button onclick="makeAccusation(selectedLocation,selectedWeapon, selectedSuspect)">Accuse</button>
+        </div>
+
+        <!-- Player hand -->
+        <h3>Your Hand</h3>
+        <ul id="player-hand">
+        </ul>
+    </body>
+
+    <script
+      src="http://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
 
 {% endblock %}
