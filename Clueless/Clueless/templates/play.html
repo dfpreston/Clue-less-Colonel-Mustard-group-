@@ -15,27 +15,199 @@
         console.log("Solution Cards:", "{{ solution_cards | safe}}");
 
         const idToText = {
-            weapon1: "Candlestick",
-            weapon2: "Knife",
-            weapon3: "Lead Pipe",
-            weapon4: "Revolver",
-            weapon5: "Rope",
-            weapon6: "Wrench",
-            room1: "Ballroom",
-            room2: "Billiard Room",
-            room3: "Conservatory",
-            room4: "Dining Room",
-            room5: "Hall",
-            room6: "Kitchen",
-            room7: "Library",
-            room8: "Lounge",
-            room9: "Study",
-            suspect1: "Colonel Mustard",
-            suspect2: "Miss Scarlet",
-            suspect3: "Mr. Green",
-            suspect4: "Mrs. Peacock",
-            suspect5: "Mrs. White",
-            suspect6: "Professor Plum"
+            weapon1: {
+                name: "Candlestick"
+            },
+            weapon2: {
+                name: "Knife"
+            },
+            weapon3: {
+                name: "Lead Pipe"
+            },
+            weapon4: {
+                name: "Revolver"
+            },
+            weapon5: {
+                name: "Rope"
+            },
+            weapon6: {
+                name: "Wrench"
+            },
+            room1: {
+                name: "Ballroom",
+                connections: [
+                    "hallway9", 
+                    "hallway11",
+                    "hallway12"
+                ]
+            },
+            room2: {
+                name: "Billiard Room",
+                connections: [
+                    "hallway4",
+                    "hallway6",
+                    "hallway7",
+                    "hallway9"
+                ]
+            },
+            room3: {
+                name: "Conservatory",
+                connections: [
+                    "hallway8",
+                    "hallway11",
+                    "room8"
+                ]
+            },
+            room4: {
+                name: "Dining Room",
+                connections: [
+                    "hallway5",
+                    "hallway7",
+                    "hallway10"
+                ]
+            },
+            room5: {
+                name: "Hall",
+                connections: [
+                    "hallway1",
+                    "hallway2",
+                    "hallway4"
+                ]
+            },
+            room6: {
+                name: "Kitchen",
+                connections: [
+                    "hallway10",
+                    "hallway12",
+                    "room9"
+                ]
+            },
+            room7: {
+                name: "Library",
+                connections: [
+                    "hallway3",
+                    "hallway6",
+                    "hallway8"
+                ]
+            },
+            room8: {
+                name: "Lounge",
+                connections: [
+                    "hallway2",
+                    "hallway5",
+                    "room3"
+                ]
+            },
+            room9: {
+                name: "Study",
+                connections: [
+                    "hallway1",
+                    "hallway3",
+                    "room6"
+                ]
+            },
+            hallway1: {
+                name: getHallwayName("room5", "room9"),
+                connections: [
+                    "room5",
+                    "room9"
+                ]
+            },
+            hallway2: {
+                name: getHallwayName("room5", "room8"),
+                connections: [
+                    "room5",
+                    "room8"
+                ]
+            },
+            hallway3: {
+                name: getHallwayName("room9", "room7"),
+                connections: [
+                    "room7",
+                    "room9"
+                ]
+            },
+            hallway4: {
+                name: getHallwayName("room5", "room2"),
+                connections: [
+                    "room5",
+                    "room2"
+                ]
+            },
+            hallway5: {
+                name: getHallwayName("room8", "room4"),
+                connections: [
+                    "room8",
+                    "room4"
+                ]
+            },
+            hallway6: {
+                name: getHallwayName("room2", "room7"),
+                connections: [
+                    "room2",
+                    "room7"
+                ]
+            },
+            hallway7: {
+                name: getHallwayName("room2", "room4"),
+                connections: [
+                    "room2",
+                    "room4"
+                ]
+            },
+            hallway8: {
+                name: getHallwayName("room7", "room3"),
+                connections: [
+                    "room7",
+                    "room3"
+                ]
+            },
+            hallway9: {
+                name: getHallwayName("room2", "room1"),
+                connections: [
+                    "room2",
+                    "room1"
+                ]
+            },
+            hallway10: {
+                name: getHallwayName("room4", "room6"),
+                connections: [
+                    "room4",
+                    "room6"
+                ]
+            },
+            hallway11: {
+                name: getHallwayName("room3", "room1"),
+                connections: [
+                    "room3",
+                    "room1"
+                ]
+            },
+            hallway12: {
+                name: getHallwayName("room1", "room6"),
+                connections: [
+                    "room1",
+                    "room6"
+                ]
+            },
+            suspect1: {
+                name: "Colonel Mustard"
+            },
+            suspect2: {
+                name: "Miss Scarlet"
+            },
+            suspect3: {
+                name: "Mr. Green"
+            },
+            suspect4: {
+                name: "Mrs. Peacock"
+            },
+            suspect5: {
+                name: "Mrs. White"
+            },
+            suspect6: {
+                name: "Professor Plum"
+            }
         }
 
         const textToId = {
@@ -62,78 +234,8 @@
             "Professor Plum": "suspect6"
         }
 
-        // Each key is the current location, and the values are possible 
-        // locations to move to from that location. Hallways are in the
-        // format "hallway##" where the two numbers are two rooms that
-        // are connected by the hallway.
-        const possibleMoves = {
-            // Ballroom
-            room1: [
-                "hallway12", 
-                "hallway13",
-                "hallway16"
-            ],
-            // Billiard room
-            room2: [
-                "hallway12",
-                "hallway24",
-                "hallway25",
-                "hallway27"
-            ],
-            // Conservatory
-            room3: [
-                "hallway13",
-                "hallway37",
-                "room8"
-            ],
-            // Dining Room
-            room4: [
-                "hallway24",
-                "hallway46",
-                "hallway48"
-            ],
-            // Hall
-            room5: [
-                "hallway25",
-                "hallway58",
-                "hallway59"
-            ],
-            // Kitchen
-            room6: [
-                "hallway16",
-                "hallway46",
-                "room9"
-            ],
-            // Library
-            room7: [
-                "hallway27",
-                "hallway37",
-                "hallway79"
-            ],
-            // Lounge
-            room8: [
-                "hallway48",
-                "hallway58",
-                "room3"
-            ],
-            // Study
-            room9: [
-                "hallway59",
-                "hallway79",
-                "room6"
-            ],
-            // Colonel Mustard
-            suspect1: [ "hallway48" ],
-            // Miss Scarlet
-            suspect2: [ "hallway58" ],
-            // Mr. Green
-            suspect3: [ "hallway13" ],
-            // Mrs. Peacock
-            suspect4: [ "hallway37" ],
-            // Mrs. White
-            suspect5: [ "hallway16" ],
-            // Professor Plum
-            suspect6: [ "hallway79" ]
+        function getHallwayName(room1, room2) {
+            return "Hallway from " + room1 + " to " + room2;
         }
 
         $(document).ready(function() {
@@ -145,7 +247,7 @@
             Object.keys(playerHand).forEach(cardType => {
                 playerHand[cardType].forEach(card => {
                     $("#player-hand").append(
-                        "<li>" + idToText[card] + "</li>"
+                        "<li>" + idToText[card].name + "</li>"
                     );
                 });
             });
@@ -159,21 +261,21 @@
             }
 
             // Notify player of current location
-            $("#player-location-msg").text("You are in the " + idToText["{{ player_location }}"]);
+            $("#player-location-msg").text("You are in the " + idToText["{{ player_location }}"].name);
 
             // initialize suspect, weapon, and location options
             Object.keys(idToText).forEach(id => {
                 if (id.includes("room")) {
                     $(".location-options").append(
-                        "<li>" + idToText[id] + "</li>"
+                        "<li>" + idToText[id].name + "</li>"
                     );
                 } else if (id.includes("suspect")) {
                     $(".suspect-options").append(
-                        "<li>" + idToText[id] + "</li>"
+                        "<li>" + idToText[id].name + "</li>"
                     );
-                } else {
+                } else if (id.includes("weapon")) {
                     $(".weapon-options").append(
-                        "<li>" + idToText[id] + "</li>"
+                        "<li>" + idToText[id].name + "</li>"
                     );
                 }
             });
@@ -201,19 +303,10 @@
         function move() {
             $("#turn-options-menu").hide();
             $("#move-options-menu").show();
-            let moveOptions;
-            // if player_location is a room or suspect starting location
-            if (possibleMoves.hasOwnProperty("{{ player_location }}")) {
-                moveOptions = possibleMoves["{{ player_location }}"];
-            } else {
-                moveOptions = "{{ player_location }}".replace("hallway","").split();
-                moveOptions.forEach(room => {
-                    room = idToText["room" + room];
-                });
-            }
+            let moveOptions = idToText["{{ player_location }}"].connections;
             moveOptions.forEach(option => {
                 $("#move-options").append(
-                    '<li class="move-location">' + option + "</li>"
+                    '<li class="move-location">' + idToText[option].name + "</li>"
                 );
             });
         }
