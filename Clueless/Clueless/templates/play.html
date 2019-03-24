@@ -14,6 +14,8 @@
         console.log("All Available Cards:", "{{ available_cards | safe}}");
         console.log("Solution Cards:", "{{ solution_cards | safe}}");
 
+        var solution_cards = {{ solution_cards | safe}};
+
         const idToText = {
             weapon1: {
                 name: "Candlestick"
@@ -266,17 +268,38 @@
             // initialize suspect, weapon, and location options
             Object.keys(idToText).forEach(id => {
                 if (id.includes("room")) {
-                    $(".location-options").append(
-                        "<li>" + idToText[id].name + "</li>"
-                    );
+                    //$(".location-options").append(
+                    //    "<li>" + idToText[id].name + "</li>"
+                    //);
+                    var accuse_list = document.getElementById("accuse-location");
+                    var suggest_list = document.getElementById("suggest-location");
+                    var option_accuse = document.createElement("option");
+                    option_accuse.text = idToText[id].name;
+                    accuse_list.add(option_accuse);
                 } else if (id.includes("suspect")) {
-                    $(".suspect-options").append(
-                        "<li>" + idToText[id].name + "</li>"
-                    );
+                    //$(".suspect-options").append(
+                    //    "<li>" + idToText[id].name + "</li>"
+                    //);
+                    var accuse_list = document.getElementById("accuse-suspect");
+                    var suggest_list = document.getElementById("suggest-suspect");
+                    var option_accuse = document.createElement("option");
+                    var option_suggest = document.createElement("option");
+                    option_accuse.text = idToText[id].name;
+                    option_suggest.text = idToText[id].name;
+                    accuse_list.add(option_accuse);
+                    suggest_list.add(option_suggest)
                 } else if (id.includes("weapon")) {
-                    $(".weapon-options").append(
-                        "<li>" + idToText[id].name + "</li>"
-                    );
+                    //$(".weapon-options").append(
+                    //    "<li>" + idToText[id].name + "</li>"
+                    //);
+                    var accuse_list = document.getElementById("accuse-weapon");
+                    var suggest_list = document.getElementById("suggest-weapon");
+                    var option_accuse = document.createElement("option");
+                    var option_suggest = document.createElement("option");
+                    option_accuse.text = idToText[id].name;
+                    option_suggest.text = idToText[id].name;
+                    accuse_list.add(option_accuse);
+                    suggest_list.add(option_suggest)
                 }
             });
 
@@ -335,7 +358,22 @@
             });
         };
 
-        function makeAccusation(location, suspect, weapon) {
+        function makeAccusation() {
+            var weapon = document.getElementById("accuse-weapon");
+            var location = document.getElementById("accuse-location");
+            var suspect = document.getElementById("accuse-suspect");
+
+            weapon = weapon.options[ weapon.selectedIndex ].value;
+            location = location.options[ location.selectedIndex ].value;
+            suspect = suspect.options[ suspect.selectedIndex ].value;
+            if(idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
+               idToText[solution_cards["Rooms"][0]]["name"] == location &&
+               idToText[solution_cards["Suspects"][0]]["name"] == suspect){
+                alert('You Won!!!');
+            }
+            else{
+                alert('You lost...');
+            };
             $.ajax({
                 type: "POST",
                 url: "/play/"
@@ -384,10 +422,16 @@
         <div class="is-players-turn" id="make-suggestion-menu">
             <h3>Make a Suggestion</h3>
             <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <p>Choose one Weapon</p>
+            <!--<p>Choose one Weapon</p>
             <ul class="weapon-options"></ul>
             <p>Choose one Suspect</p>
-            <ul class="suspect-options"></ul>
+            <ul class="suspect-options"></ul>-->
+            <p>Choose one Weapon</p>
+            <!--<ul class="weapon-options"></ul>-->
+            <select id="suggest-weapon"></select>
+            <p>Choose one Suspect</p>
+            <!--<ul class="suspect-options"></ul>-->
+            <select id="suggest-suspect"></select>
             <button onclick="makeSuggestion('{{ player_location }}', selectedWeapon, selectedSuspect)">Suggest</button>
         </div>
 
@@ -396,12 +440,15 @@
             <button onclick="showTurnOptions()">Back to Turn Options</button>
             <p><em>NOTE: if you make an incorrect Accusation, you automatically lose the game.</em></p>
             <p>Choose one Weapon</p>
-            <ul class="weapon-options"></ul>
+            <!--<ul class="weapon-options"></ul>-->
+            <select id="accuse-weapon"></select>
             <p>Choose one Suspect</p>
-            <ul class="suspect-options"></ul>
+            <!--<ul class="suspect-options"></ul>-->
+            <select id="accuse-suspect"></select>
             <p>Choose one Room</p>
-            <ul class="location-options"></ul>
-            <button onclick="makeAccusation(selectedLocation,selectedWeapon, selectedSuspect)">Accuse</button>
+            <!--<ul class="location-options"></ul>-->
+            <select id="accuse-location"></select>
+            <button onclick="makeAccusation()">Accuse</button>
         </div>
 
         <!-- Player hand -->
