@@ -20,13 +20,14 @@ class GameManager:
         self.rooms = {'Room':['room1', 'room2', 'room3', 'room4',
                       'room5', 'room6', 'room7', 'room8', 'room9'],
                       'Hallway':['hallway1', 'hallway2', 'hallway3', 'hallway4',
-                                 'hallway5,', 'hallway6', 'hallway7', 'hallway8',
+                                 'hallway5', 'hallway6', 'hallway7', 'hallway8',
                                  'hallway9', 'hallway10', 'hallway11', 'hallway12']}
         self.cards = {'Weapons':['weapon1', 'weapon2', 'weapon3', 'weapon4'],
                       'Suspects':['suspect1', 'suspect2', 'suspect3','suspect4'],
                       'Rooms':['room1', 'room2', 'room3', 'room4']}
         self.game_status = ['PENDING', 'IN_PROGRESS', 'COMPLETED']
 
+    # Game initialization
     def create_new_game(self):
         Games.objects.create(status=self.game_status[0])
         self.game_id = Games.objects.all().latest('created_at')
@@ -67,6 +68,7 @@ class GameManager:
         self.create_locations()
         self.add_player(client_ip=client_ip, client_name=client_name, is_creator=True)
 
+    # Game Start
     def sort_out_cards(self):
 
         # Get random solution cards
@@ -119,6 +121,18 @@ class GameManager:
         Players.objects.filter(id=turn_order[0]).update(their_turn=True)
         Games.objects.filter(id=self.game_id).update(turn_order=turn_order)
 
+    def start_game(self):
+
+        # Randomly picks solution cards and player hands
+        self.sort_out_cards()
+        # Set starting location for all players
+        self.place_players()
+        # Set payer order for game
+        self.set_player_order()
+        # Mark game in progress
+        Games.objects.filter(id=self.game_id).update(status=self.game_status[1])
+
+    # Game Updates
     def update_player_turn(self):
         turn_order = []
 
@@ -144,17 +158,26 @@ class GameManager:
 
         print(turn_order.index(curr_id))
 
-    def start_game(self):
+        # Skip players that lost
+        if Players.objects.filter(id=next_id)[0].status == 'LOST':
+            self.update_player_turn()
 
-        # Randomly picks solution cards and player hands
-        self.sort_out_cards()
-        # Set starting location for all players
-        self.place_players()
-        # Set payer order for game
-        self.set_player_order()
-        # Mark game in progress
-        Games.objects.filter(id=self.game_id).update(status=self.game_status[1])
+    def update_game_status(self, client_ip, client_name, player_status):
+        if player_status == '':
+            return
+        if player_status == 'lost':
+            Players.objects.filter(game=self.game_id, client_ip=client_ip, client_name=client_name)\
+                           .update(status='LOST')
 
+        if player_status == 'won':
+            Players.objects.filter(game=self.game_id, client_ip=client_ip, client_name=client_name)\
+                           .update(status='WON')
+
+            Games.objects.filter(id=self.game_id).update(status='COMPLETED')
+
+
+
+    # Game info returns
     def get_solution_cards(self):
         solution = {}
 
@@ -169,6 +192,12 @@ class GameManager:
 
     def get_game_status(self):
         return (Games.objects.filter(id=self.game_id)[0]).status
+
+    def get_game_winner(self):
+        if Players.objects.filter(game=self.game_id, status='WON'):
+            return Players.objects.filter(game=self.game_id, status='WON')[0].name
+        else:
+            return ''
 
     def get_games_pending(self):
         return Games.objects.filter(status=self.game_status[0]).count()

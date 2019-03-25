@@ -13,6 +13,9 @@
         console.log("Player Hand:", "{{ player_hand | safe}}");
         console.log("All Available Cards:", "{{ available_cards | safe}}");
         console.log("Solution Cards:", "{{ solution_cards | safe}}");
+        console.log("Player Status: ", "{{ player_status | safe }}");
+        console.log("Game Status: ", "{{ game_status | safe }}");
+        console.log("Game Winner: ", "{{ game_winner | safe }}")
 
         var solution_cards = {{ solution_cards | safe}};
 
@@ -254,6 +257,11 @@
                 });
             });
 
+            if( "{{ game_status | safe }}" == "COMPLETED"){
+                alert( "{{ game_winner | safe }} has won the game!!");
+                location.replace("/");
+            };
+
             // Player's turn options
             if (!"{{ player_turn }}") {
                 $(".is-players-turn").hide();
@@ -327,10 +335,27 @@
             $("#turn-options-menu").hide();
             $("#move-options-menu").show();
             let moveOptions = idToText["{{ player_location }}"].connections;
-            moveOptions.forEach(option => {
-                $("#move-options").append(
-                    '<li class="move-location">' + idToText[option].name + "</li>"
-                );
+            moveOptions.forEach(move => {
+                var move_list = document.getElementById("move-options");
+                var option = document.createElement("option");
+                option.text = idToText[move].name;
+                move_list.add(option);
+            });
+        }
+
+        function movePlayer(){
+
+            var move = document.getElementById("move-options");
+            move = move.options[ move.selectedIndex ].value;
+
+            url = "/play/?player_location="+textToId[move];
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                success: function() {
+                    location.reload();
+                }
             });
         }
 
@@ -360,23 +385,30 @@
 
         function makeAccusation() {
             var weapon = document.getElementById("accuse-weapon");
-            var location = document.getElementById("accuse-location");
+            var room = document.getElementById("accuse-location");
             var suspect = document.getElementById("accuse-suspect");
 
             weapon = weapon.options[ weapon.selectedIndex ].value;
-            location = location.options[ location.selectedIndex ].value;
+            room = room.options[ room.selectedIndex ].value;
             suspect = suspect.options[ suspect.selectedIndex ].value;
+
             if(idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
-               idToText[solution_cards["Rooms"][0]]["name"] == location &&
+               idToText[solution_cards["Rooms"][0]]["name"] == room &&
                idToText[solution_cards["Suspects"][0]]["name"] == suspect){
                 alert('You Won!!!');
+                url = "/play/?player_status=won";
             }
             else{
                 alert('You lost...');
+                url = "/play/?player_status=lost";
             };
+
             $.ajax({
                 type: "POST",
-                url: "/play/"
+                url: url,
+                success: function() {
+                    location.reload();
+                }
             });
         }
 
@@ -415,7 +447,10 @@
         <div class="is-players-turn" id="move-options-menu">
             <h3>Move Options</h3>
             <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <ul id="move-options">
+            <br><br>
+            <select id="move-options"></select>
+            <button onclick="movePlayer()">Move</button>
+            <!--<ul id="move-options">-->
             </ul>
         </div>
 

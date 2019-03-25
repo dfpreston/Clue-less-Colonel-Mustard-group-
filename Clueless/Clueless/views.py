@@ -130,16 +130,23 @@ def GameRoom(request):
         print('Post Request!')
         print(request.GET.get('used_card', ''))
         print(request.GET.get('new_location', ''))
+        print(request.GET.get('player_status', ''))
+        print(request.GET.get('player_location', ''))
 
+        gm.update_game_status(user_ip, user_name, request.GET.get('player_status', ''))
+        pm.update_player_location(request.GET.get('player_location', ''))
         gm.update_player_turn()
 
     context = {'game_id': pm.get_game_id(),
                'player_turn': pm.get_is_player_turn(),
                'player_location': pm.get_player_location(),
+               'player_status': pm.get_player_status(),
                'others_locations': pm.get_other_player_locations(),
                'player_hand': pm.get_hand(),
                'available_cards': pm.get_unused_cards(),
                'is_creator': pm.get_is_creator(),
-               'solution_cards': gm.get_solution_cards()}
+               'solution_cards': gm.get_solution_cards(),
+               'game_status': gm.get_game_status(),
+               'game_winner': gm.get_game_winner()}
 
     return render(request, 'play.html', context)

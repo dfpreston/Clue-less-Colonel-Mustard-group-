@@ -19,8 +19,12 @@ class PlayerManager:
         return self.player.location.name
 
     def update_player_location(self, location_name):
-        new_location = Locations.objects.filter(game=self.game_id, name=location_name)[0]
-        self.player.update(location=new_location)
+        if location_name == '':
+            return
+        else:
+            new_location = Locations.objects.filter(game=self.game_id, name=location_name)[0]
+            self.player.location=new_location
+            self.player.save()
 
     def update_player_name(self, player_name):
         if player_name is not '':
@@ -67,6 +71,9 @@ class PlayerManager:
 
     def get_is_creator(self):
         return self.player.game_creator
+
+    def get_player_status(self):
+        return self.player.status
 
     def get_is_player_turn(self):
         return self.player.their_turn
