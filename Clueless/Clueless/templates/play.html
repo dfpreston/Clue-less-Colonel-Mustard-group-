@@ -334,6 +334,7 @@
         function move() {
             $("#turn-options-menu").hide();
             $("#move-options-menu").show();
+            $("#move-options").empty();
             let moveOptions = idToText["{{ player_location }}"].connections;
             moveOptions.forEach(move => {
                 var move_list = document.getElementById("move-options");
@@ -346,9 +347,9 @@
         function movePlayer(){
 
             var move = document.getElementById("move-options");
-            move = move.options[ move.selectedIndex ].value;
+            l = idToText["{{ player_location }}"].connections[move.selectedIndex];
 
-            url = "/play/?player_location="+textToId[move];
+            url = "/play/?player_location="+l;
 
             $.ajax({
                 type: "POST",
