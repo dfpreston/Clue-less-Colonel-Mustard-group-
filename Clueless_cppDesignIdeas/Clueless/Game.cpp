@@ -18,6 +18,7 @@
 #include "CluelessEnums.h"	//for RoomType use
 //#include "mersenneTwister.h"
 #include "Player.h"
+#include "SolutionCardSet.h"
 
 #include <iostream>			//for std::cout use
 #include <sstream>			//for std::ostringstream use
@@ -111,56 +112,173 @@ Game::executePlayerTurn(
 	std::cout << "\n" << player->getName() << "'s Turn (" << player->getCharacterName() << ")...\n";
 
 	//if player made false Accusation
-	if( player->hasMadeFalseAccusation() )
+	if( player->isFalseAccuser() )
 	{
-		std::cout << "  has made false accusation\n";
+		std::cout << "  has made false accusation => skip turn\n";
 		return;
 	}
+
+	std::set<clueless::TurnOptionType> turn_options;
+	std::set<Location*> move_options( player->getLocation()->getMoveOptions() );
 
 	//--------------------------------------------------------------------------
 	// determine move options
 	//--------------------------------------------------------------------------
-	//if moved to current room by game play since last turn,
-	if( player->wasMovedToRoomOutOfTurn() )
+	do
 	{
-		//allowed to stay in room and make suggestion
-		std::cout << "STUB: allow to stay in room and make suggestion\n";
+		determinePlayerTurnOptions(player, &move_options, &turn_options);
 
-		player->clearMovedToRoomOutOfTurnIndicator();
-	}
+		//if at least one option
+		if( ! turn_options.empty() )
+		{
+			clueless::TurnOptionType choice( player->makeTurnChoice(&turn_options) );
 
-	std::set<Location*> move_options = player->getLocation()->getMoveOptions();
+			if( clueless::DO_NOTHING_ELSE_THIS_TURN != choice )
+			{
+				executePlayerChoice(player, choice, &move_options);
+			}
+		} //end if (at least one turn option)
 
-	//if no permissible moves
-	if( 0 == move_options.size() )
+	} while ( ! turn_options.empty() );
+
+	//clear per turn information so ready for next turn
+	player->prepareForNewTurn();
+
+} //end routine executePlayerTurn()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Determine player's options for current turn.
+/// \param Player: current turn taker
+/// \param set<TurnOptionType>: valid turn options
+/// \param set<Location>: valid move options... may be empty
+/// \return None
+/// \throw None
+/// \note
+/// - Assume: player object exists
+////////////////////////////////////////////////////////////////////////////////
+void
+Game::determinePlayerTurnOptions(
+	Player* const player,
+	const std::set<Location*>* const move_options, //i - valid move options
+	std::set<clueless::TurnOptionType>* turn_options) // o- valid turn options
+const
+{
+	turn_options->clear(); //no known options yet
+
+	if( player->isFalseAccuser() ) //false accuser
 	{
-		std::cout << "no permissible moves\n";
+		//lose turn
+		std::cout << "  has made false accusation => no longer active\n";
 		return;
 	}
 
-	//if only one option
-	if( 1 == move_options.size() )
+	if( ! player->hasMovedDuringTurn() ) //player has not moved yet
 	{
-		Location* destination( *(move_options.begin()) );
-		_board.movePlayerTo(player, destination);
+		//if possible moves found
+		if( 0 < move_options->size() )
+		{
+			turn_options->insert( clueless::MOVE );
+		}
+		else //no permissible moves
+		{
+			std::cout << "no permissible moves\n";
+		}
 
-		std::cout << "move to " << destination->getName() << "\n";
+		//if moved to current room by game play since last turn AND
+		//   have not made suggestion
+		if( player->wasMovedToRoomOutOfTurn() &&
+			! player->hasMadeSuggestionDuringTurn() )
+		{
+			//allowed to stay in room and make suggestion
+			std::cout << "  allow to stay in room and make suggestion\n";
+			turn_options->insert( clueless::MAKE_SUGGESTION );
+		}
+
 	}
-	else //multiple move options
+	else if(	//player has moved during turn  AND
+		player->getLocation()->isRoom() &&        // in room  AND
+		! player->hasMadeSuggestionDuringTurn() ) // has not made suggestion
 	{
-		std::cout << "random move choice... ";
-		Location* destination( _board.chooseLocation( &move_options ) );
-
-		_board.movePlayerTo(player, destination);
-
-		std::cout << "move to " << destination->getName() << "\n";
+		turn_options->insert( clueless::MAKE_SUGGESTION );
 	}
 
-	//if in room
-	if( player->getLocation()->isRoom() )
+	/// \note "make accusation" always option but only include if ready to make
+	///  accusation (for now) -- 29 Mar 2019, mem
+	if( player->isReadyToMakeAccusation() )
+	{
+		turn_options->insert( clueless::MAKE_ACCUSATION );
+	}
+
+} //end routine determinePlayerTurnOptions()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Execute player's choice during turn.
+/// \param Player: current turn taker
+/// \param TurnOptionType: player's choice
+/// \param set<Location>: move options... may be empty collection
+/// \return None
+/// \throw None
+/// \note
+/// - Assume: player object exists
+////////////////////////////////////////////////////////////////////////////////
+void
+Game::executePlayerChoice(
+	Player* const player, //i - turn taker
+	clueless::TurnOptionType choice, //i - turn option choice
+	std::set<Location*>* const move_options) //i - move options
+{
+	switch( choice )
+	{
+	case clueless::MOVE:
+	{
+		//if only one option
+		if( 1 == move_options->size() )
+		{
+			Location* destination( *(move_options->begin()) );
+			_board.movePlayerTo(player, destination);
+
+			std::cout << "  move to " << destination->getName() << "\n";
+		}
+		else //multiple move options
+		{
+			std::cout << "  random move choice... ";
+			Location* destination( _board.chooseLocation( move_options ) );
+
+			_board.movePlayerTo(player, destination);
+
+			std::cout << "  move to " << destination->getName() << "\n";
+		}
+
+		player->indicateHasMovedDuringTurn();
+	}
+		break;
+
+	case clueless::MAKE_SUGGESTION:
 	{
 		//build suggestion
-		std::cout << "STUB: build suggestion in " << player->getLocation()->getName() << "\n";
-	}
+		SolutionCardSet suggestion( player->buildSuggestion() );
 
-} //end routine executePlayerTurn()
+		/// \todo offer suggestion for other players to refute
+
+		/// \todo provide feedback to suggestor
+
+		player->indicateHasMadeSuggestionDuringTurn();
+	}
+		break;
+
+	case clueless::MAKE_ACCUSATION:
+	{
+		//build accusation
+		std::cout << "  STUB: build accusation\n";
+	}
+		break;
+
+	case clueless::DO_NOTHING_ELSE_THIS_TURN:
+	default:
+		;
+
+	} //end switch (on player's choice)
+
+} //end routine executePlayerChoice()

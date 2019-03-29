@@ -29,6 +29,11 @@ class Player;
 
 class Game
 {
+	//--------------------------------------------------------------------------
+	// Class-Scoped Enumerated Types
+	//--------------------------------------------------------------------------
+	// - none
+
 public:
 	//--------------------------------------------------------------------------
 	// Constructors / Destructor
@@ -47,6 +52,14 @@ public:
 	void setup(std::list<Player*>* allPlayers);
 
 	void executePlayerTurn(Player* const player);
+
+	void determinePlayerTurnOptions(Player* const player,
+		const std::set<Location*>* const moveOptions,
+		std::set<clueless::TurnOptionType>* turnOptions) const;
+
+	void executePlayerChoice(Player* const player,
+		clueless::TurnOptionType choice,
+		std::set<Location*>* const move_options);
 
 	//--------------------------------------------------------------------------
 	// Data Members

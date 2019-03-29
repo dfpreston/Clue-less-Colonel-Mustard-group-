@@ -32,8 +32,9 @@ int main( int argc, const char* argv[] )
 {
 	try
 	{
+		/// \note first player is marked as game creator
 		std::list<Player*> players;
-		Player player_1("Player 1", clueless::COLONEL_MUSTARD);
+		Player player_1("Player 1", clueless::COLONEL_MUSTARD, true);
 		players.push_back( &player_1 );
 
 		Player player_2("Player 2", clueless::PROFESSOR_PLUM);

@@ -22,6 +22,9 @@
 namespace clueless
 {
 
+////////////////////////////////////////////////////////////////////////////////
+// Cards, Weapons, Rooms
+////////////////////////////////////////////////////////////////////////////////
 enum PersonType
 {
 	UNKNOWN_PERSON = 0,
@@ -65,6 +68,20 @@ enum RoomType
 	KITCHEN
 
 }; //end enum RoomType defn
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Turn Options
+////////////////////////////////////////////////////////////////////////////////
+enum TurnOptionType
+{
+	DO_NOTHING_ELSE_THIS_TURN = 0,
+
+	MOVE,
+	MAKE_SUGGESTION,
+	MAKE_ACCUSATION
+
+}; //end enum TurnOptionType defn
 
 
 //------------------------------------------------------------------------------
@@ -248,6 +265,45 @@ translateRoomTypeToText(
 	return "unknown room type";
 
 } //end routine translateRoomTypeToText()
+
+
+  ////////////////////////////////////////////////////////////////////////////////
+  /// \brief Translates specified room type to text.
+  /// \param TurnOptionType: type to translate
+  /// \return string: text translation
+  /// \throw None
+  /// \note  None
+  ////////////////////////////////////////////////////////////////////////////////
+static std::string
+translateTurnOptionTypeToText(
+	TurnOptionType option_type) //i - type to translate
+{
+	switch( option_type )
+	{
+	case DO_NOTHING_ELSE_THIS_TURN:
+		return "do nothing else this turn";
+		break;
+
+	case MOVE:
+		return "move";
+		break;
+
+	case MAKE_SUGGESTION:
+		return "make suggestion";
+		break;
+
+	case MAKE_ACCUSATION:
+		return "make accusation";
+		break;
+
+	default:
+		;
+
+	} //end switch (on room type)
+
+	return "unknown turn option";
+
+} //end routine translateTurnOptionTypeToText()
 
 
 } //end namespace clueless scope

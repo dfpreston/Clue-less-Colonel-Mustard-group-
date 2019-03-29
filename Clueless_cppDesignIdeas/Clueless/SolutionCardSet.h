@@ -38,6 +38,13 @@ protected:
 	}
 
 public:
+	SolutionCardSet(clueless::PersonType person, clueless::WeaponType weapon, clueless::RoomType room)
+		: _person( person )
+		, _weapon( weapon )
+		, _room( room )
+	{
+	}
+
 	SolutionCardSet(const PersonCard& person, const WeaponCard& weapon, const RoomCard& room)
 		: _person( person )
 		, _weapon( weapon )

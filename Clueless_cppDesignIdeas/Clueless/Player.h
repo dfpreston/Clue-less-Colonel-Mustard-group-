@@ -43,7 +43,7 @@ private:
 
 public:
 	/// \brief Extended constructor
-	Player(std::string name, clueless::PersonType gameCharacter);
+	Player(std::string name, clueless::PersonType gameCharacter, bool isGameCreator = false);
 
 	/// \brief Destructor
 	virtual ~Player()
@@ -58,6 +58,9 @@ public:
 	//--------------------------------------------------------------------------
 	std::string getName() const;
 
+	bool isGameCreator() const;
+	bool isFalseAccuser() const;
+
 	clueless::PersonType getCharacter() const;
 	std::string getCharacterName() const;
 
@@ -66,9 +69,15 @@ public:
 
 	bool wasMovedToRoomOutOfTurn() const;
 	void indicateMovedToRoomOutOfTurn();
-	void clearMovedToRoomOutOfTurnIndicator();
+	//void clearMovedToRoomOutOfTurnIndicator();
 
-	bool hasMadeFalseAccusation() const;
+	bool hasMovedDuringTurn() const;
+	bool hasMadeSuggestionDuringTurn() const;
+
+	void indicateHasMovedDuringTurn();
+	void indicateHasMadeSuggestionDuringTurn();
+
+	bool isReadyToMakeAccusation() const;
 
 	std::ostringstream report() const;
 	std::ostringstream reportHand() const;
@@ -77,6 +86,11 @@ public:
 	// Additional Member Functions
 	//--------------------------------------------------------------------------
 	void addCardToHand(const Card* card);
+
+	void prepareForNewTurn();
+	clueless::TurnOptionType makeTurnChoice(std::set<clueless::TurnOptionType>* turnOptions) const;
+
+	SolutionCardSet buildSuggestion() const;
 
 	SolutionCardSet buildAccusation(const PersonCard* suspect, const WeaponCard* weapon) const;
 
@@ -92,8 +106,17 @@ public:
 	std::set<const Card*> _hand; //holds card owned by CardDeck
 
 protected:
+	//elements impacting options within single turn
 	bool _wasMovedToRoomOutOfTurn;
+
+	bool _hasMovedDuringTurn; //at most one move permitted per turn
+	bool _hasMadeSuggestionDuringTurn; //at most one suggestion permitted per turn
+
+	bool _isReadyToMakeAccusation;
 	bool _hasMadeFalseAccusation;
+
+private:
+	bool _isGameCreator;
 
 }; //end class Player defn
 
@@ -109,6 +132,16 @@ const
 	return _name;
 
 } //end routine getName()
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+Player::isGameCreator()
+const
+{
+	return _isGameCreator;
+
+} //end routine isGameCreator()
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -139,22 +172,68 @@ Player::indicateMovedToRoomOutOfTurn()
 } //end routine indicateMovedToRoomOutOfTurn()
 
 
-inline void
-Player::clearMovedToRoomOutOfTurnIndicator()
-{
-	_wasMovedToRoomOutOfTurn = false;
-
-} //end routine clearMovedToRoomOutOfTurnIndicator()
+//inline void
+//Player::clearMovedToRoomOutOfTurnIndicator()
+//{
+//	_wasMovedToRoomOutOfTurn = false;
+//
+//} //end routine clearMovedToRoomOutOfTurnIndicator()
 
 
 ////////////////////////////////////////////////////////////////////////////////
 inline bool
-Player::hasMadeFalseAccusation()
+Player::hasMovedDuringTurn()
+const
+{
+	return _hasMovedDuringTurn;
+
+} //end routine hasMovedDuringTurn()
+
+
+inline void
+Player::indicateHasMovedDuringTurn()
+{
+	_hasMovedDuringTurn = true;
+
+} //end routine indicateHasMovedDuringTurn()
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+Player::hasMadeSuggestionDuringTurn()
+const
+{
+	return _hasMadeSuggestionDuringTurn;
+
+} //end routine hasMadeSuggestionDuringTurn()
+
+
+inline void
+Player::indicateHasMadeSuggestionDuringTurn()
+{
+	_hasMadeSuggestionDuringTurn = true;
+
+} //end routine indicateHasMadeSuggestionDuringTurn()
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+Player::isReadyToMakeAccusation()
+const
+{
+	return _isReadyToMakeAccusation;
+
+} //end routine isReadyToMakeAccusation()
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+Player::isFalseAccuser()
 const
 {
 	return _hasMadeFalseAccusation;
 
-} //end routine hasMadeFalseAccusation()
+} //end routine isFalseAccuser()
 
 
 #endif //Player_h
