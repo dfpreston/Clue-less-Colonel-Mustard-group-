@@ -17,7 +17,7 @@
 #define Card_h
 
 
-#include "CluelessEnums.h"	//for PersonType, WeaponType, RoomType use
+#include "CluelessEnums.h"	//for ElementType, PersonType, WeaponType, RoomType use
 
 #include <sstream>		//for std::ostringstream use
 #include <stdexcept>	//for std::logic_error use
@@ -33,14 +33,7 @@ struct Card
 	//--------------------------------------------------------------------------
 	// Class-Scoped Enumerated Types
 	//--------------------------------------------------------------------------
-public:
-	enum CardType
-	{
-		PERSON_CARD,
-		WEAPON_CARD,
-		ROOM_CARD
-
-	}; //end enum CardType defn
+	// - none
 
 	//--------------------------------------------------------------------------
 	// Constructors / Destructor
@@ -49,7 +42,7 @@ private:
 	/// \brief Default constructor
 	/// \note private scope to force use of extended constructor by children
 	Card()
-		: _type( PERSON_CARD )
+		: _type( clueless::PERSON )
 	{
 	}
 
@@ -64,7 +57,7 @@ protected:
 	/// \brief Extended constructor
 	/// \param CardType: card type (person, weapon, room)
 	/// \note protected scope to force construction of child class
-	Card(CardType type)
+	Card(clueless::ElementType type)
 		: _type( type )
 	{
 	}
@@ -92,20 +85,20 @@ public:
 	void rename(const std::string& newName);
 
 	std::string translateCardTypeToText(
-			CardType card_type) //i - type to translate
+			clueless::ElementType card_type) //i - type to translate
 	const
 	{
 		switch( card_type )
 		{
-		case PERSON_CARD:
+		case clueless::PERSON:
 			return "person";
 			break;
 
-		case WEAPON_CARD:
+		case clueless::WEAPON:
 			return "weapon";
 			break;
 
-		case ROOM_CARD:
+		case clueless::ROOM:
 			return "room";
 			break;
 
@@ -120,7 +113,7 @@ public:
 	//--------------------------------------------------------------------------
 	// Data Members
 	//--------------------------------------------------------------------------
-	CardType _type;
+	clueless::ElementType _type;
 	std::string _name;
 
 }; //end struct Card defn
@@ -136,7 +129,7 @@ protected:
 	/// \brief Default constructor
 	/// \note protected scope to force use of extended constructor
 	PersonCard()
-		: Card( Card::PERSON_CARD )
+		: Card(clueless::PERSON )
 		, _person( clueless::UNKNOWN_PERSON )
 	{
 	}
@@ -145,7 +138,7 @@ protected:
 	PersonCard(const Card& source)
 		: Card( source ) //performs base class member copy
 	{
-		if( PERSON_CARD != source._type )
+		if(clueless::PERSON != source._type )
 		{
 			std::ostringstream msg;
 			msg << "PersonCard() copy constructor\n"
@@ -162,7 +155,7 @@ public:
 	/// \brief Extended constructor
 	/// \param PersonType: person type
 	PersonCard(clueless::PersonType type)
-		: Card( Card::PERSON_CARD )
+		: Card(clueless::PERSON )
 		, _person( type )
 	{
 		_name = clueless::translatePersonTypeToText( type );
@@ -178,7 +171,7 @@ public:
 	//--------------------------------------------------------------------------
 	virtual bool operator==(const Card& other) const override
 	{
-		if( PERSON_CARD != other._type ) //other not person
+		if(clueless::PERSON != other._type ) //other not person
 		{
 			return false; //must be different
 		}
@@ -212,7 +205,7 @@ protected:
 	/// \brief Default constructor
 	/// \note protected scope to force use of extended constructor
 	WeaponCard()
-		: Card( Card::WEAPON_CARD )
+		: Card(clueless::WEAPON )
 		, _weapon( clueless::UNKNOWN_WEAPON )
 	{
 	}
@@ -221,7 +214,7 @@ protected:
 	WeaponCard(const Card& source)
 		: Card( source ) //performs base class member copy
 	{
-		if( WEAPON_CARD != source._type )
+		if(clueless::WEAPON != source._type )
 		{
 			std::ostringstream msg;
 			msg << "WeaponCard() copy constructor\n"
@@ -238,7 +231,7 @@ public:
 	/// \brief Extended constructor
 	/// \param WeaponType: weapon type
 	WeaponCard(clueless::WeaponType type)
-		: Card( Card::WEAPON_CARD )
+		: Card(clueless::WEAPON )
 		, _weapon( type )
 	{
 		_name = clueless::translateWeaponTypeToText( type );
@@ -254,7 +247,7 @@ public:
 	//--------------------------------------------------------------------------
 	virtual bool operator==(const Card& other) const override
 	{
-		if( WEAPON_CARD != other._type ) //other not weapon
+		if(clueless::WEAPON != other._type ) //other not weapon
 		{
 			return false; //must be different
 		}
@@ -288,7 +281,7 @@ protected:
 	/// \brief Default constructor
 	/// \note protected scope to force use of extended constructor
 	RoomCard()
-		: Card( Card::ROOM_CARD )
+		: Card(clueless::ROOM )
 		, _room( clueless::UNKNOWN_ROOM )
 	{
 	}
@@ -297,7 +290,7 @@ protected:
 	RoomCard(const Card& source)
 		: Card( source ) //performs base class member copy
 	{
-		if( ROOM_CARD != source._type )
+		if(clueless::ROOM != source._type )
 		{
 			std::ostringstream msg;
 			msg << "RoomCard() copy constructor\n"
@@ -314,7 +307,7 @@ public:
 	/// \brief Extended constructor
 	/// \param RoomType: room type
 	RoomCard(clueless::RoomType type)
-		: Card( Card::ROOM_CARD )
+		: Card( clueless::ROOM )
 		, _room( type )
 	{
 		_name = clueless::translateRoomTypeToText( type );
@@ -330,7 +323,7 @@ public:
 	//--------------------------------------------------------------------------
 	virtual bool operator==(const Card& other) const override
 	{
-		if( ROOM_CARD != other._type ) //other not person
+		if(clueless::ROOM != other._type ) //other not person
 		{
 			return false; //must be different
 		}

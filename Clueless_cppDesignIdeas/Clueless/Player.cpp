@@ -46,6 +46,8 @@ Player::Player()
 	, _isReadyToMakeAccusation( false )
 	, _hasMadeFalseAccusation( false )
 {
+	_notebook.setOwner( this );
+
 } //end routine constructor
 
 
@@ -72,6 +74,8 @@ Player::Player(
 	, _isReadyToMakeAccusation( false )
 	, _hasMadeFalseAccusation( false )
 {
+	_notebook.setOwner( this );
+
 } //end routine Player(name, character)
 
 
@@ -208,6 +212,7 @@ Player::addCardToHand(
 	const Card* card) //i - card to join hand
 {
 	_hand.insert( card );
+	_notebook.recordCardInHand( card );
 
 } //end routine addCardToHand()
 

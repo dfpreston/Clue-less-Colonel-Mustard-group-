@@ -16,6 +16,8 @@
 #ifndef Player_h
 #define Player_h
 
+#include "DetectiveNotebook.h"
+
 #include "CluelessEnums.h"
 
 #include <set>			//for std::set use
@@ -104,6 +106,8 @@ public:
 	PersonPiece* _assocGameToken;
 
 	std::set<const Card*> _hand; //holds card owned by CardDeck
+
+	DetectiveNotebook _notebook;
 
 protected:
 	//elements impacting options within single turn

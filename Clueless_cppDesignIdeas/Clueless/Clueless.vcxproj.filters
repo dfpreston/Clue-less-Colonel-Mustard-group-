@@ -48,6 +48,12 @@
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DetectiveNotebook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NotebookEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Location.cpp">
@@ -81,6 +87,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectiveNotebook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NotebookEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

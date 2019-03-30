@@ -25,6 +25,15 @@ namespace clueless
 ////////////////////////////////////////////////////////////////////////////////
 // Cards, Weapons, Rooms
 ////////////////////////////////////////////////////////////////////////////////
+enum ElementType
+{
+	PERSON,
+	WEAPON,
+	ROOM
+
+}; //end enum ElementType defn
+
+
 enum PersonType
 {
 	UNKNOWN_PERSON = 0,
@@ -111,6 +120,41 @@ static size_t getNumRoomTypes()
 //------------------------------------------------------------------------------
 // Translation from Type to Text
 //------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Translates specified element type to text.
+/// \param ElementType: type to translate
+/// \return string: text translation
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+static std::string
+translateElementTypeToText(
+	ElementType elmt_type) //i - type to translate
+{
+	switch( elmt_type )
+	{
+	case PERSON:
+		return "person";
+		break;
+
+	case WEAPON:
+		return "weapon";
+		break;
+
+	case ROOM:
+		return "room";
+		break;
+
+	default:
+		; //unknown
+
+	} //end switch (on person type)
+
+	return "unknown element type";
+
+} //end routine translateElementTypeToText()
+
+
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Translates specified person type to text.
 /// \param PersonType: type to translate
