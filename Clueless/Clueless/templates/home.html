@@ -1,14 +1,34 @@
 {% block content %}
     <body>
-    	<h2>ClueLess</h2>
-    	<p>Welcome to Boddy Manor! It would seem we have a murder on our hands...</p>
-	    <br>
-	    <h3>Start a new investigation</h3>
-	    <input type="button" value="Create Game" onclick="location.href='/customize/?game=create';" />
-	    <br>
-	    <h3>Join an existing investigation ({{ games_pending }} open)</h3>
-	    <input type="button" value="Join Game" onclick="location.href='/customize/?game=join';" />
+        <div class="jumbotron">
+            <div class="container">
+                <h1>Clue-Less</h1>
+                <p>Welcome to Boddy Manor! It would seem we have a murder on our hands...</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-6">
+            	    <h4>Start a new investigation</h4>
+            	    <input class="btn btn-primary" type="button" value="Create Game" onclick="location.href='/customize/?game=create';" />
+        	    </div>
+                <div class="col-xs-6">
+            	    <h4>Join an existing investigation <small>({{ games_pending }} open)</small></h4>
+            	    <input class="btn btn-primary" type="button" value="Join Game" onclick="location.href='/customize/?game=join';" />
+                </div>
+            </div>
+        </div>
     </body>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
     <script type="text/javascript">
         console.log("Current data, per user:");
         console.log("Open games:", "{{ games_pending }}");

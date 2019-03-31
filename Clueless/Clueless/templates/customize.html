@@ -1,30 +1,100 @@
 {% block content %}
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-    <h2>Entry Way</h2>
-    <h3>Hello {{player_name}}</h3>
     <body>
-        <p>The victim: John Boddy, 37, millionaire inventor of sliced bread</p>
-        <p>Boddy was hosting a dinner party for you and several other guests, and after some hubbub you found his corpse here in the entryway. It seems to have been dragged here... but from where? How did he die? And most importantly, who killed him?</p>
-        <p>Several people in this room stand to gain from his death, but who would have stooped so low as to murder their host in his own home?</p>
-        <p>The suspects:</p>
-        <ul>
-            <li><button onclick="setPlayerToken('Colonel Mustard')">Choose</button> Colonel Mustard</li>
-            <li><button onclick="setPlayerToken('Mrs. White')">Choose</button> Mrs. White</li>
-            <li><button onclick="setPlayerToken('Professor Plum')">Choose</button> Professor Plum</li>
-            <li><button onclick="setPlayerToken('Mrs. Peacock')">Choose</button> Mrs. Peacock</li>
-            <li><button onclick="setPlayerToken('Mr. Green')">Choose</button> Mr. Green</li>
-            <li><button onclick="setPlayerToken('Miss Scarlet')">Choose</button> Miss Scarlet</li>
-        </ul>
-        <br />
-        <h3>Waiting for other players to join the game...</h3>
-        <p>Only the game creator can start the game, if there are 2-6 people waiting</p>
-        <form action="/play">
-            <input type="submit" value="Start Game" />
-        </form>
+        <div class="jumbotron">
+            <div class="container">
+                <h2>Entry Way</h2>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <h3>Hello {{player_name}}</h3>
+                <p>The victim: John Boddy, 37, millionaire inventor of sliced bread</p>
+                <p>The crime: Boddy was hosting a dinner party for you and several other guests, and after some hubbub you found his corpse here in the entryway. It seems to have been dragged here... but from where? How did he die? And most importantly, who killed him?</p>
+                <p>The mystery: Several people in this room stand to gain from his death, but who would have stooped so low as to murder their host in his own home?</p>
+                <p>The suspects:</p>
+                <div class="media">
+                    <div class="media-left">
+                        <img src="http://chittagongit.com//images/avatar-png-icon/avatar-png-icon-23.jpg" class="media-object" style="width:90px">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Colonel Mustard</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <button class="btn" onclick="setPlayerToken('Colonel Mustard')">Play as Colonel Mustard</button>
+                    </div>
+                </div>
+                <div class="media">
+                    <div class="media-left">
+                        <img src="http://chittagongit.com//images/avatar-png-icon/avatar-png-icon-23.jpg" class="media-object" style="width:90px">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Mrs. White</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <button class="btn" onclick="setPlayerToken('Mrs. White')">Play as Mrs. White</button>
+                    </div>
+                </div>
+                <div class="media">
+                    <div class="media-left">
+                        <img src="http://chittagongit.com//images/avatar-png-icon/avatar-png-icon-22.jpg" class="media-object" style="width:90px">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Professor Plum</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <button class="btn" onclick="setPlayerToken('Professor Plum')">Play as Professor Plum</button>
+                    </div>
+                </div>
+                <div class="media">
+                    <div class="media-left">
+                        <img src="http://chittagongit.com//images/avatar-png-icon/avatar-png-icon-15.jpg" class="media-object" style="width:90px">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Mrs. Peacock</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <button class="btn" onclick="setPlayerToken('Mrs. Peacock')">Play as Mrs. Peacock</button>
+                    </div>
+                </div>
+                <div class="media">
+                    <div class="media-left">
+                        <img src="http://chittagongit.com//images/avatar-png-icon/avatar-png-icon-11.jpg" class="media-object" style="width:90px">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Mr. Green</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <button class="btn" onclick="setPlayerToken('Mr. Green')">Play as Mr. Green</button>
+                    </div>
+                </div>
+                <div class="media">
+                    <div class="media-left">
+                        <img src="http://chittagongit.com//images/avatar-png-icon/avatar-png-icon-23.jpg" class="media-object" style="width:90px">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Miss Scarlet</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <button class="btn" onclick="setPlayerToken('Miss Scarlet')">Play as Miss Scarlet</button>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="row">
+                <h3>Waiting for other players to join the game...</h3>
+                <p>Only the game creator can start the game, if there are 2-6 people waiting</p>
+                <form action="/play">
+                    <input class="btn btn-primary" type="submit" value="Start Game" />
+                </form>
+            </div>
+        </div>
+        
 
     </body>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
     <script type="text/javascript">
         console.log("Current data, per user:");

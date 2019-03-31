@@ -1,5 +1,6 @@
 {% load static from staticfiles %}
 {% block content %}
+{% load static %}
     <!--<meta http-equiv="refresh" content="1">-->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -244,10 +245,16 @@
             return "Hallway from " + room1 + " to " + room2;
         }
 
+        function addItemToList(item, listToAddTo) {
+            var list = document.getElementById(listToAddTo);
+            var option = document.createElement("option");
+            option.text = idToText[item].name;
+            option.value = item;
+            list.add(option);
+        }
+
         $(document).ready(function() {
             // construct player's hand
-
-            // convert player_hand to JSON. Globally replace &#39; with quotes
             const playerHand = JSON.parse("{{ player_hand }}".replace(/&#39;/g, "\""));
 
             Object.keys(playerHand).forEach(cardType => {
@@ -258,6 +265,7 @@
                 });
             });
 
+            // Notify player if they are the winner
             if( "{{ game_status | safe }}" == "COMPLETED"){
                 alert( "{{ game_winner | safe }} has won the game!!");
                 location.replace("/");
@@ -277,38 +285,13 @@
             // initialize suspect, weapon, and location options
             Object.keys(idToText).forEach(id => {
                 if (id.includes("room")) {
-                    //$(".location-options").append(
-                    //    "<li>" + idToText[id].name + "</li>"
-                    //);
-                    var accuse_list = document.getElementById("accuse-location");
-                    var suggest_list = document.getElementById("suggest-location");
-                    var option_accuse = document.createElement("option");
-                    option_accuse.text = idToText[id].name;
-                    accuse_list.add(option_accuse);
+                    addItemToList(id, "accuse-location");
                 } else if (id.includes("suspect")) {
-                    //$(".suspect-options").append(
-                    //    "<li>" + idToText[id].name + "</li>"
-                    //);
-                    var accuse_list = document.getElementById("accuse-suspect");
-                    var suggest_list = document.getElementById("suggest-suspect");
-                    var option_accuse = document.createElement("option");
-                    var option_suggest = document.createElement("option");
-                    option_accuse.text = idToText[id].name;
-                    option_suggest.text = idToText[id].name;
-                    accuse_list.add(option_accuse);
-                    suggest_list.add(option_suggest)
+                    addItemToList(id, "accuse-suspect");
+                    addItemToList(id, "suggest-suspect");
                 } else if (id.includes("weapon")) {
-                    //$(".weapon-options").append(
-                    //    "<li>" + idToText[id].name + "</li>"
-                    //);
-                    var accuse_list = document.getElementById("accuse-weapon");
-                    var suggest_list = document.getElementById("suggest-weapon");
-                    var option_accuse = document.createElement("option");
-                    var option_suggest = document.createElement("option");
-                    option_accuse.text = idToText[id].name;
-                    option_suggest.text = idToText[id].name;
-                    accuse_list.add(option_accuse);
-                    suggest_list.add(option_suggest)
+                    addItemToList(id, "accuse-weapon");
+                    addItemToList(id, "suggest-weapon");
                 }
             });
 
@@ -333,8 +316,6 @@
         }
 
         function move() {
-            $("#turn-options-menu").hide();
-            $("#move-options-menu").show();
             $("#move-options").empty();
             let moveOptions = idToText["{{ player_location }}"].connections;
             moveOptions.forEach(move => {
@@ -343,10 +324,11 @@
                 option.text = idToText[move].name;
                 move_list.add(option);
             });
+            $("#turn-options-menu").hide();
+            $("#move-options-menu").show();
         }
 
         function movePlayer(){
-
             var move = document.getElementById("move-options");
             l = idToText["{{ player_location }}"].connections[move.selectedIndex];
 
@@ -371,28 +353,10 @@
             $("#make-accusation-menu").show();
         }
 
-        $(".move-location").click(function() {
-            const newLocation = cardToId[$(this).text()];
-            console.log(newLocation);
-            updatePlayerLocation(location);
-        })
-
-        function updatePlayerLocation(newLocation) {
-            const url = "/play/?new_location=" + new_location;
-            $.ajax({
-                type: "POST",
-                url: url
-            });
-        };
-
         function makeAccusation() {
-            var weapon = document.getElementById("accuse-weapon");
-            var room = document.getElementById("accuse-location");
-            var suspect = document.getElementById("accuse-suspect");
-
-            weapon = weapon.options[ weapon.selectedIndex ].value;
-            room = room.options[ room.selectedIndex ].value;
-            suspect = suspect.options[ suspect.selectedIndex ].value;
+            var weapon = $("#accuse-weapon option:selected").text();
+            var room = $("#accuse-location option:selected").text();
+            var suspect = $("#accuse-suspect option:selected").text();
 
             if(idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
                idToText[solution_cards["Rooms"][0]]["name"] == room &&
@@ -416,12 +380,9 @@
 
         function makeSuggestion() {
 
-            var weapon = document.getElementById("suggest-weapon");
-            var suspect = document.getElementById("suggest-suspect");
-
-            room = "{{player_location | safe }}"
-            weapon = weapon.options[ weapon.selectedIndex ].value;
-            suspect = suspect.options[ suspect.selectedIndex ].value;
+            var weapon = $("#suggest-weapon  option:selected").text();
+            var suspect = $("#suggest-suspect option:selected").text();
+            var room = "{{player_location | safe }}";
 
             alert( room + weapon + suspect);
 
@@ -466,22 +427,15 @@
             <br><br>
             <select id="move-options"></select>
             <button onclick="movePlayer()">Move</button>
-            <!--<ul id="move-options">-->
             </ul>
         </div>
 
         <div class="is-players-turn" id="make-suggestion-menu">
             <h3>Make a Suggestion</h3>
             <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <!--<p>Choose one Weapon</p>
-            <ul class="weapon-options"></ul>
-            <p>Choose one Suspect</p>
-            <ul class="suspect-options"></ul>-->
             <p>Choose one Weapon</p>
-            <!--<ul class="weapon-options"></ul>-->
             <select id="suggest-weapon"></select>
             <p>Choose one Suspect</p>
-            <!--<ul class="suspect-options"></ul>-->
             <select id="suggest-suspect"></select>
             <button onclick="makeSuggestion()">Suggest</button>
         </div>
@@ -491,13 +445,10 @@
             <button onclick="showTurnOptions()">Back to Turn Options</button>
             <p><em>NOTE: if you make an incorrect Accusation, you automatically lose the game.</em></p>
             <p>Choose one Weapon</p>
-            <!--<ul class="weapon-options"></ul>-->
             <select id="accuse-weapon"></select>
             <p>Choose one Suspect</p>
-            <!--<ul class="suspect-options"></ul>-->
             <select id="accuse-suspect"></select>
             <p>Choose one Room</p>
-            <!--<ul class="location-options"></ul>-->
             <select id="accuse-location"></select>
             <button onclick="makeAccusation()">Accuse</button>
         </div>
