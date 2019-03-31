@@ -248,8 +248,14 @@ Game::executePlayerChoice(
 		}
 		else //multiple move options
 		{
-			std::cout << "  random move choice... ";
-			Location* destination( _board.chooseLocation( move_options ) );
+			//consult player for preference
+			Location* destination( player->offerMovePreference(move_options) );
+
+			if( ! destination ) //no preference
+			{
+				std::cout << "  random move choice... ";
+				destination = _board.chooseLocation(move_options);
+			}
 
 			_board.movePlayerTo(player, destination);
 
@@ -276,6 +282,7 @@ Game::executePlayerChoice(
 
 		//provide feedback to suggestor
 		player->acceptCounterEvidence(
+			&suggestion,
 			counter_evidence,
 			opponent_providing_counter_evidence );
 
@@ -292,6 +299,7 @@ Game::executePlayerChoice(
 		if( _cards.doesAccusationMatchCaseFile( accusation ) )
 		{
 			//player wins game :)
+			_winner = player;
 			player->indicateIsGameWinner();
 			_winner = player;
 
@@ -320,7 +328,7 @@ Game::executePlayerChoice(
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \brief 
+/// \brief Request counter-evidence from opponents for player's suggestion.
 /// \param Player: current suggestor
 /// \param SolutionCardSet: suggestion
 /// \param Player: opponent with counter-evidence (character)

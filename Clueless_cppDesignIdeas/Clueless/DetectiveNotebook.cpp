@@ -16,11 +16,16 @@
 #include "DetectiveNotebook.h"
 
 #include "Card.h"
+#include "Board.h"
+#include "Location.h"
 #include "Player.h"
+#include "Room.h"
 #include "SolutionCardSet.h"
 
 #include "mersenneTwister.h"
 
+#include <algorithm>		//for std::min use
+#include <limits.h>			//for UINT_MAX use
 #include <sstream>			//for std::ostringstream use
 #include <stdexcept>		//for std::logic_error use
 
@@ -36,7 +41,10 @@ DetectiveNotebook::DetectiveNotebook()
 	, _suspectedPerson( clueless::UNKNOWN_PERSON )
 	, _suspectedWeapon( clueless::UNKNOWN_WEAPON )
 	, _suspectedRoom( clueless::UNKNOWN_ROOM )
+	, _nextRoomDestination( clueless::UNKNOWN_ROOM )
 {
+	initializeRoomsNeedingQuestioning();
+
 } //end routine constructor
 
 
@@ -53,7 +61,10 @@ DetectiveNotebook::DetectiveNotebook(
 	, _suspectedPerson( clueless::UNKNOWN_PERSON )
 	, _suspectedWeapon( clueless::UNKNOWN_WEAPON )
 	, _suspectedRoom( clueless::UNKNOWN_ROOM )
+	, _nextRoomDestination( clueless::UNKNOWN_ROOM )
 {
+	initializeRoomsNeedingQuestioning();
+
 } //end routine extended constructor
 
 
@@ -88,9 +99,57 @@ DetectiveNotebook::~DetectiveNotebook()
 } //end routine destructor
 
 
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Allows for consistent initalization of rooms needing questioning.
+/// \param None
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+void
+DetectiveNotebook::initializeRoomsNeedingQuestioning()
+{
+	size_t room_index( clueless::UNKNOWN_ROOM + 1 );
+
+	//while more entries to consider
+	for(room_index  = (clueless::RoomType)(clueless::UNKNOWN_ROOM + 1);
+		room_index <= clueless::getNumRoomTypes();
+		++room_index)
+	{
+		_roomsNeedingQuestioning.insert( (clueless::RoomType)room_index );
+
+	} //end while (more entries)
+
+} //end routine initializeRoomsNeedingQuestioning()
+
+
 //------------------------------------------------------------------------------
 // Accessors and Mutators
 //------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Populates reference to room distance chart.
+/// \param chart
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+//void
+//DetectiveNotebook::setRoomDistanceChart(
+//	const std::map<std::pair<const Location*, const Room*>, std::pair<size_t, Location*>>* chart)
+//{
+//	_roomDistanceChart = chart;
+//
+//} //end routine setRoomDistanceChart()
+
+void
+DetectiveNotebook::setBoard(
+	Board* board) //i - board with room distance chart
+{
+	_assocBoard = board;
+
+} //end routine setBoard()
+
+
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Returns reference to entry associated with card.  Null if no entry.
 /// \param Card: card of interest
@@ -219,6 +278,71 @@ const
 	return entry; //not found
 
 } //end routine fetchNotebookEntry()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Take note that player has visited specified room.
+/// \param RoomType: room visited
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+void
+DetectiveNotebook::noteRoomQuestionHasBeenAnswered(
+	clueless::RoomType room) //i - room visited
+{
+	std::set<clueless::RoomType>::iterator room_iter(
+		_roomsNeedingQuestioning.find(room) );
+
+	//if previously unvisited
+	if( _roomsNeedingQuestioning.end() != room_iter )
+	{
+		_roomsNeedingQuestioning.erase(room_iter);
+	}
+
+} //end routine noteRoomQuestionHasBeenAnswered()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Determines whether have previously shown specified card to player.
+/// \param string: name
+/// \param Card: card of interest
+/// \param PersonType: player character of interest
+/// \return bool: whether have shown card to player
+/// \throw
+/// - INSUFFICIENT_DATA when card does not exist.
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+bool
+DetectiveNotebook::haveCounterEvidenceForRoom(
+	const Room* room) //i - room
+const
+{
+	bool have_counter_evidence( false );
+
+	std::map<clueless::ElementType, std::set<NotebookEntry*>>::const_iterator room_iter(
+		_notebook.find(clueless::ROOM) );
+	if( _notebook.end() != room_iter )
+	{
+		std::set<NotebookEntry*>::const_iterator entry_iter( room_iter->second.begin() );
+		while( ! have_counter_evidence &&
+			(room_iter->second.end() != entry_iter) )
+		{
+			if( room->_type == ((RoomNotebookEntry*)(*entry_iter))->_room )
+			{
+				have_counter_evidence = true;
+			}
+			else
+			{
+				++entry_iter;
+			}
+		} //end while (more entries to consider)
+
+	} //end if (have room entries)
+
+	return have_counter_evidence;
+
+} //end routine haveCounterEvidenceForRoom()
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -400,6 +524,11 @@ DetectiveNotebook::recordCardInHand(
 	//add entry to notebook
 	addEntryForCard(card, _ownerCharacter);
 
+	if( clueless::ROOM == card->_type )
+	{
+		_roomsInHand.insert( ((const RoomCard* const)(card))->_room );
+	}
+
 } //end routine recordCardInHand()
 
 //void
@@ -476,6 +605,7 @@ DetectiveNotebook::addEntryForCard(
 
 	case clueless::ROOM:
 		new_entry = new RoomNotebookEntry(card, card_owner_character);
+		_roomsNeedingQuestioning.erase( ((RoomCard*)card)->_room );
 		break;
 
 	default:
@@ -502,6 +632,7 @@ DetectiveNotebook::addEntryForCard(
 
 		case clueless::ROOM:
 			_suspectedRoom = determineMissingRoom();
+			_roomsNeedingQuestioning.clear();
 			break;
 
 		default:
@@ -511,6 +642,39 @@ DetectiveNotebook::addEntryForCard(
 	} //end if (only one card not seen)
 
 } //end routine addEntryForCard()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Allows notes to account for lack of counter-evidence for card.
+/// \param Card: suggested card without counter-evidence
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+void
+DetectiveNotebook::notifyNoCounterEvidenceForCard(
+	const Card* const card) //i - card without counter-evidence
+{
+	switch( card->_type )
+	{
+	case clueless::PERSON:
+		_suspectedPerson = ((const PersonCard* const)card)->_person;
+		break;
+
+	case clueless::WEAPON:
+		_suspectedWeapon = ((const WeaponCard* const)card)->_weapon;
+		break;
+
+	case clueless::ROOM:
+		_suspectedRoom = ((const RoomCard* const)card)->_room;
+		_roomsNeedingQuestioning.clear();
+		break;
+
+	default:
+		;
+	} //end switch (on card type)
+
+} //end routine notifyNoCounterEvidenceForCard()
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -527,7 +691,7 @@ const
 	clueless::PersonType chosen_person( clueless::UNKNOWN_PERSON );
 
 	//if has suspected person
-	if( clueless::UNKNOWN_PERSON != _suspectedPerson )
+	if( haveSuspectedPerson() )
 	{
 		std::set<clueless::PersonType> in_hand( retrievePeopleInHand() );
 
@@ -568,7 +732,7 @@ const
 	clueless::WeaponType chosen_weapon( clueless::UNKNOWN_WEAPON );
 
 	//if has suspected weapon
-	if( clueless::UNKNOWN_WEAPON != _suspectedWeapon )
+	if( haveSuspectedWeapon() )
 	{
 		std::set<clueless::WeaponType> in_hand( retrieveWeaponsInHand() );
 
@@ -628,6 +792,172 @@ const
 	return choice;
 
 } //end routine decideWhichCardToShowOpponent()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Determines shortest path from starting point through next step room
+///  to a destination room needing questioning.
+/// \param 
+/// \return size_t: distance (number of moves) to destination
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+size_t
+DetectiveNotebook::determineShortestPathForDestinationNeedingQuestion(
+	const Location* start_loc, //i - starting point
+	Location* next_step) //i - desired next step location
+const
+{
+	size_t shortest_distance( UINT_MAX );
+
+	bool is_next_step_compare_needed( false );
+	size_t addition_to_dist( 0 );
+
+	const Room* start_room( nullptr );
+	if( start_loc->isRoom() )
+	{
+		start_room = (const Room*)start_loc;
+		is_next_step_compare_needed = true;
+	}
+	else if( next_step->isRoom() )
+	{
+		start_room = (const Room*)next_step;
+		++addition_to_dist;
+	}
+
+	if( start_room )
+	{
+		size_t distance( UINT_MAX );
+		Location* next_from_chart( nullptr );
+
+		//for each room needing questioning
+		std::set<clueless::RoomType>::const_iterator ques_iter( _roomsNeedingQuestioning.begin() );
+		for(ques_iter  = _roomsNeedingQuestioning.begin();
+			ques_iter != _roomsNeedingQuestioning.end();
+			++ques_iter)
+		{
+			//if starting room is room needing questioning
+			if( start_room->_type == (*ques_iter) )
+			{
+				//if currenting in destination room
+				if( start_loc->isRoom() )
+				{
+					//assume need to leave room and reenter
+					distance = 2;
+				}
+				else //in adjacent hallway
+				{
+					distance = 0;
+				}
+			}
+			else //room needing questioning not current location
+			{
+				next_from_chart =
+					_assocBoard->fetchDistanceToRoom(
+						start_room,
+						*ques_iter,
+						distance);
+			} //end else (room needing question not curr location)
+
+			if( is_next_step_compare_needed )
+			{
+				if( next_step == next_from_chart )
+				{
+					shortest_distance = std::min(shortest_distance, (distance + addition_to_dist));
+				}
+			}
+			else //next step comparison baked in because queried with next as starting room
+			{
+				shortest_distance = std::min(shortest_distance, (distance + addition_to_dist));
+			}
+		} //end for (each room needing questioning)
+
+	} //end if (found starting room)
+
+	return shortest_distance;
+
+} //end routine determineShortestPathForDestinationNeedingQuestion()
+
+
+size_t
+DetectiveNotebook::determineShortestPathForDestinationSuspectedOrInHand(
+	const Location* start_loc, //i - starting point
+	Location* next_step) //i - desired next step location
+const
+{
+	size_t shortest_distance( UINT_MAX );
+
+	//create combined collection of rooms in hand and suspected
+	std::set<clueless::RoomType> roomsToConsider = _roomsInHand;
+	roomsToConsider.insert( _suspectedRoom );
+
+	bool is_next_step_compare_needed( false );
+	size_t addition_to_dist( 0 );
+
+	const Room* start_room( nullptr );
+	if( start_loc->isRoom() )
+	{
+		start_room = (const Room*)start_loc;
+		is_next_step_compare_needed = true;
+	}
+	else if( next_step->isRoom() )
+	{
+		start_room = (const Room*)next_step;
+		++addition_to_dist;
+	}
+
+	if( start_room )
+	{
+		size_t distance( UINT_MAX );
+		Location* next_from_chart( nullptr );
+
+		//for each room needing questioning
+		std::set<clueless::RoomType>::const_iterator room_iter( roomsToConsider.begin() );
+		for(room_iter  = roomsToConsider.begin();
+			room_iter != roomsToConsider.end();
+			++room_iter)
+		{
+			//if starting room is room needing questioning
+			if( start_room->_type == (*room_iter) )
+			{
+				//if currenting in destination room
+				if( start_loc->isRoom() )
+				{
+					//assume need to leave room and reenter
+					distance = 2;
+				}
+				else //in adjacent hallway
+				{
+					distance = 0;
+				}
+			}
+			else //room needing questioning not current location
+			{
+				next_from_chart =
+					_assocBoard->fetchDistanceToRoom(
+						start_room,
+						*room_iter,
+						distance);
+			} //end else (room needing question not curr location)
+
+			if( is_next_step_compare_needed )
+			{
+				if( next_step == next_from_chart )
+				{
+					shortest_distance = std::min(shortest_distance, (distance + addition_to_dist));
+				}
+			}
+			else //next step comparison baked in because queried with next as starting room
+			{
+				shortest_distance = std::min(shortest_distance, (distance + addition_to_dist));
+			}
+		} //end for (each room needing questioning)
+
+	} //end if (found starting room)
+
+	return shortest_distance;
+
+} //end routine determineShortestPathForDestinationSuspectedOrInHand()
 
 
 ////////////////////////////////////////////////////////////////////////////////

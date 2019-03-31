@@ -182,6 +182,42 @@ const
 } //end routine fetchRoom()
 
 
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Determines distance from location to room with next location on
+///  shortest path.
+/// \param Location: current location
+/// \param Room: destination room
+/// \param size_t: distance from location to room (in number of moves)
+/// \return Location: next location on shortest path
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+const Location*
+Board::getDistanceToRoom(
+	const Location* curr_location, //i - current location
+	const Room* destination, //i - destination room
+	size_t& distance)
+const
+{
+	Location* next_location_on_path( nullptr );
+
+	std::pair<const Location*, const Room*> location_room;
+	location_room = std::make_pair(curr_location, destination);
+
+	std::map<std::pair<const Location*, const Room*>, std::pair<size_t, Location*>>::const_iterator
+		chart_iter( _roomDistanceChart.find(location_room) );
+
+	if( _roomDistanceChart.end() != chart_iter )
+	{
+		distance = chart_iter->second.first;
+		next_location_on_path = chart_iter->second.second;
+	}
+
+	return next_location_on_path;
+
+} //end routine getDistanceToRoom()
+
+
 //------------------------------------------------------------------------------
 // Additional Member Functions
 //------------------------------------------------------------------------------
@@ -268,9 +304,13 @@ Board::createRooms()
 	_study->createSecretPassageTo( _kitchen );
 	_kitchen->createSecretPassageTo( _study );
 
+	populateDistanceChart_studyKitchen();
+
 	//lounge-conservatory
 	_lounge->createSecretPassageTo( _conservatory );
 	_conservatory->createSecretPassageTo( _lounge );
+
+	populateDistanceChart_loungeConservatory();
 
 } //end routine createRooms()
 
@@ -287,10 +327,14 @@ void
 Board::createConnectingHallways()
 {
 	using clueless::PersonType;
+	std::pair<const Location*, const Room*> location_room;
+	std::pair<size_t, Location*> distance_nextLocation;
 
 	// 1: study-hall
 	Hallway* hallway = new Hallway(_study, _hall);
 	_hallways.insert( hallway );
+
+	populateDistanceChart_hallwayStudyHall( hallway );
 
 	// 2: hall-lounge + Miss Scarlet starting place
 	hallway = new Hallway(_hall, _lounge);
@@ -298,15 +342,21 @@ Board::createConnectingHallways()
 
 	_personHomes.insert( new HomeLocation(_missScarlet, hallway) );
 
+	populateDistanceChart_hallwayHallLounge( hallway );
+
 	// 3: study-library
 	hallway = new Hallway(_study, _library);
 	_hallways.insert( hallway );
 
 	_personHomes.insert( new HomeLocation(_professorPlum, hallway) );
 
+	populateDistanceChart_hallwayStudyLibrary( hallway );
+
 	// 4: hall-billiard room
 	hallway = new Hallway(_hall, _billiardRoom);
 	_hallways.insert( hallway );
+
+	populateDistanceChart_hallwayHallBilliardRoom( hallway );
 
 	// 5: lounge-dining room
 	hallway = new Hallway(_lounge, _diningRoom);
@@ -314,13 +364,19 @@ Board::createConnectingHallways()
 
 	_personHomes.insert( new HomeLocation(_colonelMustard, hallway) );
 
+	populateDistanceChart_hallwayLoungeDiningRoom( hallway );
+
 	// 6: library-billiard room
 	hallway = new Hallway(_library, _billiardRoom);
 	_hallways.insert( hallway );
 
+	populateDistanceChart_hallwayLibraryBilliardRoom( hallway );
+
 	// 7: billiard room-dining room
 	hallway = new Hallway(_billiardRoom, _diningRoom);
 	_hallways.insert( hallway );
+
+	populateDistanceChart_hallwayBilliardRoomDiningRoom( hallway );
 
 	// 8: library-conservatory
 	hallway = new Hallway(_library, _conservatory);
@@ -328,13 +384,19 @@ Board::createConnectingHallways()
 
 	_personHomes.insert( new HomeLocation(_mrsPeacock, hallway) );
 
+	populateDistanceChart_hallwayLibraryConservatory( hallway );
+
 	// 9: billiard room-ballroom
 	hallway = new Hallway(_billiardRoom, _ballroom);
 	_hallways.insert( hallway );
 
+	populateDistanceChart_hallwayBilliardRoomBallroom( hallway );
+
 	//10: dining room-kitchen
 	hallway = new Hallway(_diningRoom, _kitchen);
 	_hallways.insert( hallway );
+
+	populateDistanceChart_hallwayDiningRoomKitchen( hallway );
 
 	//11: conservatory-ballroom
 	hallway = new Hallway(_conservatory, _ballroom);
@@ -342,11 +404,15 @@ Board::createConnectingHallways()
 
 	_personHomes.insert( new HomeLocation(_mrGreen, hallway) );
 
+	populateDistanceChart_hallwayConservatoryBallroom( hallway );
+
 	//12: ballroom-kitchen
 	hallway = new Hallway(_ballroom, _kitchen);
 	_hallways.insert( hallway );
 
 	_personHomes.insert( new HomeLocation(_mrsWhite, hallway) );
+
+	populateDistanceChart_hallwayBallroomKitchen( hallway );
 
 } //end routine createConnectingHallways()
 
@@ -518,6 +584,9 @@ Board::recognizePlayerCharacterAssignments(
 	{
 		//build relationship between board character and player
 		assignCharacterToPlayer(*player_iter, (*player_iter)->getCharacter());
+
+		//provide room distance chart reference to player's notebook
+		(*player_iter)->_notebook.setBoard( this );
 
 		++player_iter; //next player
 
