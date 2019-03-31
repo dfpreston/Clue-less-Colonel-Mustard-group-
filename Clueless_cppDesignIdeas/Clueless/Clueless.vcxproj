@@ -133,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="Board_roomDistanceChart.cpp" />
     <ClCompile Include="CardDeck.cpp" />
     <ClCompile Include="DetectiveNotebook.cpp" />
     <ClCompile Include="Game.cpp" />

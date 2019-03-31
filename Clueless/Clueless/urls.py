@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from . import views
 
 urlpatterns = [
@@ -23,3 +24,5 @@ urlpatterns = [
     path('customize/', views.GameCustiomize),
     path('play/', views.GameRoom),
 ]
+
+urlpatterns += staticfiles_urlpatterns()

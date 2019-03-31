@@ -159,7 +159,7 @@ class GameManager:
         print(turn_order.index(curr_id))
 
         # Skip players that lost
-        if Players.objects.filter(id=next_id)[0].status == 'LOST':
+        if Players.objects.filter(id=next_id)[0].status == 'LOST' and Players.objects.filter(game=self.game_id).count()>1:
             self.update_player_turn()
 
     def update_game_status(self, client_ip, client_name, player_status):
@@ -204,6 +204,14 @@ class GameManager:
 
     def get_games_in_progress(self):
         return Games.objects.filter(status=self.game_status[1]).count()
+
+    def get_player_names(self):
+        names = []
+
+        for player in Players.objects.filter(game=self.game_id):
+            names.append(player.name)
+
+        return names
 
     def delete_completed_games(self):
         if Games.objects.filter().exists():

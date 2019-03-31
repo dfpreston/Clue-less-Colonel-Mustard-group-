@@ -48,7 +48,7 @@ int main( int argc, const char* argv[] )
 		clueless.setup( &players );
 
 		unsigned int turn_number( 0 );
-		const unsigned int MAX_NUM_TURNS( 300 );
+		const unsigned int MAX_NUM_TURNS( 100 );
 
 		while( ! clueless.hasWinner() &&
 			(clueless._numFalseAccusers < clueless._players.size()) &&

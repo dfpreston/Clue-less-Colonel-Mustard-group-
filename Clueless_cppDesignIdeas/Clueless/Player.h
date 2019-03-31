@@ -70,6 +70,9 @@ public:
 	const Location* getLocation() const;
 	std::string getLocationName() const;
 
+	bool isCardInHand(const Card* card) const;
+	//bool isRoomInHand(const Room* room) const;
+
 	bool wasMovedToRoomOutOfTurn() const;
 	void indicateMovedToRoomOutOfTurn();
 	//void clearMovedToRoomOutOfTurnIndicator();
@@ -95,10 +98,18 @@ public:
 	void prepareForNewTurn();
 	clueless::TurnOptionType makeTurnChoice(std::set<clueless::TurnOptionType>* turnOptions) const;
 
+	// Move
+	Location* offerMovePreference(std::set<Location*>* moveOptions) const;
+
+	// Make Suggestion
 	SolutionCardSet buildSuggestion() const;
-	void acceptCounterEvidence(const Card* const card, clueless::PersonType opponentOfferingCounterEvidence);
+	void acceptCounterEvidence(
+		const SolutionCardSet* suggestion,
+		const Card* const card,
+		clueless::PersonType opponentOfferingCounterEvidence);
 	const Card* offerCounterEvidenceToSuggestion(const SolutionCardSet* suggestion, const Player* suggestorCharacter);
 
+	// Make Accusation
 	SolutionCardSet buildAccusation() const;
 
 protected:

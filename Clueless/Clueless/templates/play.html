@@ -1,3 +1,4 @@
+{% load static from staticfiles %}
 {% block content %}
 {% load static %}
     <!--<meta http-equiv="refresh" content="1">-->
@@ -113,84 +114,84 @@
                 ]
             },
             hallway1: {
-                name: getHallwayName("room5", "room9"),
+                name: getHallwayName("Hall", "Study"),
                 connections: [
                     "room5",
                     "room9"
                 ]
             },
             hallway2: {
-                name: getHallwayName("room5", "room8"),
+                name: getHallwayName("Hall", "Lounge"),
                 connections: [
                     "room5",
                     "room8"
                 ]
             },
             hallway3: {
-                name: getHallwayName("room9", "room7"),
+                name: getHallwayName("Study", "Library"),
                 connections: [
                     "room7",
                     "room9"
                 ]
             },
             hallway4: {
-                name: getHallwayName("room5", "room2"),
+                name: getHallwayName("Hall", "Billiard Room"),
                 connections: [
                     "room5",
                     "room2"
                 ]
             },
             hallway5: {
-                name: getHallwayName("room8", "room4"),
+                name: getHallwayName("Lounge", "Dining Room"),
                 connections: [
                     "room8",
                     "room4"
                 ]
             },
             hallway6: {
-                name: getHallwayName("room2", "room7"),
+                name: getHallwayName("Billiard Room", "Library"),
                 connections: [
                     "room2",
                     "room7"
                 ]
             },
             hallway7: {
-                name: getHallwayName("room2", "room4"),
+                name: getHallwayName("Billiard Room", "Dining Room"),
                 connections: [
                     "room2",
                     "room4"
                 ]
             },
             hallway8: {
-                name: getHallwayName("room7", "room3"),
+                name: getHallwayName("Library", "Conservatory"),
                 connections: [
                     "room7",
                     "room3"
                 ]
             },
             hallway9: {
-                name: getHallwayName("room2", "room1"),
+                name: getHallwayName("Billiard Room", "Ballroom"),
                 connections: [
                     "room2",
                     "room1"
                 ]
             },
             hallway10: {
-                name: getHallwayName("room4", "room6"),
+                name: getHallwayName("Dining Room", "Kitchen"),
                 connections: [
                     "room4",
                     "room6"
                 ]
             },
             hallway11: {
-                name: getHallwayName("room3", "room1"),
+                name: getHallwayName("Conservatory", "Ballroom"),
                 connections: [
                     "room3",
                     "room1"
                 ]
             },
             hallway12: {
-                name: getHallwayName("room1", "room6"),
+                name: getHallwayName("Ballroom", "Kitchen"),
                 connections: [
                     "room1",
                     "room6"
@@ -378,12 +379,23 @@
         }
 
         function makeSuggestion() {
-            var weapon = $("#suggest-weapon option:selected").text();
-            var suspect = $("#suggest-suspect option:selected").text();
-            var room = "{{ player_location }}";
+
+            var weapon = document.getElementById("suggest-weapon");
+            var suspect = document.getElementById("suggest-suspect");
+
+            room = "{{player_location | safe }}"
+            weapon = weapon.options[ weapon.selectedIndex ].value;
+            suspect = suspect.options[ suspect.selectedIndex ].value;
+
+            alert( room + weapon + suspect);
+
+            url = "/play/?suggest_room=" + room +
+                        "&suggest_weapon=" + textToId[weapon] +
+                        "&suggest_suspect="+ textToId[suspect];
+
             $.ajax({
                 type: "POST",
-                url: "/play/"
+                url: url
             });
         };
 
@@ -399,8 +411,7 @@
     <h2>Game</h2>
     <body>
         <h3>Game Board</h3>
-
-        <img src='{% static "board.png" %}' alt="game board picture">
+        <img src="{% static 'images/board.png' %}" alt="game board picture">
         <h3 id="player-location-msg"></h3>
 
         <!-- Turn handling -->

@@ -101,6 +101,17 @@
         console.log("Message:", "{{ msg }}");
         console.log("Game ID:", "{{ game_id }}");
         console.log("Is Player Game Creator:", "{{ is_creator }}");
+        console.log("All Players: {{ all_names | safe }}");
+        //console.log("Game Status: {{ game_status | safe }}");
+
+        //if("{{ game_status | safe }}" == "IN_PROGRESS"){
+        //    location.replace("/play/");
+        //};
+
+        // Listen for game updates
+            setInterval(function(){
+                location.reload();
+            }, 5000);
 
         function setPlayerToken(name){
             url = "/customize/?token=" + name;

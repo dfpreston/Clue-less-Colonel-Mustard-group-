@@ -61,6 +61,9 @@ def GameCustiomize(request):
             gm.delete_completed_games()  # Cleaning for testing
             gm.initialize_new_game(client_ip=user_ip, client_name=user_name)
 
+            pm = PlayerManager(client_ip=user_ip, client_name=user_name)
+            gm = GameManager(game_id=pm.get_game_id())
+
         # User joins pending game
         elif request.GET.get('game') == 'join':
             if not Games.objects.filter(status='PENDING').exists():
@@ -77,6 +80,9 @@ def GameCustiomize(request):
             pm = PlayerManager(client_ip=user_ip, client_name=user_name)
             gm = GameManager(game_id=pm.get_game_id())
 
+            if gm.get_game_status == 'IN_PROGRESS':
+                return redirect('/play')
+
     # Post Request
     elif request.method == 'POST':
         msg = 'You are updating player info for game!'
@@ -92,9 +98,11 @@ def GameCustiomize(request):
     context = {'msg':msg,
                'game_id':pm.get_game_id(),
                'player_name':pm.get_player_name(),
+               'all_names':gm.get_player_names(),
                'player_hand':pm.get_hand(),
                'available_cards':pm.get_unused_cards(),
-               'is_creator': pm.get_is_creator()}
+               'is_creator': pm.get_is_creator()}#,
+               #game_status': gm.get_game_status()}
 
     return render(request, 'customize.html', context)
 

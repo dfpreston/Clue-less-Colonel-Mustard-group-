@@ -27,6 +27,7 @@
 #include <map>		//for std::map use
 #include <set>		//for std::set use
 #include <string>	//for std::string use
+#include <tuple>	//for std::pair use
 
 
 //forward declarations
@@ -50,6 +51,17 @@ public:
 	// Accessors and Mutators
 	//--------------------------------------------------------------------------
 	void listRooms() const;
+
+	const Location* getDistanceToRoom(
+		const Location* currentLocation,
+		const Room* destinationRoom,
+		size_t& distance) const;
+
+	Location* fetchDistanceToRoom(
+		const Location* startingPoint,
+		clueless::RoomType destination,
+		size_t& distance);
+
 
 	//--------------------------------------------------------------------------
 	// Additional Member Functions
@@ -120,6 +132,36 @@ private:
 	WeaponPiece* _candlestick;
 	WeaponPiece* _revolver;
 	WeaponPiece* _wrench;
+
+	//location to room distance chart with next location on shortest path
+	std::map<std::pair<const Location*, const Room*>, std::pair<size_t, Location*>> _roomDistanceChart;
+
+	void addDataToDistanceChart(
+		const Location* startingLocation,
+		const Room* destination,
+		size_t distanceInNumberOfMoves,
+		Location* nextStepShortestPath);
+
+	Location* fetchDistanceToRoom(
+		const Location* startingPoint,
+		const Room* destination,
+		size_t& distance);
+
+	void populateDistanceChart_studyKitchen();
+	void populateDistanceChart_loungeConservatory();
+
+	void populateDistanceChart_hallwayStudyHall(Hallway* hallway);
+	void populateDistanceChart_hallwayHallLounge(Hallway* hallway);
+	void populateDistanceChart_hallwayStudyLibrary(Hallway* hallway);
+	void populateDistanceChart_hallwayHallBilliardRoom(Hallway* hallway);
+	void populateDistanceChart_hallwayLoungeDiningRoom(Hallway* hallway);
+	void populateDistanceChart_hallwayLibraryBilliardRoom(Hallway* hallway);
+	void populateDistanceChart_hallwayBilliardRoomDiningRoom(Hallway* hallway);
+	void populateDistanceChart_hallwayLibraryConservatory(Hallway* hallway);
+	void populateDistanceChart_hallwayBilliardRoomBallroom(Hallway* hallway);
+	void populateDistanceChart_hallwayDiningRoomKitchen(Hallway* hallway);
+	void populateDistanceChart_hallwayConservatoryBallroom(Hallway* hallway);
+	void populateDistanceChart_hallwayBallroomKitchen(Hallway* hallway);
 
 }; //end class Board defn
 
