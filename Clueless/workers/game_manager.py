@@ -22,9 +22,9 @@ class GameManager:
                       'Hallway':['hallway1', 'hallway2', 'hallway3', 'hallway4',
                                  'hallway5', 'hallway6', 'hallway7', 'hallway8',
                                  'hallway9', 'hallway10', 'hallway11', 'hallway12']}
-        self.cards = {'Weapons':['weapon1', 'weapon2', 'weapon3', 'weapon4'],
-                      'Suspects':['suspect1', 'suspect2', 'suspect3','suspect4'],
-                      'Rooms':['room1', 'room2', 'room3', 'room4']}
+        self.cards = {'Weapons':['weapon1', 'weapon2', 'weapon3', 'weapon4', 'weapon5', 'weapon6'],
+                      'Suspects':['suspect1', 'suspect2', 'suspect3','suspect4', 'suspect5', 'suspect6'],
+                      'Rooms':['room1', 'room2', 'room3', 'room4', 'room5', 'room6', 'room7', 'room8', 'room9']}
         self.game_status = ['PENDING', 'IN_PROGRESS', 'COMPLETED']
 
     # Game initialization
@@ -175,7 +175,9 @@ class GameManager:
 
             Games.objects.filter(id=self.game_id).update(status='COMPLETED')
 
-
+    def update_suggested_card(self, card_name):
+        if Cards.objects.filter(game=self.game_id, name=card_name).exists():
+            Cards.objects.filter(game=self.game_id, name=card_name).update(suggested=True)
 
     # Game info returns
     def get_solution_cards(self):
@@ -189,6 +191,16 @@ class GameManager:
                 solution[card.card_type].append(card.name)
 
         return solution
+
+    def get_suggested_cards(self):
+        suggests = {}
+
+        for card in Cards.objects.filter(game=self.game_id, suggested=True):
+            if card.card_type not in suggests.keys():
+                suggests[card.card_type] = [card.name]
+            else:
+                suggests[card.card_type].append(card.name)
+        return suggests
 
     def get_game_status(self):
         return (Games.objects.filter(id=self.game_id)[0]).status

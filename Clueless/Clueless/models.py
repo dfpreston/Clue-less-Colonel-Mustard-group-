@@ -31,3 +31,4 @@ class Cards(models.Model):
     card_type = models.CharField(max_length=200, default='')
     used = models.BooleanField(default=False)
     solution = models.BooleanField(default=False)
+    suggested = models.BooleanField(default=False)

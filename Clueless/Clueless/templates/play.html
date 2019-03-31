@@ -15,6 +15,7 @@
         console.log("Player Hand:", "{{ player_hand | safe}}");
         console.log("All Available Cards:", "{{ available_cards | safe}}");
         console.log("Solution Cards:", "{{ solution_cards | safe}}");
+        console.log("Suggested Cards:", "{{ suggested_cards | safe}}");
         console.log("Player Status: ", "{{ player_status | safe }}");
         console.log("Game Status: ", "{{ game_status | safe }}");
         console.log("Game Winner: ", "{{ game_winner | safe }}")
@@ -297,16 +298,22 @@
 
             // Listen for game updates if not player's turn
             if( !{{player_turn | yesno:"true,false"}}) {
-                setInterval(function(){
-                    $.ajax({
-                        type: "GET",
-                        url: "/play/",
-                        success: function() {
-                            location.reload();
-                        }
-                    });
-                    rebukeSuggestion();
-                }, 5000);
+                if(!$.isEmptyObject( {{ suggested_cards | safe}} )){
+                    alert("Suggestion was made!!!");
+                    alert("Players will have option to rebuke suggestion!!");
+                }
+                else{
+                    setInterval(function(){
+                        $.ajax({
+                            type: "GET",
+                            url: "/play/",
+                            success: function() {
+                                location.reload();
+                            }
+                        });
+                        ///rebukeSuggestion();
+                    }, 5000);
+                }
             };
         });
 
@@ -384,15 +391,16 @@
             var suspect = $("#suggest-suspect option:selected").text();
             var room = "{{player_location | safe }}";
 
-            alert( room + weapon + suspect);
-
             url = "/play/?suggest_room=" + room +
                         "&suggest_weapon=" + textToId[weapon] +
                         "&suggest_suspect="+ textToId[suspect];
 
             $.ajax({
                 type: "POST",
-                url: url
+                url: url,
+                success: function() {
+                    location.reload();
+                }
             });
         };
 

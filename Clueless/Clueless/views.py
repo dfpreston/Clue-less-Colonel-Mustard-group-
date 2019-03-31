@@ -140,7 +140,13 @@ def GameRoom(request):
         print(request.GET.get('new_location', ''))
         print(request.GET.get('player_status', ''))
         print(request.GET.get('player_location', ''))
+        print(request.GET.get('suggest_room', ''))
+        print(request.GET.get('suggest_weapon', ''))
+        print('Suggested Suspect: {}'.format(request.GET.get('suggest_suspect', '')))
 
+        gm.update_suggested_card(request.GET.get('suggest_room', ''))
+        gm.update_suggested_card(request.GET.get('suggest_weapon', ''))
+        gm.update_suggested_card(request.GET.get('suggest_suspect', ''))
         gm.update_game_status(user_ip, user_name, request.GET.get('player_status', ''))
         pm.update_player_location(request.GET.get('player_location', ''))
         gm.update_player_turn()
@@ -152,6 +158,7 @@ def GameRoom(request):
                'others_locations': pm.get_other_player_locations(),
                'player_hand': pm.get_hand(),
                'available_cards': pm.get_unused_cards(),
+               'suggested_cards': gm.get_suggested_cards(),
                'is_creator': pm.get_is_creator(),
                'solution_cards': gm.get_solution_cards(),
                'game_status': gm.get_game_status(),
