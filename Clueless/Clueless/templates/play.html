@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static from staticfiles %}
 {% block content %}
     <!--<meta http-equiv="refresh" content="1">-->
 
@@ -414,10 +414,24 @@
             });
         }
 
-        function makeSuggestion(location, suspect, weapon) {
+        function makeSuggestion() {
+
+            var weapon = document.getElementById("suggest-weapon");
+            var suspect = document.getElementById("suggest-suspect");
+
+            room = "{{player_location | safe }}"
+            weapon = weapon.options[ weapon.selectedIndex ].value;
+            suspect = suspect.options[ suspect.selectedIndex ].value;
+
+            alert( room + weapon + suspect);
+
+            url = "/play/?suggest_room=" + room +
+                        "&suggest_weapon=" + textToId[weapon] +
+                        "&suggest_suspect="+ textToId[suspect];
+
             $.ajax({
                 type: "POST",
-                url: "/play/"
+                url: url
             });
         };
 
@@ -433,7 +447,7 @@
     <h2>Game</h2>
     <body>
         <h3>Game Board</h3>
-        <img src="assets\board.png" alt="game board picture">
+        <img src="{% static 'images/board.png' %}" alt="game board picture">
         <h3 id="player-location-msg"></h3>
 
         <!-- Turn handling -->
@@ -469,7 +483,7 @@
             <p>Choose one Suspect</p>
             <!--<ul class="suspect-options"></ul>-->
             <select id="suggest-suspect"></select>
-            <button onclick="makeSuggestion('{{ player_location }}', selectedWeapon, selectedSuspect)">Suggest</button>
+            <button onclick="makeSuggestion()">Suggest</button>
         </div>
 
         <div class="is-players-turn" id="make-accusation-menu">
