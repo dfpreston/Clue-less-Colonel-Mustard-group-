@@ -380,12 +380,9 @@
 
         function makeSuggestion() {
 
-            var weapon = document.getElementById("suggest-weapon");
-            var suspect = document.getElementById("suggest-suspect");
-
-            room = "{{player_location | safe }}"
-            weapon = weapon.options[ weapon.selectedIndex ].value;
-            suspect = suspect.options[ suspect.selectedIndex ].value;
+            var weapon = $("#suggest-weapon  option:selected").text();
+            var suspect = $("#suggest-suspect option:selected").text();
+            var room = "{{player_location | safe }}";
 
             alert( room + weapon + suspect);
 
