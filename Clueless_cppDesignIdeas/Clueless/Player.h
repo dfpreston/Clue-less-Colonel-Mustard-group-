@@ -62,6 +62,7 @@ public:
 
 	bool isGameCreator() const;
 	bool isFalseAccuser() const;
+	bool isGameWinner() const;
 
 	clueless::PersonType getCharacter() const;
 	std::string getCharacterName() const;
@@ -80,6 +81,8 @@ public:
 	void indicateHasMadeSuggestionDuringTurn();
 
 	bool isReadyToMakeAccusation() const;
+	void indicateIsGameWinner();
+	void indicateHasMadeFalseAccusation();
 
 	std::ostringstream report() const;
 	std::ostringstream reportHand() const;
@@ -93,8 +96,13 @@ public:
 	clueless::TurnOptionType makeTurnChoice(std::set<clueless::TurnOptionType>* turnOptions) const;
 
 	SolutionCardSet buildSuggestion() const;
+	void acceptCounterEvidence(const Card* const card, clueless::PersonType opponentOfferingCounterEvidence);
+	const Card* offerCounterEvidenceToSuggestion(const SolutionCardSet* suggestion, const Player* suggestorCharacter);
 
-	SolutionCardSet buildAccusation(const PersonCard* suspect, const WeaponCard* weapon) const;
+	SolutionCardSet buildAccusation() const;
+
+protected:
+	std::set<const Card*> findCounterEvidenceInHand(const SolutionCardSet* suggestion) const;
 
 	//--------------------------------------------------------------------------
 	// Data Members
@@ -116,11 +124,12 @@ protected:
 	bool _hasMovedDuringTurn; //at most one move permitted per turn
 	bool _hasMadeSuggestionDuringTurn; //at most one suggestion permitted per turn
 
-	bool _isReadyToMakeAccusation;
+	//bool _isReadyToMakeAccusation;
 	bool _hasMadeFalseAccusation;
 
 private:
 	bool _isGameCreator;
+	bool _isGameWinner;
 
 }; //end class Player defn
 
@@ -146,6 +155,24 @@ const
 	return _isGameCreator;
 
 } //end routine isGameCreator()
+
+
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+Player::isGameWinner()
+const
+{
+	return _isGameWinner;
+
+} //end routine isGameWinner()
+
+
+inline void
+Player::indicateIsGameWinner()
+{
+	_isGameWinner = true;
+
+} //end routine indicateIsGameWinner()
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +252,7 @@ inline bool
 Player::isReadyToMakeAccusation()
 const
 {
-	return _isReadyToMakeAccusation;
+	return _notebook.hasAllElementsForAccusation();
 
 } //end routine isReadyToMakeAccusation()
 
@@ -238,6 +265,14 @@ const
 	return _hasMadeFalseAccusation;
 
 } //end routine isFalseAccuser()
+
+
+inline void
+Player::indicateHasMadeFalseAccusation()
+{
+	_hasMadeFalseAccusation = true;
+
+} //end routine indicateHadMadeFalseAccusation()
 
 
 #endif //Player_h

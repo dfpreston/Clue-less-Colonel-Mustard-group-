@@ -20,18 +20,18 @@
 //------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Determines whether have previously shown entry to specified player.
-/// \param Player: player of interest
+/// \param PersonType: player character of interest
 /// \return bool: whether have shown to player
 /// \throw None
 /// \note  None
 ////////////////////////////////////////////////////////////////////////////////
 bool
 NotebookEntry::haveShownToPlayer(
-	const Player* player) //i - player
+	clueless::PersonType player_character) //i - player
 const
 {
-	std::set<const Player*>::const_iterator player_iter(
-		_playersShown.find(player) );
+	std::set<clueless::PersonType>::const_iterator player_iter(
+		_playersShown.find(player_character) );
 
 	//whether found player
 	return( _playersShown.end() != player_iter );

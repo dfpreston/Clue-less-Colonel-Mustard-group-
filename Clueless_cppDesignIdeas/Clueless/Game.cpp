@@ -36,6 +36,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 Game::Game()
 	: _winner( nullptr )
+	, _numFalseAccusers( 0 )
 {
 } //end routine constructor
 
@@ -49,6 +50,8 @@ Game::Game()
 ////////////////////////////////////////////////////////////////////////////////
 Game::~Game()
 {
+	_players.clear(); //does not own players
+
 } //end routine destructor
 
 
@@ -88,6 +91,8 @@ Game::setup(
 		player_iter != (*players).end();
 		++player_iter )
 	{
+		_players.push_back( *player_iter ); //class storage
+
 		std::cout << (*player_iter)->report().str();
 
 	} //end for (each player)
@@ -260,9 +265,19 @@ Game::executePlayerChoice(
 		//build suggestion
 		SolutionCardSet suggestion( player->buildSuggestion() );
 
-		/// \todo offer suggestion for other players to refute
+		//offer suggestion for other players to refute
+		clueless::PersonType opponent_providing_counter_evidence( clueless::UNKNOWN_PERSON );
 
-		/// \todo provide feedback to suggestor
+		const Card* counter_evidence(
+			requestCounterEvidenceToPlayerSuggestion(
+			player, //suggestor
+			&suggestion,
+			opponent_providing_counter_evidence) );
+
+		//provide feedback to suggestor
+		player->acceptCounterEvidence(
+			counter_evidence,
+			opponent_providing_counter_evidence );
 
 		player->indicateHasMadeSuggestionDuringTurn();
 	}
@@ -271,7 +286,27 @@ Game::executePlayerChoice(
 	case clueless::MAKE_ACCUSATION:
 	{
 		//build accusation
-		std::cout << "  STUB: build accusation\n";
+		SolutionCardSet accusation( player->buildAccusation() );
+
+		//compare accusation to Case File
+		if( _cards.doesAccusationMatchCaseFile( accusation ) )
+		{
+			//player wins game :)
+			player->indicateIsGameWinner();
+			_winner = player;
+
+			std::cout << "\n*** " << player->getName() << " WINS game\n"
+				<< "solution: " << accusation.report().str();
+		}
+		else //accusation does not match case file
+		{
+			//player is false accuser
+			player->indicateHasMadeFalseAccusation();
+			++_numFalseAccusers;
+
+			std::cout << "\n*** " << player->getName() << " has made a false accusation\n"
+				<< "    eliminated from active game play\n";
+		}
 	}
 		break;
 
@@ -282,3 +317,82 @@ Game::executePlayerChoice(
 	} //end switch (on player's choice)
 
 } //end routine executePlayerChoice()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief 
+/// \param Player: current suggestor
+/// \param SolutionCardSet: suggestion
+/// \param Player: opponent with counter-evidence (character)
+/// \return Card: counter-evidence to suggestion
+/// \throw None
+/// \note
+/// - It is important to ask each opponent for counter-evidence in the order of
+///   play, starting with the opponent whose turn is next after suggestor.
+////////////////////////////////////////////////////////////////////////////////
+const Card*
+Game::requestCounterEvidenceToPlayerSuggestion(
+	const Player* suggestor, //i - suggestor
+	const SolutionCardSet* suggestion, //i - suggestion
+	clueless::PersonType& opponent_character) // o- opponent with counter-evidence
+const
+{
+	//have not found counter-evidence to suggestor yet
+	const Card* counter_evidence( nullptr );
+
+	//determine suggestor iterator
+	bool have_found_suggestor_iter( false );
+	std::list<Player*>::const_iterator suggestor_iter( _players.begin() );
+	while( ! have_found_suggestor_iter &&
+		(_players.end() != suggestor_iter) )
+	{
+		if( *suggestor_iter == suggestor )
+		{
+			have_found_suggestor_iter = true;
+		}
+		else //not suggestor
+		{
+			++suggestor_iter;
+		}
+	}
+
+	//player following suggestor
+	std::list<Player*>::const_iterator player_iter( ++suggestor_iter );
+
+	//while have not found counter-evidence  AND
+	///     more players in list after suggestor
+	while( ! counter_evidence &&
+		(_players.end() != player_iter) )
+	{
+		opponent_character = (*player_iter)->getCharacter();
+		counter_evidence = (*player_iter)->offerCounterEvidenceToSuggestion(suggestion, suggestor);
+
+		++player_iter; //next player
+
+	} //end while (more players in list after suggestor)
+
+	//continue at start of player list
+	player_iter = _players.begin();
+	
+	//while have not found counter-evidence  AND
+	//      more players in list before suggestor
+	while( ! counter_evidence &&
+		(suggestor_iter != player_iter) )
+	{
+		opponent_character = (*player_iter)->getCharacter();
+		counter_evidence = (*player_iter)->offerCounterEvidenceToSuggestion(suggestion, suggestor);
+
+		++player_iter; //next player
+
+	} //end while (more players in list before suggestor)
+
+	//if no counter-evidence uncovered
+	if( ! counter_evidence )
+	{
+		//clear last opponent
+		opponent_character = clueless::UNKNOWN_PERSON;
+	}
+
+	return counter_evidence;
+
+} //end routine requestCounterEvidenceToPlayerSuggestion()

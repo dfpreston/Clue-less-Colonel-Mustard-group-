@@ -40,14 +40,14 @@ Player::Player()
 	, _isGameCreator( false )
 	, _character( clueless::UNKNOWN_PERSON )
 	, _assocGameToken( nullptr )
+	, _notebook( clueless::UNKNOWN_PERSON )
 	, _wasMovedToRoomOutOfTurn( false )
 	, _hasMovedDuringTurn( false )
 	, _hasMadeSuggestionDuringTurn( false )
-	, _isReadyToMakeAccusation( false )
+	//, _isReadyToMakeAccusation( false )
 	, _hasMadeFalseAccusation( false )
+	, _isGameWinner( false )
 {
-	_notebook.setOwner( this );
-
 } //end routine constructor
 
 
@@ -68,14 +68,14 @@ Player::Player(
 	, _isGameCreator( is_game_creator )
 	, _character( game_character )
 	, _assocGameToken( nullptr )
+	, _notebook( game_character )
 	, _wasMovedToRoomOutOfTurn( false )
 	, _hasMovedDuringTurn( false )
 	, _hasMadeSuggestionDuringTurn( false )
-	, _isReadyToMakeAccusation( false )
+	//, _isReadyToMakeAccusation( false )
 	, _hasMadeFalseAccusation( false )
+	, _isGameWinner( false )
 {
-	_notebook.setOwner( this );
-
 } //end routine Player(name, character)
 
 
@@ -250,7 +250,7 @@ const
 	clueless::TurnOptionType choice( clueless::DO_NOTHING_ELSE_THIS_TURN );
 
 	//if not ready to make accusation
-	if( ! _isReadyToMakeAccusation )
+	if( ! isReadyToMakeAccusation() )
 	{
 		if( 1 == options->size() ) //only one option
 		{
@@ -313,45 +313,138 @@ const
 			((const Room*)getLocation())->_type );
 	}
 
-	std::cout << "  STUB: build suggestion in " << getLocation()->getName() << "\n";
+	clueless::PersonType suspect( _notebook.choosePersonForSuggestion() );
+	clueless::WeaponType wpn( _notebook.chooseWeaponForSuggestion() );
 
-	clueless::PersonType suspect( clueless::UNKNOWN_PERSON );
-	clueless::WeaponType wpn( clueless::UNKNOWN_WEAPON );
-
-
-	return SolutionCardSet(
+	SolutionCardSet suggestion(
 		suspect,
 		wpn,
 		((const Room*)getLocation())->_type ); //room must be current token location
+
+	std::cout << "  suggestion... " << suggestion.report().str() << "\n";
+
+	return suggestion;
 
 } //end routine buildSuggestion()
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \brief Constructs an Accusation.
-/// \param None
+/// \brief Accepts counter-evidence to Suggestion.
+/// \param Card: counter-evidence
+/// \param PersonType: opponent offering counter-evidence (character)
 /// \return None
 /// \throw None
 /// \note  None
 ////////////////////////////////////////////////////////////////////////////////
-SolutionCardSet
-Player::buildAccusation(
-	const PersonCard* suspect, //i - suspect (person) card
-	const WeaponCard* weapon)  //i - weapon card
+void
+Player::acceptCounterEvidence(
+	const Card* const counter_evidence, //i - counter-evidence
+	clueless::PersonType opponent) //i - opponent offering counter-evidence
+{
+	if( counter_evidence )
+	{
+		//record in detective's notebook
+		_notebook.recordCardShownByPlayer( counter_evidence, opponent );
+	}
+
+} //end routine acceptCounterEvidence()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Offers counter-evidence to opponent's suggestion.
+/// \param SolutionCardSet: suggestion to refute
+/// \param Player: opponent with suggestion
+/// \return Card: counter-evidence; null if no counter-evidence
+/// \throw None
+/// \note
+/// - If have counter-evidence, must let opponent know.
+/// - If can refute more than one element of suggestion, still only show one
+///   card to opponent.
+////////////////////////////////////////////////////////////////////////////////
+const Card*
+Player::offerCounterEvidenceToSuggestion(
+	const SolutionCardSet* suggestion, //i - suggestion
+	const Player* suggestor) //i - player authoring suggestion
+{
+	const Card* counter_evidence( nullptr );
+
+	//find counter-evidence in hand
+	std::set<const Card*> in_hand( findCounterEvidenceInHand(suggestion) );
+
+	//if found counter-evidence
+	if( ! in_hand.empty() )
+	{
+		//decide which card to show opponent
+		counter_evidence = _notebook.decideWhichCardToShowOpponent( &in_hand );
+
+		//make note that showed card to suggestor
+		_notebook.recordHaveShownCardToPlayer(counter_evidence, suggestor->getCharacter());
+
+		std::cout
+			<< "  " << getName() << " showed counter-evidence card \'"
+			<< counter_evidence->getName() << "\' to " << suggestor->getName() << "\n";
+	}
+	//otherwise, found no counter-evidence
+
+	return counter_evidence;
+
+} //end routine offerCounterEvidenceToSuggestion()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Searches in hand for counter-evidence to suggestion.
+/// \param SolutionCardSet: suggestion
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+std::set<const Card*>
+Player::findCounterEvidenceInHand(
+	const SolutionCardSet* suggestion) //i - suggestion
 const
 {
-	RoomCard* room_card( nullptr );
+	std::set<const Card*> counter_evidence;
+	std::set<const Card*>::const_iterator card_iter( _hand.begin() );
 
-	if( getLocation()->isAccusationAllowedHere() )
+	//while have not found three pieces of counter-evidence  AND
+	//      more cards in hand
+	while(
+		(3 > counter_evidence.size() ) &&
+		(_hand.end() != card_iter) )
 	{
-		//must be room
-		room_card = ((const Room*)getLocation())->_assocCard;
-	}
-	else //not allowed to accuse
+		//if current card matches element of suggestion
+		if( suggestion->doesCardMatchAnElement(*card_iter) )
+		{
+			//add to counter-evidence
+			counter_evidence.insert( *card_iter );
+		}
+
+		++card_iter; //next card in hand
+
+	} //end while (more to look for)
+
+	return counter_evidence;
+
+} //end routine findCounterEvidenceInHand()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Constructs an Accusation based on detective's notebook entries.
+/// \param None
+/// \return SolutionCardSet: accusation
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+SolutionCardSet
+Player::buildAccusation()
+const
+{
+	if( ! isReadyToMakeAccusation() )
 	{
+		std::cout << "  STUB: add details to determine elements to make accusation\n";
 	}
 
 	//accusation
-	return( SolutionCardSet(*suspect, *weapon, *room_card) );
+	return( _notebook.getAccusation() );
 
 } //end routine buildAccusation()
