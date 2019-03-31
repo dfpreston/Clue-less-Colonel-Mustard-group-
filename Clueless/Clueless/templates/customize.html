@@ -109,6 +109,10 @@
         //    location.replace("/play/");
         //};
 
+        if(location.href.includes("game=")){
+            location.replace("/customize/");
+        }
+
         // Listen for game updates
             setInterval(function(){
                 if(location.href.includes("game=")){
@@ -117,7 +121,7 @@
                 else{
                     location.reload();
                 }
-            }, 5000);
+            }, 10000);
 
         function setPlayerToken(name){
             url = "/customize/?token=" + name;

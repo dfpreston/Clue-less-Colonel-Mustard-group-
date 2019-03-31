@@ -179,6 +179,11 @@ class GameManager:
         if Cards.objects.filter(game=self.game_id, name=card_name).exists():
             Cards.objects.filter(game=self.game_id, name=card_name).update(suggested=True)
 
+    def rebuke_suggestion(self, card_name):
+        if Cards.objects.filter(game=self.game_id, name=card_name).exists():
+            Cards.objects.filter(game=self.game_id, name=card_name).update(used=True)
+            Cards.objects.filter(game=self.game_id, suggested=True).update(suggested=False)
+
     # Game info returns
     def get_solution_cards(self):
         solution = {}

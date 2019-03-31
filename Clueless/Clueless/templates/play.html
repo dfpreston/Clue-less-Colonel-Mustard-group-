@@ -311,7 +311,6 @@
                                 location.reload();
                             }
                         });
-                        ///rebukeSuggestion();
                     }, 5000);
                 }
             };
@@ -360,6 +359,29 @@
             $("#make-accusation-menu").show();
         }
 
+        function rebuke() {
+            $("#rebuke-options").empty();
+
+            const playerHand = JSON.parse("{{ player_hand }}".replace(/&#39;/g, "\""));
+            const suggestedCards = JSON.parse("{{ suggested_cards }}".replace(/&#39;/g, "\""));
+
+            Object.keys(playerHand).forEach(cardType => {
+                playerHand[cardType].forEach(card => {
+                    //alert(card);
+                    //alert(suggestedCards[cardType]);
+
+                    if(card == suggestedCards[cardType]){
+                        var rebuke_list = document.getElementById("rebuke-options");
+                        var option = document.createElement("option");
+                        option.text = card;
+                        rebuke_list.add(option);
+                    };
+                });
+            });
+            $("#turn-options-menu").hide();
+            $("#rebuke-suggestion-menu").show();
+        }
+
         function makeAccusation() {
             var weapon = $("#accuse-weapon option:selected").text();
             var room = $("#accuse-location option:selected").text();
@@ -405,9 +427,16 @@
         };
 
         function rebukeSuggestion() {
+
+            var rebuke_card = $("#rebuke-options option:selected").text();
+
+            var url = "/play/?rebuke_card=" + rebuke_card;
             $.ajax({
                 type: "POST",
-                url: "/play/?used_card=foo"
+                url: url,
+                success: function(){
+                    location.reload();
+                }
             });
         };
 
@@ -426,6 +455,7 @@
                 <li onclick="move()">Move</li>
                 <li onclick="suggest()">Make a Suggestion</li>
                 <li onclick="accuse()">Make an Accusation</li>
+                <li onclick="rebuke()">Rebuke Suggestion</li>
             </ul>
         </div>
 
@@ -459,6 +489,14 @@
             <p>Choose one Room</p>
             <select id="accuse-location"></select>
             <button onclick="makeAccusation()">Accuse</button>
+        </div>
+
+        <div class="is-players-turn" id="rebuke-suggestion-menu">
+            <h3>Make an Accusation</h3>
+            <button onclick="showTurnOptions()">Back to Turn Options</button>
+            <p>Choose Card from Hand</p>
+            <select id="rebuke-options"></select>
+            <button onclick="rebukeSuggestion()">Rebuke</button>
         </div>
 
         <!-- Player hand -->
