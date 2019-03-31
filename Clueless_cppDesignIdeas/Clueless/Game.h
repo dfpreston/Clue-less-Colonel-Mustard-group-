@@ -61,6 +61,11 @@ public:
 		clueless::TurnOptionType choice,
 		std::set<Location*>* const move_options);
 
+	const Card* requestCounterEvidenceToPlayerSuggestion(
+		const Player* suggestor,
+		const SolutionCardSet* suggestion,
+		clueless::PersonType& opponentWithCounterEvidence) const;
+
 	//--------------------------------------------------------------------------
 	// Data Members
 	//--------------------------------------------------------------------------
@@ -70,6 +75,7 @@ public:
 
 	std::list<Player*> _players;
 	Player* _winner;
+	size_t _numFalseAccusers;
 
 }; //end class Game defn
 

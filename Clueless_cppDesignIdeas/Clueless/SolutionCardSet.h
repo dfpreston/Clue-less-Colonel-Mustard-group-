@@ -66,6 +66,38 @@ public:
 	}
 
 	//--------------------------------------------------------------------------
+	// Accessors and Mutators
+	//--------------------------------------------------------------------------
+	bool
+	doesCardMatchAnElement(
+		const Card* card) //i - card of interest
+	const
+	{
+		bool does_match( false );
+
+		switch( card->_type )
+		{
+		case clueless::PERSON:
+			does_match = (_person._person == ((const PersonCard*)card)->_person );
+			break;
+
+		case clueless::WEAPON:
+			does_match = (_weapon._weapon == ((const WeaponCard*)card)->_weapon );
+			break;
+
+		case clueless::ROOM:
+			does_match = (_room._room == ((const RoomCard*)card)->_room );
+			break;
+
+		default:
+			;
+		} //end switch (on card type)
+
+		return does_match;
+
+	} //end routine doesCardMatchAnElement()
+
+	//--------------------------------------------------------------------------
 	// Additional Member Functions
 	//--------------------------------------------------------------------------
 	virtual std::ostringstream

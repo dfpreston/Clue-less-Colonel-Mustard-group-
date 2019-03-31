@@ -18,8 +18,6 @@
 
 #include "NotebookEntry.h"
 
-//#include "Player.h"
-
 #include "CluelessEnums.h"	//for ElementType use
 
 #include <map>		//for std::map use
@@ -27,7 +25,6 @@
 
 //forward declarations
 struct Card;
-class Player;
 struct SolutionCardSet;
 
 
@@ -38,37 +35,60 @@ class DetectiveNotebook
 	//--------------------------------------------------------------------------
 public:
 	DetectiveNotebook();
-	//DetectiveNotebook( Player* owner );
+	DetectiveNotebook( clueless::PersonType ownerCharacter );
 
 	virtual ~DetectiveNotebook();
 
 	//--------------------------------------------------------------------------
 	// Accessors and Mutators
 	//--------------------------------------------------------------------------
-	void setOwner(Player* owner);
-
 	NotebookEntry* fetchNotebookEntry(const Card* card) const;
 
-	bool haveShownCardToPlayer(const Card* const card, const Player* player) const;
+	bool haveShownCardToPlayer(const Card* const card, clueless::PersonType playerCharacter) const;
 	bool haveShownCardToAnyPlayer(const Card* const card) const;
-	void recordHaveShownCardToPlayer(const Card* const card, const Player* player);
+	void recordHaveShownCardToPlayer(const Card* const card, clueless::PersonType playerCharacter);
+
+	bool hasAllElementsForAccusation() const;
+	SolutionCardSet getAccusation() const;
 
 	//--------------------------------------------------------------------------
 	// Additional Member Functions
 	//--------------------------------------------------------------------------
 	void recordCardInHand(const Card* const cardInHand);
-	void recordCardShownByPlayer(const Card* const card, const Player* player);
+	void recordCardShownByPlayer(const Card* const card, clueless::PersonType playerCharacter);
+
+	clueless::PersonType choosePersonForSuggestion() const;
+	clueless::WeaponType chooseWeaponForSuggestion() const;
+
+	const Card* decideWhichCardToShowOpponent(const std::set<const Card*>* cards) const;
 
 protected:
-	void addEntryForCard(const Card* const card, const Player* cardOwner);
+	void addEntryForCard(const Card* const card, clueless::PersonType cardOwnerCharacter);
+
+	std::set<clueless::PersonType> retrievePeopleInHand() const;
+//	std::set<clueless::PersonType> retrievePeopleNotSeen() const;
+
+	std::set<clueless::WeaponType> retrieveWeaponsInHand() const;
+//	std::set<clueless::WeaponType> retrieveWeaponsNotSeen() const;
+
+	clueless::PersonType determineMissingPerson() const;
+	clueless::WeaponType determineMissingWeapon() const;
+	clueless::RoomType determineMissingRoom() const;
+
+	const Card* randomlyChooseCard(const std::set<const Card*>* cards) const;
 
 	//--------------------------------------------------------------------------
 	// Data Members
 	//--------------------------------------------------------------------------
 protected:
-	Player* _owner;
+	clueless::PersonType _ownerCharacter;
 
 	std::map<clueless::ElementType, std::set<NotebookEntry*> > _notebook;
+
+	//building accusation...
+	clueless::PersonType _suspectedPerson;
+	clueless::WeaponType _suspectedWeapon;
+	clueless::RoomType   _suspectedRoom;
 
 }; //end class DetectiveNotebook defn
 
@@ -76,13 +96,6 @@ protected:
 //------------------------------------------------------------------------------
 // Inlined Methods
 //------------------------------------------------------------------------------
-inline void
-DetectiveNotebook::setOwner(
-	Player* owner)
-{
-	_owner = owner;
-
-} //end routine setOwner()
 
 
 #endif //DetectiveNotebook_h defn

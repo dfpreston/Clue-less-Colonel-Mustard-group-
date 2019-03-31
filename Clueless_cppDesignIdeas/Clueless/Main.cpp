@@ -47,9 +47,12 @@ int main( int argc, const char* argv[] )
 		Game clueless;
 		clueless.setup( &players );
 
-		for(unsigned int turn_number  = 0;
-			turn_number != 10;
-			++turn_number)
+		unsigned int turn_number( 0 );
+		const unsigned int MAX_NUM_TURNS( 300 );
+
+		while( ! clueless.hasWinner() &&
+			(clueless._numFalseAccusers < clueless._players.size()) &&
+			(MAX_NUM_TURNS > turn_number) )
 		{
 			if( 0 == turn_number % 5 )
 			{
@@ -66,7 +69,8 @@ int main( int argc, const char* argv[] )
 			// Turn for Each Player
 			//----------------------------------------------------------------------
 			std::list<Player*>::const_iterator player_iter( players.begin() );
-			while( players.end() != player_iter )
+			while( ! clueless.hasWinner() &&
+				(players.end() != player_iter) )
 			{
 				clueless.executePlayerTurn( *player_iter );
 
@@ -76,7 +80,9 @@ int main( int argc, const char* argv[] )
 
 			std::cout << "\n";
 
-		} //end for (each turn)
+			++turn_number; //next turn
+
+		} //end while (reason to continue turns)
 
 		std::cout << "\n";
 	}

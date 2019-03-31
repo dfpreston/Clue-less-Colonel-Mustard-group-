@@ -117,6 +117,35 @@ static size_t getNumRoomTypes()
 } //end routine getNumRoomTypes()
 
 
+static size_t getNumElementSubtypes(
+	ElementType elmt_type) //i - element type (person, weapon, room)
+{
+	size_t num_elmt_subtypes( 0 );
+
+	switch( elmt_type )
+	{
+	case PERSON:
+		num_elmt_subtypes = getNumPersonTypes();
+		break;
+
+	case WEAPON:
+		num_elmt_subtypes = getNumWeaponTypes();
+		break;
+
+	case ROOM:
+		num_elmt_subtypes = getNumRoomTypes();
+		break;
+
+	default:
+		; //unknown element type
+
+	} //end switch (on element type)
+
+	return num_elmt_subtypes;
+
+} //end routine getNumElementSubtypes()
+
+
 //------------------------------------------------------------------------------
 // Translation from Type to Text
 //------------------------------------------------------------------------------

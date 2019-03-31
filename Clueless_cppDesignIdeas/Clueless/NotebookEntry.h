@@ -16,12 +16,13 @@
 #ifndef NotebookEntry_h
 #define NotebookEntry_h
 
+#include "Card.h"
+
 #include "CluelessEnums.h"	//for ElementType use
 
 #include <set>		//for std::set use
 
 //forward declarations
-struct Card;
 class Player;
 
 
@@ -34,16 +35,17 @@ private:
 	/// \brief default constructor
 	NotebookEntry()
 		: _card( nullptr )
-		, _owner( nullptr )
+		, _ownerCharacter( clueless::UNKNOWN_PERSON )
 	{
 	}
 
 public:
 	/// \brief Extended constructor
-	NotebookEntry(const Card* const card, const Player* const owner)
+	NotebookEntry(const Card* const card, clueless::PersonType ownerCharacter)
 		: _card( card )
-		, _owner( owner )
+		, _ownerCharacter( ownerCharacter )
 	{
+		//not object owner for any referenced data members
 	}
 
 	/// \brief destructor
@@ -54,7 +56,7 @@ public:
 	//--------------------------------------------------------------------------
 	// Accessors and Mutators
 	//--------------------------------------------------------------------------
-	bool haveShownToPlayer(const Player* player) const;
+	bool haveShownToPlayer(clueless::PersonType player) const;
 
 	//--------------------------------------------------------------------------
 	// Data Members
@@ -62,30 +64,32 @@ public:
 public:
 	const Card* const _card; //not owned
 
-	const Player* const _owner;
-	std::set<const Player*> _playersShown;
+	clueless::PersonType _ownerCharacter;
+	std::set<clueless::PersonType> _playersShown; //player character type
 
 }; //end struct NotebookEntry defn
 
 
-struct PersonEntry : public NotebookEntry
+struct PersonNotebookEntry : public NotebookEntry
 {
 	//--------------------------------------------------------------------------
 	// Constructors / Destructor
 	//--------------------------------------------------------------------------
 private:
-	PersonEntry()
-		: NotebookEntry(nullptr, nullptr)
+	PersonNotebookEntry()
+		: NotebookEntry(nullptr, clueless::UNKNOWN_PERSON) //card, card owner's character
+		, _person( clueless::UNKNOWN_PERSON )
 	{
 	}
 
 public:
-	PersonEntry(const Card* const card, const Player* const owner)
-		: NotebookEntry(card, owner)
+	PersonNotebookEntry(const Card* const card, clueless::PersonType ownerCharacter)
+		: NotebookEntry(card, ownerCharacter)
+		, _person( ((const PersonCard*)card)->_person )
 	{
 	}
 
-	virtual ~PersonEntry()
+	virtual ~PersonNotebookEntry()
 	{
 	}
 
@@ -94,27 +98,29 @@ public:
 	//--------------------------------------------------------------------------
 	clueless::PersonType _person;
 
-}; //end struct PersonEntry defn
+}; //end struct PersonNotebookEntry defn
 
 
-struct WeaponEntry : public NotebookEntry
+struct WeaponNotebookEntry : public NotebookEntry
 {
 	//--------------------------------------------------------------------------
 	// Constructors / Destructor
 	//--------------------------------------------------------------------------
 private:
-	WeaponEntry()
-		: NotebookEntry(nullptr, nullptr)
+	WeaponNotebookEntry()
+		: NotebookEntry(nullptr, clueless::UNKNOWN_PERSON) //card, card owner's character
+		, _weapon( clueless::UNKNOWN_WEAPON )
 	{
 	}
 
 public:
-	WeaponEntry(const Card* const card, const Player* const owner)
-		: NotebookEntry(card, owner)
+	WeaponNotebookEntry(const Card* const card, clueless::PersonType ownerCharacter)
+		: NotebookEntry(card, ownerCharacter)
+		, _weapon( ((const WeaponCard*)card)->_weapon )
 	{
 	}
 
-	virtual ~WeaponEntry()
+	virtual ~WeaponNotebookEntry()
 	{
 	}
 
@@ -123,27 +129,29 @@ public:
 	//--------------------------------------------------------------------------
 	clueless::WeaponType _weapon;
 
-}; //end struct WeaponEntry defn
+}; //end struct WeaponNotebookEntry defn
 
 
-struct RoomEntry : public NotebookEntry
+struct RoomNotebookEntry : public NotebookEntry
 {
 	//--------------------------------------------------------------------------
 	// Constructors / Destructor
 	//--------------------------------------------------------------------------
 private:
-	RoomEntry()
-		: NotebookEntry(nullptr, nullptr)
+	RoomNotebookEntry()
+		: NotebookEntry(nullptr, clueless::UNKNOWN_PERSON) //card, card owner's character
+		, _room( clueless::UNKNOWN_ROOM )
 	{
 	}
 
 public:
-	RoomEntry(const Card* const card, const Player* const owner)
-		: NotebookEntry(card, owner)
+	RoomNotebookEntry(const Card* const card, clueless::PersonType ownerCharacter)
+		: NotebookEntry(card, ownerCharacter)
+		, _room( ((const RoomCard*)card)->_room )
 	{
 	}
 
-	virtual ~RoomEntry()
+	virtual ~RoomNotebookEntry()
 	{
 	}
 
@@ -152,7 +160,7 @@ public:
 	//--------------------------------------------------------------------------
 	clueless::RoomType _room;
 
-}; //end struct RoomEntry defn
+}; //end struct RoomNotebookEntry defn
 
 
 #endif //NotebookEntry_h defn
