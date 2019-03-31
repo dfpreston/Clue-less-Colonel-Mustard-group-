@@ -47,7 +47,11 @@ def GameCustiomize(request):
         user_ip = request.META.get('HTTP_X_REAL_IP')
     else:
         user_ip = request.META.get('REMOTE_ADDR')
-    user_name = request.META.get('USERNAME')
+    user_name = request.META.get('HTTP_USER_AGENT')
+
+
+    for k in (request.META).keys():
+        print('{}: {}'.format(k, request.META.get(k)))
 
     # GET Request
     if request.method == 'GET':
@@ -114,7 +118,7 @@ def GameRoom(request):
         user_ip = request.META.get('HTTP_X_REAL_IP')
     else:
         user_ip = request.META.get('REMOTE_ADDR')
-    user_name = request.META.get('USERNAME')
+    user_name = request.META.get('HTTP_USER_AGENT')
 
     pm = PlayerManager(client_ip=user_ip, client_name=user_name)
     gm = GameManager(game_id=pm.get_game_id())
