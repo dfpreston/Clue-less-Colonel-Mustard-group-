@@ -20,7 +20,7 @@ class Players(models.Model):
     game_creator = models.BooleanField(default=False)
     their_turn = models.BooleanField(default=False)
     client_ip = models.CharField(max_length=200, default='')
-    client_name = models.CharField(max_length=200, default='')
+    client_name = models.CharField(max_length=200, null=True)
     status = models.CharField(max_length=50, default='ACTIVE')
 
 
@@ -31,3 +31,4 @@ class Cards(models.Model):
     card_type = models.CharField(max_length=200, default='')
     used = models.BooleanField(default=False)
     solution = models.BooleanField(default=False)
+    suggested = models.BooleanField(default=False)

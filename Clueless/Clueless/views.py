@@ -47,7 +47,11 @@ def GameCustiomize(request):
         user_ip = request.META.get('HTTP_X_REAL_IP')
     else:
         user_ip = request.META.get('REMOTE_ADDR')
-    user_name = request.META.get('USERNAME')
+    user_name = request.META.get('HTTP_USER_AGENT')
+
+
+    for k in (request.META).keys():
+        print('{}: {}'.format(k, request.META.get(k)))
 
     # GET Request
     if request.method == 'GET':
@@ -114,7 +118,7 @@ def GameRoom(request):
         user_ip = request.META.get('HTTP_X_REAL_IP')
     else:
         user_ip = request.META.get('REMOTE_ADDR')
-    user_name = request.META.get('USERNAME')
+    user_name = request.META.get('HTTP_USER_AGENT')
 
     pm = PlayerManager(client_ip=user_ip, client_name=user_name)
     gm = GameManager(game_id=pm.get_game_id())
@@ -140,7 +144,15 @@ def GameRoom(request):
         print(request.GET.get('new_location', ''))
         print(request.GET.get('player_status', ''))
         print(request.GET.get('player_location', ''))
+        print(request.GET.get('suggest_room', ''))
+        print(request.GET.get('suggest_weapon', ''))
+        print(request.GET.get('suggest_suspect', ''))
+        print(request.GET.get('rebuke_card', ''))
 
+        gm.update_suggested_card(request.GET.get('suggest_room', ''))
+        gm.update_suggested_card(request.GET.get('suggest_weapon', ''))
+        gm.update_suggested_card(request.GET.get('suggest_suspect', ''))
+        gm.rebuke_suggestion(request.GET.get('rebuke_card', ''))
         gm.update_game_status(user_ip, user_name, request.GET.get('player_status', ''))
         pm.update_player_location(request.GET.get('player_location', ''))
         gm.update_player_turn()
@@ -152,6 +164,7 @@ def GameRoom(request):
                'others_locations': pm.get_other_player_locations(),
                'player_hand': pm.get_hand(),
                'available_cards': pm.get_unused_cards(),
+               'suggested_cards': gm.get_suggested_cards(),
                'is_creator': pm.get_is_creator(),
                'solution_cards': gm.get_solution_cards(),
                'game_status': gm.get_game_status(),
