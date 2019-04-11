@@ -442,72 +442,83 @@
 
     </script>
 
-    <h2>Game</h2>
     <body>
-        <h3>Game Board</h3>
-        <img src="{% static 'images/board.png' %}" alt="game board picture">
-        <h3 id="player-location-msg"></h3>
-
-        <!-- Turn handling -->
-        <div class="is-players-turn" id="turn-options-menu">
-            <h3>Turn Options</h3>
-            <ul id="turn-options">
-                <li onclick="move()">Move</li>
-                <li onclick="suggest()">Make a Suggestion</li>
-                <li onclick="accuse()">Make an Accusation</li>
-                <li onclick="rebuke()">Rebuke Suggestion</li>
-            </ul>
+        <div class="jumbotron">
+            <div class="container">
+                <h2>Clue-Less: Play Game</h2>
+            </div>
         </div>
+        <div class="container">
+            <div class="col-xs-12 col-sm-6">
+                <h3 id="player-location-msg"></h3>
+                <img src="{% static 'images/board.png' %}" alt="game board picture" style="width:75%">
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <!-- Turn handling -->
+                <div class="is-players-turn" id="turn-options-menu">
+                    <h3>Turn Options</h3>
+                    <ul id="turn-options">
+                        <li onclick="move()">Move</li>
+                        <li onclick="suggest()">Make a Suggestion</li>
+                        <li onclick="accuse()">Make an Accusation</li>
+                        <li onclick="rebuke()">Rebuke Suggestion</li>
+                    </ul>
+                </div>
 
-        <div class="is-players-turn" id="move-options-menu">
-            <h3>Move Options</h3>
-            <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <br><br>
-            <select id="move-options"></select>
-            <button onclick="movePlayer()">Move</button>
-            </ul>
+                <div class="is-players-turn" id="move-options-menu">
+                    <h3>Move Options</h3>
+                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <br><br>
+                    <select id="move-options"></select>
+                    <button onclick="movePlayer()">Move</button>
+                    </ul>
+                </div>
+
+                <div class="is-players-turn" id="make-suggestion-menu">
+                    <h3>Make a Suggestion</h3>
+                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <p>Choose one Weapon</p>
+                    <select id="suggest-weapon"></select>
+                    <p>Choose one Suspect</p>
+                    <select id="suggest-suspect"></select>
+                    <button onclick="makeSuggestion()">Suggest</button>
+                </div>
+
+                <div class="is-players-turn" id="make-accusation-menu">
+                    <h3>Make an Accusation</h3>
+                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <p><em>NOTE: if you make an incorrect Accusation, you automatically lose the game.</em></p>
+                    <p>Choose one Weapon</p>
+                    <select id="accuse-weapon"></select>
+                    <p>Choose one Suspect</p>
+                    <select id="accuse-suspect"></select>
+                    <p>Choose one Room</p>
+                    <select id="accuse-location"></select>
+                    <button onclick="makeAccusation()">Accuse</button>
+                </div>
+
+                <div class="is-players-turn" id="rebuke-suggestion-menu">
+                    <h3>Make an Accusation</h3>
+                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <p>Choose Card from Hand</p>
+                    <select id="rebuke-options"></select>
+                    <button onclick="rebukeSuggestion()">Rebuke</button>
+                </div>
+                <!-- Player hand -->
+                <h3>Your Hand</h3>
+                <ul id="player-hand">
+                </ul>
+            </div>
         </div>
-
-        <div class="is-players-turn" id="make-suggestion-menu">
-            <h3>Make a Suggestion</h3>
-            <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <p>Choose one Weapon</p>
-            <select id="suggest-weapon"></select>
-            <p>Choose one Suspect</p>
-            <select id="suggest-suspect"></select>
-            <button onclick="makeSuggestion()">Suggest</button>
-        </div>
-
-        <div class="is-players-turn" id="make-accusation-menu">
-            <h3>Make an Accusation</h3>
-            <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <p><em>NOTE: if you make an incorrect Accusation, you automatically lose the game.</em></p>
-            <p>Choose one Weapon</p>
-            <select id="accuse-weapon"></select>
-            <p>Choose one Suspect</p>
-            <select id="accuse-suspect"></select>
-            <p>Choose one Room</p>
-            <select id="accuse-location"></select>
-            <button onclick="makeAccusation()">Accuse</button>
-        </div>
-
-        <div class="is-players-turn" id="rebuke-suggestion-menu">
-            <h3>Make an Accusation</h3>
-            <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <p>Choose Card from Hand</p>
-            <select id="rebuke-options"></select>
-            <button onclick="rebukeSuggestion()">Rebuke</button>
-        </div>
-
-        <!-- Player hand -->
-        <h3>Your Hand</h3>
-        <ul id="player-hand">
-        </ul>
     </body>
 
-    <script
-      src="http://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-      crossorigin="anonymous"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
 {% endblock %}
