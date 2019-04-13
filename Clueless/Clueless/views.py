@@ -82,6 +82,10 @@ def GameCustiomize(request):
 
             # Game tracker
             gm = GameManager(game_id=Games.objects.filter(status='PENDING')[0])
+
+            if len(gm.get_player_names()) > 6:
+                return redirect('/')
+
             gm.add_player(client_ip=user_ip, client_name=user_name, is_creator=False)
 
         else:
@@ -136,6 +140,9 @@ def GameRoom(request):
         Update waiting player
         """
         print('Get Request!')
+
+        if len(gm.get_player_names()) < 0 or '' in gm.get_player_names():
+            return redirect('/customize')
 
         # Start game if new
         if gm.get_game_status() == 'PENDING':
