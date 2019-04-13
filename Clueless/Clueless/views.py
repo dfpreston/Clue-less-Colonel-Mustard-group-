@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 
 from django.views.decorators.csrf import csrf_exempt
@@ -25,7 +27,10 @@ def Home(request):
         gm = GameManager()
 
         context = {'games_pending':gm.get_games_pending(),
-                   'games_in_progress':gm.get_games_in_progress}
+                   'games_in_progress':gm.get_games_in_progress()}
+
+        for key in context.keys():
+            context[key] = json.dumps(context[key])
 
     # Client to Server data updates
     elif request.method == 'POST':
@@ -50,8 +55,8 @@ def GameCustiomize(request):
     user_name = request.META.get('HTTP_USER_AGENT')
 
 
-    for k in (request.META).keys():
-        print('{}: {}'.format(k, request.META.get(k)))
+    #for k in (request.META).keys():
+    #    print('{}: {}'.format(k, request.META.get(k)))
 
     # GET Request
     if request.method == 'GET':
@@ -107,6 +112,9 @@ def GameCustiomize(request):
                'available_cards':pm.get_unused_cards(),
                'is_creator': pm.get_is_creator()}#,
                #game_status': gm.get_game_status()}
+
+    for key in context.keys():
+        context[key] = json.dumps(context[key])
 
     return render(request, 'customize.html', context)
 
@@ -169,5 +177,8 @@ def GameRoom(request):
                'solution_cards': gm.get_solution_cards(),
                'game_status': gm.get_game_status(),
                'game_winner': gm.get_game_winner()}
+
+    for key in context.keys():
+        context[key] = json.dumps(context[key])
 
     return render(request, 'play.html', context)

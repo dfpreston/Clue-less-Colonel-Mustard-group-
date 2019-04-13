@@ -9,7 +9,7 @@
         </div>
         <div class="container">
             <div class="row">
-                <h3>Hello {{player_name}}</h3>
+                <h3>Hello {{player_name | safe }}</h3>
                 <p>The victim: John Boddy, 37, millionaire inventor of sliced bread</p>
                 <p>The crime: Boddy was hosting a dinner party for you and several other guests, and after some hubbub you found his corpse here in the entryway. It seems to have been dragged here... but from where? How did he die? And most importantly, who killed him?</p>
                 <p>The mystery: Several people in this room stand to gain from his death, but who would have stooped so low as to murder their host in his own home?</p>
@@ -99,11 +99,11 @@
 
     <script type="text/javascript">
         console.log("Current data, per user:");
-        console.log("Message:", "{{ msg }}");
-        console.log("Game ID:", "{{ game_id }}");
-        console.log("Is Player Game Creator:", "{{ is_creator }}");
-        console.log("All Players: {{ all_names | safe }}");
-        //console.log("Game Status: {{ game_status | safe }}");
+        console.log("Message:", {{ msg | safe }});
+        console.log("Game ID:", {{ game_id | safe }});
+        console.log("Is Player Game Creator:", {{ is_creator | safe }});
+        console.log("All Players:", {{ all_names | safe }});
+        //console.log("Game Status:", {{ game_status | safe }});
 
         //if("{{ game_status | safe }}" == "IN_PROGRESS"){
         //    location.replace("/play/");

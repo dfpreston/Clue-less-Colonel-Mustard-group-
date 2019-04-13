@@ -14,15 +14,24 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+#from django.urls import path
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from . import views
 
+from django.conf.urls import url
+
+#urlpatterns = [
+#    path(r'admin/', admin.site.urls),
+#    path('', views.Home),
+#    path('customize/', views.GameCustiomize),
+#    path('play/', views.GameRoom),
+#]
+
 urlpatterns = [
-    path(r'admin/', admin.site.urls),
-    path('', views.Home),
-    path('customize/', views.GameCustiomize),
-    path('play/', views.GameRoom),
+    url(r'admin/', admin.site.urls),
+    url('^$', views.Home),
+    url('customize/', views.GameCustiomize),
+    url('play/', views.GameRoom),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
