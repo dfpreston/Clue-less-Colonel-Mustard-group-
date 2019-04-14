@@ -578,7 +578,7 @@ const
 	else //more than one room
 	{
 		//create position based on floor of random draw in [0, num cards)
-		size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, rooms->size()) )) );
+		size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, (double)(rooms->size())) )) );
 
 		std::set<Location*>::const_iterator room_iter( rooms->begin() );
 		for(size_t pos_index(0);
