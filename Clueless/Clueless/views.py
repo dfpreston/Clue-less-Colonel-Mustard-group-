@@ -93,8 +93,7 @@ def GameCustiomize(request):
             pm = PlayerManager(client_ip=user_ip, client_name=user_name)
             gm = GameManager(game_id=pm.get_game_id())
 
-            if gm.get_game_status == 'IN_PROGRESS':
-                return redirect('/play')
+
 
     # Post Request
     elif request.method == 'POST':
@@ -103,10 +102,21 @@ def GameCustiomize(request):
         gm = GameManager(game_id=pm.get_game_id())
 
         player_token = request.GET.get('token', '')
+        player_leave = request.GET.get('leave_game', '')
+
+        if player_leave is not '':
+            gm.remove_player(check=player_leave, client_ip=user_ip, client_name=user_name)
+            return redirect('/')
         pm.update_player_name(player_token)
+
+
 
     # PLAYER STATUS TESTING
     pm = PlayerManager(client_ip=user_ip, client_name=user_name)
+    gm = GameManager(game_id=pm.get_game_id())
+
+    if gm.get_game_status() == 'IN_PROGRESS':
+        return redirect('/play')
 
     context = {'msg':msg,
                'game_id':pm.get_game_id(),
@@ -114,8 +124,8 @@ def GameCustiomize(request):
                'all_names':gm.get_player_names(),
                'player_hand':pm.get_hand(),
                'available_cards':pm.get_unused_cards(),
-               'is_creator': pm.get_is_creator()}#,
-               #game_status': gm.get_game_status()}
+               'is_creator': pm.get_is_creator(),
+               'game_status': gm.get_game_status()}
 
     for key in context.keys():
         context[key] = json.dumps(context[key])
