@@ -44,9 +44,10 @@ class GameManager:
 
     def add_player(self, client_ip, client_name, is_creator):
 
-        #self.player_multi_game_check(client_ip=client_ip, client_name=client_name)
+        if Players.objects.filter(client_ip=client_ip, client_name=client_name).exists():
+            Players.objects.filter(client_ip=client_ip, client_name=client_name).delete()
 
-        Players.objects.create(game=self.game_id, name='Blah', game_creator=is_creator,
+        Players.objects.create(game=self.game_id, name='', game_creator=is_creator,
                                client_ip=client_ip, client_name=client_name)
 
     def player_multi_game_check(self, client_ip, client_name):
@@ -233,3 +234,7 @@ class GameManager:
     def delete_completed_games(self):
         if Games.objects.filter().exists():
             Games.objects.filter().delete()
+
+    def remove_player(self, check, client_ip, client_name):
+        if check is not '':
+            Players.objects.filter(client_ip=client_ip, client_name=client_name).delete()

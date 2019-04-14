@@ -129,11 +129,11 @@ public:
 	virtual void recognizeOccupantLeft(const GamePiece* previousOccupant) override;
 
 	const GamePiece* getOccupant() const;
-	bool setOccupant(const GamePiece* occupant);
 
 	//--------------------------------------------------------------------------
 	// Additional Member Functions
 	//--------------------------------------------------------------------------
+public:
 	virtual std::set<Location*> getMoveOptions() const override;
 
 	//--------------------------------------------------------------------------
@@ -143,7 +143,7 @@ private:
 	Room* _connectingRoom1;
 	Room* _connectingRoom2;
 
-	const GamePiece* _occupant;
+	const PersonPiece* _occupant;
 
 }; //end class Hallway defn
 

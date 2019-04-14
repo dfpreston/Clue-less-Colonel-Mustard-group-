@@ -43,6 +43,8 @@ public:
 	//--------------------------------------------------------------------------
 	const std::set<Card*> getRoomCards() const;
 
+	std::ostringstream reportCaseFile() const;
+
 protected:
 	bool areAnyCardsUndealt() const;
 

@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 
 from django.views.decorators.csrf import csrf_exempt
@@ -25,7 +27,10 @@ def Home(request):
         gm = GameManager()
 
         context = {'games_pending':gm.get_games_pending(),
-                   'games_in_progress':gm.get_games_in_progress}
+                   'games_in_progress':gm.get_games_in_progress()}
+
+        for key in context.keys():
+            context[key] = json.dumps(context[key])
 
     # Client to Server data updates
     elif request.method == 'POST':
@@ -50,8 +55,8 @@ def GameCustiomize(request):
     user_name = request.META.get('HTTP_USER_AGENT')
 
 
-    for k in (request.META).keys():
-        print('{}: {}'.format(k, request.META.get(k)))
+    #for k in (request.META).keys():
+    #    print('{}: {}'.format(k, request.META.get(k)))
 
     # GET Request
     if request.method == 'GET':
@@ -77,6 +82,10 @@ def GameCustiomize(request):
 
             # Game tracker
             gm = GameManager(game_id=Games.objects.filter(status='PENDING')[0])
+
+            if len(gm.get_player_names()) > 6:
+                return redirect('/')
+
             gm.add_player(client_ip=user_ip, client_name=user_name, is_creator=False)
 
         else:
@@ -84,8 +93,7 @@ def GameCustiomize(request):
             pm = PlayerManager(client_ip=user_ip, client_name=user_name)
             gm = GameManager(game_id=pm.get_game_id())
 
-            if gm.get_game_status == 'IN_PROGRESS':
-                return redirect('/play')
+
 
     # Post Request
     elif request.method == 'POST':
@@ -94,10 +102,21 @@ def GameCustiomize(request):
         gm = GameManager(game_id=pm.get_game_id())
 
         player_token = request.GET.get('token', '')
+        player_leave = request.GET.get('leave_game', '')
+
+        if player_leave is not '':
+            gm.remove_player(check=player_leave, client_ip=user_ip, client_name=user_name)
+            return redirect('/')
         pm.update_player_name(player_token)
+
+
 
     # PLAYER STATUS TESTING
     pm = PlayerManager(client_ip=user_ip, client_name=user_name)
+    gm = GameManager(game_id=pm.get_game_id())
+
+    if gm.get_game_status() == 'IN_PROGRESS':
+        return redirect('/play')
 
     context = {'msg':msg,
                'game_id':pm.get_game_id(),
@@ -105,8 +124,11 @@ def GameCustiomize(request):
                'all_names':gm.get_player_names(),
                'player_hand':pm.get_hand(),
                'available_cards':pm.get_unused_cards(),
-               'is_creator': pm.get_is_creator()}#,
-               #game_status': gm.get_game_status()}
+               'is_creator': pm.get_is_creator(),
+               'game_status': gm.get_game_status()}
+
+    for key in context.keys():
+        context[key] = json.dumps(context[key])
 
     return render(request, 'customize.html', context)
 
@@ -128,6 +150,9 @@ def GameRoom(request):
         Update waiting player
         """
         print('Get Request!')
+
+        if len(gm.get_player_names()) < 0 or '' in gm.get_player_names():
+            return redirect('/customize')
 
         # Start game if new
         if gm.get_game_status() == 'PENDING':
@@ -169,5 +194,8 @@ def GameRoom(request):
                'solution_cards': gm.get_solution_cards(),
                'game_status': gm.get_game_status(),
                'game_winner': gm.get_game_winner()}
+
+    for key in context.keys():
+        context[key] = json.dumps(context[key])
 
     return render(request, 'play.html', context)

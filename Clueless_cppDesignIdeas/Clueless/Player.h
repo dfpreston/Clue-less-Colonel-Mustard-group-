@@ -67,6 +67,9 @@ public:
 	clueless::PersonType getCharacter() const;
 	std::string getCharacterName() const;
 
+	PersonPiece* fetchAssocGameToken() const;
+	void acceptAssocCharacterToken(PersonPiece* personToken);
+
 	const Location* getLocation() const;
 	std::string getLocationName() const;
 
@@ -99,7 +102,7 @@ public:
 	clueless::TurnOptionType makeTurnChoice(std::set<clueless::TurnOptionType>* turnOptions) const;
 
 	// Move
-	Location* offerMovePreference(std::set<Location*>* moveOptions) const;
+	Location* provideMovePreference(std::set<Location*>* moveOptions) const;
 
 	// Make Suggestion
 	SolutionCardSet buildSuggestion() const;
@@ -107,7 +110,7 @@ public:
 		const SolutionCardSet* suggestion,
 		const Card* const card,
 		clueless::PersonType opponentOfferingCounterEvidence);
-	const Card* offerCounterEvidenceToSuggestion(const SolutionCardSet* suggestion, const Player* suggestorCharacter);
+	const Card* offerEvidenceCounterToSuggestion(const SolutionCardSet* suggestion, const Player* suggestorCharacter);
 
 	// Make Accusation
 	SolutionCardSet buildAccusation() const;
@@ -118,7 +121,7 @@ protected:
 	//--------------------------------------------------------------------------
 	// Data Members
 	//--------------------------------------------------------------------------
-public:
+protected:
 	std::string _name;
 
 	clueless::PersonType _character;
@@ -126,6 +129,7 @@ public:
 
 	std::set<const Card*> _hand; //holds card owned by CardDeck
 
+public:
 	DetectiveNotebook _notebook;
 
 protected:
@@ -194,6 +198,15 @@ const
 	return _character;
 
 } //end routine getCharacterPersonType()
+
+
+inline PersonPiece*
+Player::fetchAssocGameToken()
+const
+{
+	return _assocGameToken;
+
+} //end routine fetchAssocGameToken()
 
 
 ////////////////////////////////////////////////////////////////////////////////

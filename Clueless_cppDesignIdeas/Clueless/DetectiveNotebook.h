@@ -61,6 +61,7 @@ public:
 
 	bool haveShownCardToPlayer(const Card* const card, clueless::PersonType playerCharacter) const;
 	bool haveShownCardToAnyPlayer(const Card* const card) const;
+	size_t numberPlayersShownCard(const Card* const card) const;
 	void recordHaveShownCardToPlayer(const Card* const card, clueless::PersonType playerCharacter);
 
 	bool haveSuspectedPerson() const;
@@ -81,7 +82,9 @@ public:
 	clueless::PersonType choosePersonForSuggestion() const;
 	clueless::WeaponType chooseWeaponForSuggestion() const;
 
-	const Card* decideWhichCardToShowOpponent(const std::set<const Card*>* cards) const;
+	const Card* decideWhichCardToShowOpponent(
+		const std::set<const Card*>* cards,
+		clueless::PersonType opponentsCharacter) const;
 
 	size_t determineShortestPathForDestinationNeedingQuestion(
 		const Location* startingPoint,

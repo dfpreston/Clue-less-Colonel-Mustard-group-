@@ -52,11 +52,11 @@ enum WeaponType
 {
 	UNKNOWN_WEAPON = 0,
 
-	LEAD_PIPE,
-	KNIFE,
-	ROPE,
 	CANDLESTICK,
+	KNIFE,
+	LEAD_PIPE,
 	REVOLVER,
+	ROPE,
 	WRENCH
 
 }; //end enum WeaponType defn

@@ -66,6 +66,14 @@ public:
 		const SolutionCardSet* suggestion,
 		clueless::PersonType& opponentWithCounterEvidence) const;
 
+protected:
+	void notifyAllPlayers_playerMadeSuggestion(const std::string& suggestor) const;
+	void notifyAllPlayers_playerRefutedSuggestion(clueless::PersonType refuter) const;
+	void notifyAllPlayers_playerSuggestionUnrefuted(const std::string& suggestor) const;
+
+	void notifyAllPlayers_gameWinner(const Player* winner) const;
+	void notifyAllPlayers_falseAccuser(const Player* accuser) const;
+
 	//--------------------------------------------------------------------------
 	// Data Members
 	//--------------------------------------------------------------------------
