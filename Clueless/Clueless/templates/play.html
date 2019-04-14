@@ -7,18 +7,19 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script  type="text/javascript">        
         console.log("Current data, per user:");
-        console.log("Game Id:", "{{ game_id }}");
-        console.log("Is Player Game Creator:", "{{ is_creator }}");
         console.log("Is it Player\'s turn:", "{{ player_turn }}");
-        console.log("Player Location:", "{{ player_location }}");
-        console.log("Others Locations:", "{{ others_locations }}")
-        console.log("Player Hand:", "{{ player_hand | safe}}");
-        console.log("All Available Cards:", "{{ available_cards | safe}}");
-        console.log("Solution Cards:", "{{ solution_cards | safe}}");
-        console.log("Suggested Cards:", "{{ suggested_cards | safe}}");
-        console.log("Player Status: ", "{{ player_status | safe }}");
-        console.log("Game Status: ", "{{ game_status | safe }}");
-        console.log("Game Winner: ", "{{ game_winner | safe }}")
+        console.log("Game Id:", {{ game_id }});
+        console.log("Is Player Game Creator:", {{ is_creator | safe }});
+        console.log("Is it Player\'s turn:", {{ player_turn | safe }});
+        console.log("Player Location:", {{ player_location | safe }});
+        console.log("Others Locations:", {{ others_locations | safe }})
+        console.log("Player Hand:", {{ player_hand | safe}});
+        console.log("All Available Cards:", {{ available_cards | safe}});
+        console.log("Solution Cards:", {{ solution_cards | safe}});
+        console.log("Suggested Cards:", {{ suggested_cards | safe}});
+        console.log("Player Status: ", {{ player_status | safe }});
+        console.log("Game Status: ", {{ game_status | safe }});
+        console.log("Game Winner: ", {{ game_winner | safe }})
 
         var solution_cards = {{ solution_cards | safe}};
 
@@ -256,7 +257,9 @@
 
         $(document).ready(function() {
             // construct player's hand
-            const playerHand = JSON.parse("{{ player_hand }}".replace(/&#39;/g, "\""));
+            playerHand = {{ player_hand | safe}};
+            //const playerHand = JSON.parse("{{ player_hand | safe}}");
+
 
             Object.keys(playerHand).forEach(cardType => {
                 playerHand[cardType].forEach(card => {
@@ -267,8 +270,8 @@
             });
 
             // Notify player if they are the winner
-            if( "{{ game_status | safe }}" == "COMPLETED"){
-                alert( "{{ game_winner | safe }} has won the game!!");
+            if( {{ game_status | safe }} == "COMPLETED"){
+                alert( {{ game_winner | safe }} +" has won the game!!");
                 location.replace("/");
             };
 
@@ -281,7 +284,7 @@
             }
 
             // Notify player of current location
-            $("#player-location-msg").text("You are in the " + idToText["{{ player_location }}"].name);
+            $("#player-location-msg").text("You are in the " + idToText[{{ player_location | safe }}].name);
 
             // initialize suspect, weapon, and location options
             Object.keys(idToText).forEach(id => {
@@ -323,7 +326,7 @@
 
         function move() {
             $("#move-options").empty();
-            let moveOptions = idToText["{{ player_location }}"].connections;
+            let moveOptions = idToText[{{ player_location | safe }}].connections;
             moveOptions.forEach(move => {
                 var move_list = document.getElementById("move-options");
                 var option = document.createElement("option");
@@ -336,7 +339,7 @@
 
         function movePlayer(){
             var move = document.getElementById("move-options");
-            l = idToText["{{ player_location }}"].connections[move.selectedIndex];
+            l = idToText[{{ player_location | safe }}].connections[move.selectedIndex];
 
             url = "/play/?player_location="+l;
 
@@ -362,8 +365,8 @@
         function rebuke() {
             $("#rebuke-options").empty();
 
-            const playerHand = JSON.parse("{{ player_hand }}".replace(/&#39;/g, "\""));
-            const suggestedCards = JSON.parse("{{ suggested_cards }}".replace(/&#39;/g, "\""));
+            const playerHand = {{ player_hand | safe}};
+            const suggestedCards = {{ suggested_cards | safe}};
 
             Object.keys(playerHand).forEach(cardType => {
                 playerHand[cardType].forEach(card => {
@@ -411,7 +414,7 @@
 
             var weapon = $("#suggest-weapon  option:selected").text();
             var suspect = $("#suggest-suspect option:selected").text();
-            var room = "{{player_location | safe }}";
+            var room = {{player_location | safe }};
 
             url = "/play/?suggest_room=" + room +
                         "&suggest_weapon=" + textToId[weapon] +
@@ -442,72 +445,83 @@
 
     </script>
 
-    <h2>Game</h2>
     <body>
-        <h3>Game Board</h3>
-        <img src="{% static 'images/board.png' %}" alt="game board picture">
-        <h3 id="player-location-msg"></h3>
-
-        <!-- Turn handling -->
-        <div class="is-players-turn" id="turn-options-menu">
-            <h3>Turn Options</h3>
-            <ul id="turn-options">
-                <li onclick="move()">Move</li>
-                <li onclick="suggest()">Make a Suggestion</li>
-                <li onclick="accuse()">Make an Accusation</li>
-                <li onclick="rebuke()">Rebuke Suggestion</li>
-            </ul>
+        <div class="jumbotron">
+            <div class="container">
+                <h2>Clue-Less: Play Game</h2>
+            </div>
         </div>
+        <div class="container">
+            <div class="col-xs-12 col-sm-6">
+                <h3 id="player-location-msg"></h3>
+                <img src="{% static 'images/board.png' %}" alt="game board picture" style="width:75%">
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <!-- Turn handling -->
+                <div class="is-players-turn" id="turn-options-menu">
+                    <h3>Turn Options</h3>
+                    <ul id="turn-options">
+                        <li onclick="move()">Move</li>
+                        <li onclick="suggest()">Make a Suggestion</li>
+                        <li onclick="accuse()">Make an Accusation</li>
+                        <li onclick="rebuke()">Rebuke Suggestion</li>
+                    </ul>
+                </div>
 
-        <div class="is-players-turn" id="move-options-menu">
-            <h3>Move Options</h3>
-            <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <br><br>
-            <select id="move-options"></select>
-            <button onclick="movePlayer()">Move</button>
-            </ul>
+                <div class="is-players-turn" id="move-options-menu">
+                    <h3>Move Options</h3>
+                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <br><br>
+                    <select id="move-options"></select>
+                    <button onclick="movePlayer()">Move</button>
+                    </ul>
+                </div>
+
+                <div class="is-players-turn" id="make-suggestion-menu">
+                    <h3>Make a Suggestion</h3>
+                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <p>Choose one Weapon</p>
+                    <select id="suggest-weapon"></select>
+                    <p>Choose one Suspect</p>
+                    <select id="suggest-suspect"></select>
+                    <button onclick="makeSuggestion()">Suggest</button>
+                </div>
+
+                <div class="is-players-turn" id="make-accusation-menu">
+                    <h3>Make an Accusation</h3>
+                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <p><em>NOTE: if you make an incorrect Accusation, you automatically lose the game.</em></p>
+                    <p>Choose one Weapon</p>
+                    <select id="accuse-weapon"></select>
+                    <p>Choose one Suspect</p>
+                    <select id="accuse-suspect"></select>
+                    <p>Choose one Room</p>
+                    <select id="accuse-location"></select>
+                    <button onclick="makeAccusation()">Accuse</button>
+                </div>
+
+                <div class="is-players-turn" id="rebuke-suggestion-menu">
+                    <h3>Make an Accusation</h3>
+                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <p>Choose Card from Hand</p>
+                    <select id="rebuke-options"></select>
+                    <button onclick="rebukeSuggestion()">Rebuke</button>
+                </div>
+                <!-- Player hand -->
+                <h3>Your Hand</h3>
+                <ul id="player-hand">
+                </ul>
+            </div>
         </div>
-
-        <div class="is-players-turn" id="make-suggestion-menu">
-            <h3>Make a Suggestion</h3>
-            <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <p>Choose one Weapon</p>
-            <select id="suggest-weapon"></select>
-            <p>Choose one Suspect</p>
-            <select id="suggest-suspect"></select>
-            <button onclick="makeSuggestion()">Suggest</button>
-        </div>
-
-        <div class="is-players-turn" id="make-accusation-menu">
-            <h3>Make an Accusation</h3>
-            <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <p><em>NOTE: if you make an incorrect Accusation, you automatically lose the game.</em></p>
-            <p>Choose one Weapon</p>
-            <select id="accuse-weapon"></select>
-            <p>Choose one Suspect</p>
-            <select id="accuse-suspect"></select>
-            <p>Choose one Room</p>
-            <select id="accuse-location"></select>
-            <button onclick="makeAccusation()">Accuse</button>
-        </div>
-
-        <div class="is-players-turn" id="rebuke-suggestion-menu">
-            <h3>Make an Accusation</h3>
-            <button onclick="showTurnOptions()">Back to Turn Options</button>
-            <p>Choose Card from Hand</p>
-            <select id="rebuke-options"></select>
-            <button onclick="rebukeSuggestion()">Rebuke</button>
-        </div>
-
-        <!-- Player hand -->
-        <h3>Your Hand</h3>
-        <ul id="player-hand">
-        </ul>
     </body>
 
-    <script
-      src="http://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-      crossorigin="anonymous"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
 {% endblock %}

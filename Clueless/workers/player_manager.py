@@ -27,7 +27,7 @@ class PlayerManager:
             self.player.save()
 
     def update_player_name(self, player_name):
-        if player_name is not '':
+        if not Players.objects.filter(name=player_name).exists():
             self.player.name=player_name
             self.player.save()
 
