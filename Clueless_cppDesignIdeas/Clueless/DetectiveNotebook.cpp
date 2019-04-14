@@ -386,11 +386,9 @@ const
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Determines whether have previously shown specified card to any player.
-/// \param string: name
 /// \param Card: card of interest
 /// \return bool: whether have shown card to any player
-/// \throw
-/// - INSUFFICIENT_DATA when card does not exist.
+/// \throw None
 /// \note  None
 ////////////////////////////////////////////////////////////////////////////////
 bool
@@ -398,27 +396,41 @@ DetectiveNotebook::haveShownCardToAnyPlayer(
 	const Card* const card) //i - card of interest
 const
 {
+	//return whether have shown card to at least one player
+	return( 0 < numberPlayersShownCard( card ) );
+
+} //end routine haveShownCardToAnyPlayer()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Determines number of players to whom card was previously shown.
+/// \param Card: card of interest
+/// \return size_t: number of players shown card
+/// \throw
+/// - INSUFFICIENT_DATA when card does not exist.
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+size_t
+DetectiveNotebook::numberPlayersShownCard(
+	const Card* const card) //i - card of interest
+const
+{
 	//if object dne
 	if( ! card )
 	{
 		std::ostringstream msg;
-		msg << "DetectiveNotebook::haveShownCardToPlayer()\n"
+		msg << "DetectiveNotebook::numberPlayersShownCard()\n"
 			<< "  INSUFFICIENT_DATA\n"
-			<< "  card objects must exist";
+			<< "  card object must exist";
 		throw std::logic_error( msg.str().c_str() );
 	}
 
-	bool have_shown_card( false );
+	//consult notebook
 	const NotebookEntry* entry( fetchNotebookEntry(card) );
 
-	if( entry )
-	{
-		have_shown_card = ( ! entry->_playersShown.empty() );
-	}
+	return( entry->_playersShown.size() );
 
-	return have_shown_card;
-
-} //end routine haveShownCardToAnyPlayer()
+} //end routine numberPlayersShownCard()
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -762,13 +774,15 @@ const
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Decide which card to show opponent.
 /// \param set<Card>: potential cards to show opponent
+/// \param PersonType: opponent's character
 /// \return Card: card to show opponent
 /// \throw None
 /// \note  None
 ////////////////////////////////////////////////////////////////////////////////
 const Card*
 DetectiveNotebook::decideWhichCardToShowOpponent(
-	const std::set<const Card*>* cards) //i - counter-evidence in hand
+	const std::set<const Card*>* cards, //i - counter-evidence in hand
+	clueless::PersonType player) //i - opponent's character
 const
 {
 	const Card* choice( nullptr ); //no decision yet
@@ -779,14 +793,45 @@ const
 		//must show that card
 		choice = *(cards->begin());
 	}
-	else
+	else //choose amongst cards
 	{
-		/// \todo favor card already shown to this opponent
+		size_t greatest_num_shown( 0 );
+		std::set<const Card*> cards_shown_to_greatest_num;
 
-		/// \todo next, prefer card already shown to greatest number of opponents
+		std::set<const Card*>::const_iterator card_iter( cards->begin() );
 
-		//otherwise, randomly choose
-		choice = randomlyChooseCard( cards );
+		while( ! choice &&
+			(cards->end() != card_iter) )
+		{
+			//favor card already shown to this opponent
+			if( haveShownCardToPlayer(*card_iter, player) )
+			{
+				choice = *card_iter;
+			}
+
+			//next, prefer card already shown to greatest number of opponents
+			size_t num_opponents_shown( numberPlayersShownCard(*card_iter) );
+			if( num_opponents_shown > greatest_num_shown )
+			{
+				cards_shown_to_greatest_num.clear(); //start over
+
+				//current card considered better choice
+				greatest_num_shown = num_opponents_shown;
+				cards_shown_to_greatest_num.insert( *card_iter );
+			}
+			else if( num_opponents_shown == greatest_num_shown )
+			{
+				//current card a comparable choice
+				cards_shown_to_greatest_num.insert( *card_iter );
+			}
+
+		} //end while (consider cards)
+
+		if( ! choice )
+		{
+			//otherwise, randomly choose amongst better choices
+			choice = randomlyChooseCard( &cards_shown_to_greatest_num );
+		}
 	}
 
 	return choice;
@@ -982,7 +1027,7 @@ const
 	else if( ! options->empty() ) //more than one option
 	{
 		//create position based on floor of random draw in [0, num choices)
-		size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, options->size()) )) );
+		size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, (double)(options->size())) )) );
 
 		std::set<const Card*>::const_iterator opt_iter( options->begin() );
 		for(size_t pos_index(0);

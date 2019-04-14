@@ -238,31 +238,29 @@ Game::executePlayerChoice(
 	{
 	case clueless::MOVE:
 	{
+		Location* destination( nullptr );
+
 		//if only one option
 		if( 1 == move_options->size() )
 		{
-			Location* destination( *(move_options->begin()) );
-			_board.movePlayerTo(player, destination);
-
-			std::cout << "  move to " << destination->getName() << "\n";
+			destination = *(move_options->begin());
 		}
 		else //multiple move options
 		{
 			//consult player for preference
-			Location* destination( player->offerMovePreference(move_options) );
+			destination = player->provideMovePreference(move_options);
 
 			if( ! destination ) //no preference
 			{
 				std::cout << "  random move choice... ";
 				destination = _board.chooseLocation(move_options);
 			}
+		} //end else (move options)
 
-			_board.movePlayerTo(player, destination);
-
-			std::cout << "  move to " << destination->getName() << "\n";
-		}
-
+		_board.movePlayerTo(player, destination);
 		player->indicateHasMovedDuringTurn();
+
+		std::cout << "  move to " << destination->getName() << "\n";
 	}
 		break;
 
@@ -271,14 +269,16 @@ Game::executePlayerChoice(
 		//build suggestion
 		SolutionCardSet suggestion( player->buildSuggestion() );
 
+		notifyAllPlayers_playerMadeSuggestion( player->getCharacterName() );
+
 		//offer suggestion for other players to refute
 		clueless::PersonType opponent_providing_counter_evidence( clueless::UNKNOWN_PERSON );
 
 		const Card* counter_evidence(
 			requestCounterEvidenceToPlayerSuggestion(
-			player, //suggestor
-			&suggestion,
-			opponent_providing_counter_evidence) );
+				player, //suggestor
+				&suggestion,
+				opponent_providing_counter_evidence) );
 
 		//provide feedback to suggestor
 		player->acceptCounterEvidence(
@@ -287,6 +287,15 @@ Game::executePlayerChoice(
 			opponent_providing_counter_evidence );
 
 		player->indicateHasMadeSuggestionDuringTurn();
+
+		if( counter_evidence )
+		{
+			notifyAllPlayers_playerRefutedSuggestion( opponent_providing_counter_evidence );
+		}
+		else //unrefuted
+		{
+			notifyAllPlayers_playerSuggestionUnrefuted( player->getCharacterName() );
+		}
 	}
 		break;
 
@@ -301,10 +310,8 @@ Game::executePlayerChoice(
 			//player wins game :)
 			_winner = player;
 			player->indicateIsGameWinner();
-			_winner = player;
 
-			std::cout << "\n*** " << player->getName() << " WINS game\n"
-				<< "solution: " << accusation.report().str();
+			notifyAllPlayers_gameWinner( player );
 		}
 		else //accusation does not match case file
 		{
@@ -312,8 +319,7 @@ Game::executePlayerChoice(
 			player->indicateHasMadeFalseAccusation();
 			++_numFalseAccusers;
 
-			std::cout << "\n*** " << player->getName() << " has made a false accusation\n"
-				<< "    eliminated from active game play\n";
+			notifyAllPlayers_falseAccuser( player );
 		}
 	}
 		break;
@@ -345,7 +351,7 @@ Game::requestCounterEvidenceToPlayerSuggestion(
 	clueless::PersonType& opponent_character) // o- opponent with counter-evidence
 const
 {
-	//have not found counter-evidence to suggestor yet
+	//have not found counter-evidence for suggestor yet
 	const Card* counter_evidence( nullptr );
 
 	//determine suggestor iterator
@@ -372,8 +378,7 @@ const
 	while( ! counter_evidence &&
 		(_players.end() != player_iter) )
 	{
-		opponent_character = (*player_iter)->getCharacter();
-		counter_evidence = (*player_iter)->offerCounterEvidenceToSuggestion(suggestion, suggestor);
+		counter_evidence = (*player_iter)->offerEvidenceCounterToSuggestion(suggestion, suggestor);
 
 		++player_iter; //next player
 
@@ -387,8 +392,7 @@ const
 	while( ! counter_evidence &&
 		(suggestor_iter != player_iter) )
 	{
-		opponent_character = (*player_iter)->getCharacter();
-		counter_evidence = (*player_iter)->offerCounterEvidenceToSuggestion(suggestion, suggestor);
+		counter_evidence = (*player_iter)->offerEvidenceCounterToSuggestion(suggestion, suggestor);
 
 		++player_iter; //next player
 
@@ -404,3 +408,98 @@ const
 	return counter_evidence;
 
 } //end routine requestCounterEvidenceToPlayerSuggestion()
+
+
+//------------------------------------------------------------------------------
+// Player Notifications
+//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Notify all Players of 
+/// \param string: suggestor's character name
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+void
+Game::notifyAllPlayers_playerMadeSuggestion(
+	const std::string& suggestor) //i - suggestor's character name
+const
+{
+	std::cout << "\nNotice to All Players...\n"
+		<< suggestor << " made a Suggestion\n";
+
+} //end routine notifyAllPlayers_playerMadeSuggestion()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Notify all Players of 
+/// \param Player: 
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+void
+Game::notifyAllPlayers_playerRefutedSuggestion(
+	clueless::PersonType refuter) //i - player's character
+const
+{
+	std::cout << "\nNotice to All Players...\n"
+		<< clueless::translatePersonTypeToText(refuter) << " refuted Suggestion\n";
+
+} //end routine notifyAllPlayers_playerRefutedSuggestion()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Notify all Players of 
+/// \param string: suggestor's character name
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+void
+Game::notifyAllPlayers_playerSuggestionUnrefuted(
+	const std::string& suggestor) //i - suggestor's character name
+const
+{
+	std::cout << "\nNotice to All Players...\n"
+		<< suggestor << "\'s Suggestion is unrefuted\n";
+
+} //end routine notifyAllPlayers_playerSuggestionUnrefuted()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Notify all Players of game winner and Case File solution.
+/// \param Player: winner
+/// \return None
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+void
+Game::notifyAllPlayers_gameWinner(
+	const Player* winner) //i - game winner
+const
+{
+	std::cout << "\n*** " << winner->getName() << " WINS game\n"
+		<< "solution: " << _cards.reportCaseFile().str();
+
+} //end routine notifyAllPlayers_gameWinner()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Notify all Players of false accusation by Player.
+/// \param Player: false accuser
+/// \return None
+/// \throw None
+/// \note
+/// - Do not share contents of false accusation with all players.
+////////////////////////////////////////////////////////////////////////////////
+void
+Game::notifyAllPlayers_falseAccuser(
+	const Player* false_accuser) //i - false accuser
+const
+{
+	std::cout << "\n*** " << false_accuser->getName() << " has made a false accusation\n"
+		<< "    eliminated from active game play\n";
+
+} //end routine notifyAllPlayers_falseAccuser()
+

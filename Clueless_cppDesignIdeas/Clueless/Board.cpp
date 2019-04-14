@@ -93,6 +93,34 @@ Board::~Board()
 		room_iter = _rooms.begin();
 	}
 
+	//delete all person tokens
+	std::map<clueless::PersonType, PersonPiece*>::iterator person_iter( _personTokens.begin() );
+	PersonPiece* curr_person_token( nullptr );
+
+	while( person_iter != _personTokens.end() )
+	{
+		curr_person_token = person_iter->second;
+		_personTokens.erase( person_iter );
+		delete curr_person_token;
+
+		person_iter = _personTokens.begin();
+
+	} //end while (more person tokens)
+
+	//delete all weapon tokens
+	std::map<clueless::WeaponType, GamePiece*>::iterator wpn_iter( _weaponTokens.begin() );
+	GamePiece* curr_wpn_token( nullptr );
+
+	while( wpn_iter != _weaponTokens.end() )
+	{
+		curr_wpn_token = wpn_iter->second;
+		_weaponTokens.erase( wpn_iter );
+		delete curr_wpn_token;
+
+		wpn_iter = _weaponTokens.begin();
+
+	} //end while (more weapon tokens)
+
 } //end routine destructor
 
 
@@ -691,7 +719,7 @@ Board::movePlayerTo(
 	}
 
 	//retrieve associated character token
-	PersonPiece* player_token( player->_assocGameToken );
+	PersonPiece* player_token( player->fetchAssocGameToken() );
 	Location* curr_location( player_token->_location );
 
 	//if destination differs from current location  AND
@@ -746,6 +774,6 @@ Board::assignCharacterToPlayer(
 	_personTokens[character]->setAssociatedPlayer( player );
 
 	//update Player reference to token
-	player->_assocGameToken = _personTokens[character];
+	player->acceptAssocCharacterToken( _personTokens[character] );
 
 } //end routine assignCharacterToPlayer()

@@ -84,32 +84,6 @@ public:
 	std::string getName() const;
 	void rename(const std::string& newName);
 
-	std::string translateCardTypeToText(
-			clueless::ElementType card_type) //i - type to translate
-	const
-	{
-		switch( card_type )
-		{
-		case clueless::PERSON:
-			return "person";
-			break;
-
-		case clueless::WEAPON:
-			return "weapon";
-			break;
-
-		case clueless::ROOM:
-			return "room";
-			break;
-
-		default:
-			;
-		}
-
-		return "unknown";
-
-	} //end routine translateCardTypeToText()
-
 	//--------------------------------------------------------------------------
 	// Data Members
 	//--------------------------------------------------------------------------
@@ -143,7 +117,8 @@ protected:
 			std::ostringstream msg;
 			msg << "PersonCard() copy constructor\n"
 				<< "  INCONSISTENT_DATA\n"
-				<< "  cannot create PersonCard from card of type: " << translateCardTypeToText( source._type );
+				<< "  cannot create PersonCard from card of type: "
+				<< clueless::translateElementTypeToText( source._type );
 			throw std::logic_error( msg.str() );
 		}
 
@@ -219,7 +194,8 @@ protected:
 			std::ostringstream msg;
 			msg << "WeaponCard() copy constructor\n"
 				<< "  INCONSISTENT_DATA\n"
-				<< "  cannot create WeaponCard from card of type: " << translateCardTypeToText( source._type );
+				<< "  cannot create WeaponCard from card of type: "
+				<< clueless::translateElementTypeToText( source._type );
 			throw std::logic_error( msg.str() );
 		}
 
@@ -295,7 +271,8 @@ protected:
 			std::ostringstream msg;
 			msg << "RoomCard() copy constructor\n"
 				<< "  INCONSISTENT_DATA\n"
-				<< "  cannot create RoomCard from card of type: " << translateCardTypeToText( source._type );
+				<< "  cannot create RoomCard from card of type: "
+				<< clueless::translateElementTypeToText( source._type );
 			throw std::logic_error( msg.str() );
 		}
 

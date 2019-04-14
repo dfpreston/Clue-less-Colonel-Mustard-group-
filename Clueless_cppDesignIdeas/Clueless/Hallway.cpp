@@ -114,12 +114,32 @@ bool
 Hallway::addOccupant(
 	const GamePiece* piece)
 {
-	//prompt base class logic (primarily for error handling)
-	Location::addOccupant( piece );
+	bool is_occupant_set( false );
 
-	//child class logic
-	_occupant = piece;
-	return true; //occupant set
+	//prompt base class logic (primarily for error handling)
+	if( Location::addOccupant(piece) )
+	{
+		//child class logic
+		if( piece->isPersonPiece() )
+		{
+			//acceptable occupant
+			_occupant = (const PersonPiece*)piece;
+		}
+		else //not person token
+		{
+			is_occupant_set = false;
+
+			std::ostringstream msg;
+			msg << "Hallway::addOccupant()\n"
+				<< "  INCONSISTENT_DATA\n"
+				<< "  only expect person token to move into hallway \'" << getName()
+				<< "\', not " << piece->getName();
+			throw std::logic_error(msg.str().c_str());
+		}
+
+	} //end if (successful base class logic)
+
+	return is_occupant_set; //occupant set
 
 } //end routine addOccupant()
 
@@ -138,57 +158,6 @@ const
 	return _occupant;
 
 } //end routine getOccupant()
-
-
-////////////////////////////////////////////////////////////////////////////////
-/// \brief 
-/// \param 
-/// \return bool: success installing piece as occupant
-/// \throw
-/// - LOGIC_ERROR when piece already occupies hallway --> must move into room
-/// - LOGIC_ERROR when attempt to place piece when already occupied
-/// - LOGIC_ERROR when prompting clearing hallway... use explicit method instead
-/// \note  None
-////////////////////////////////////////////////////////////////////////////////
-bool
-Hallway::setOccupant(
-	const GamePiece* piece) //i - new occupant
-{
-	if( isOccupied() )
-	{
-		if( _occupant == piece )
-		{
-			std::ostringstream msg;
-			msg << "Hallway::setOccupant()\n"
-				<< "  LOGIC_ERROR\n"
-				<< "  \'" << _occupant->_name << "\' already occupies hallway; must move into an adjacent room";
-			throw std::logic_error( msg.str() );
-		}
-		else //requesting new occupant
-		{
-			std::ostringstream msg;
-			msg << "Hallway::setOccupant()\n"
-				<< "  LOGIC_ERROR\n"
-				<< "  hallway already occupied by \'" << _occupant->_name << "\'";
-			throw std::logic_error( msg.str() );
-		}
-
-		return false; //new occupant not set -- will not reach due to throw
-	}
-
-	if( nullptr == piece )
-	{
-		std::ostringstream msg;
-		msg << "Hallway::setOccupant()\n"
-			<< "  LOGIC_ERROR\n"
-			<< "  use recognizeOccupantLeft() to explicitly clear hallway";
-		throw std::logic_error( msg.str() );
-	}
-
-	_occupant = piece;
-	return true; //occupant set
-
-} //end routine setOccupant()
 
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -284,7 +284,7 @@ const
 	else //more than one card
 	{
 		//create position based on floor of random draw in [0, num cards)
-		size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, cards->size()) )) );
+		size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, (double)(cards->size())) )) );
 	
 		std::set<Card*>::const_iterator card_iter( cards->begin() );
 		for(size_t pos_index(0);
@@ -325,7 +325,7 @@ const
 	else //more than one card
 	{
 		//create position based on floor of random draw in [0, num cards)
-		size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, cards->size()) )) );
+		size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, (double)(cards->size())) )) );
 
 		std::set<const Card*>::const_iterator card_iter( cards->begin() );
 		for(size_t pos_index(0);
@@ -435,6 +435,25 @@ CardDeck::determineNextPlayer(
 	return next_player_iter;
 
 } //end routine determineNextPlayer()
+
+
+//------------------------------------------------------------------------------
+// Accessors and Mutators
+//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Reports contents of Case File (solution).
+/// \param None
+/// \return ostringstream: text report
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+std::ostringstream
+CardDeck::reportCaseFile()
+const
+{
+	return _caseFile->report();
+
+} //end routine reportCaseFile()
 
 
 //------------------------------------------------------------------------------

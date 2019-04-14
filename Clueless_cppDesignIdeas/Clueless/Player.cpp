@@ -86,7 +86,7 @@ Player::Player(
 // Accessors and Mutators
 //------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
-inline std::string
+std::string
 Player::getCharacterName()
 const
 {
@@ -98,6 +98,28 @@ const
 	return( clueless::translatePersonTypeToText( _character ) );
 
 } //end routine getCharacterName()
+
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Player::acceptAssocCharacterToken(
+	PersonPiece* token) //i - associated character game token
+{
+	if( token->_person != _character )
+	{
+		std::ostringstream msg;
+		msg << "Player::acceptAssocCharacterToken()\n"
+			<< "  INCONSISTENT_DATA\n"
+			<< "  token for \'" << clueless::translatePersonTypeToText(token->_person)
+			<< "\' does not match character choice of \'" << getCharacterName() << "\'";
+		throw std::logic_error( msg.str().c_str() );
+
+	} //end if (token does not match character choice)
+
+	//otherwise, match => accept token association
+	_assocGameToken = token;
+
+} //end routine acceptAssocCharacterToken()
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -314,7 +336,7 @@ const
 		else
 		{
 			//create position based on floor of random draw in [0, num choices)
-			size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, options->size()) )) );
+			size_t zero_based_pos( size_t(std::floor( MersenneTwister::drawReal2(0, (double)(options->size())) )) );
 
 			std::set<clueless::TurnOptionType>::const_iterator opt_iter( options->begin() );
 			for(size_t pos_index(0);
@@ -349,7 +371,7 @@ const
 /// \note  None
 ////////////////////////////////////////////////////////////////////////////////
 Location*
-Player::offerMovePreference(
+Player::provideMovePreference(
 	std::set<Location*>* move_options) //i - move options
 const
 {
@@ -481,7 +503,7 @@ const
 
 	return preferred_destination;
 
-} //end routine offerMovePreference()
+} //end routine provideMovePreference()
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -591,7 +613,7 @@ Player::acceptCounterEvidence(
 ///   card to opponent.
 ////////////////////////////////////////////////////////////////////////////////
 const Card*
-Player::offerCounterEvidenceToSuggestion(
+Player::offerEvidenceCounterToSuggestion(
 	const SolutionCardSet* suggestion, //i - suggestion
 	const Player* suggestor) //i - player authoring suggestion
 {
@@ -604,7 +626,7 @@ Player::offerCounterEvidenceToSuggestion(
 	if( ! in_hand.empty() )
 	{
 		//decide which card to show opponent
-		counter_evidence = _notebook.decideWhichCardToShowOpponent( &in_hand );
+		counter_evidence = _notebook.decideWhichCardToShowOpponent( &in_hand, suggestor->getCharacter() );
 
 		//make note that showed card to suggestor
 		_notebook.recordHaveShownCardToPlayer(counter_evidence, suggestor->getCharacter());
@@ -617,7 +639,7 @@ Player::offerCounterEvidenceToSuggestion(
 
 	return counter_evidence;
 
-} //end routine offerCounterEvidenceToSuggestion()
+} //end routine offerEvidenceCounterToSuggestion()
 
 
 ////////////////////////////////////////////////////////////////////////////////
