@@ -73,11 +73,15 @@ public:
 
 	//std::set<Location*> getMoveOptionsFrom(const Location* const startingPoint) const;
 	bool movePlayerTo(Player* const player, Location* const destination);
+	bool movePersonTokenToRoom(clueless::PersonType character, clueless::RoomType);
+	bool moveWeaponTokenToRoom(clueless::WeaponType weapon, clueless::RoomType);
 
 	//--------------------------------------------------------------------------
 	// Accessors and Mutators - Protected Scope
 	//--------------------------------------------------------------------------
 protected:
+	PersonPiece* fetchPersonToken(clueless::PersonType person) const;
+	WeaponPiece* fetchWeaponToken(clueless::WeaponType weapon) const;
 	Room* fetchRoom(clueless::RoomType) const;
 
 protected:
@@ -105,7 +109,7 @@ public:
 	std::set<Location*> _personHomes;
 
 	std::map<clueless::PersonType, PersonPiece*> _personTokens;
-	std::map<clueless::WeaponType, GamePiece*> _weaponTokens;
+	std::map<clueless::WeaponType, WeaponPiece*> _weaponTokens;
 
 private:
 	/// \note for ease of access... use rooms collection for deletion

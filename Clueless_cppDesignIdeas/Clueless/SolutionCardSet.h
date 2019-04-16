@@ -68,6 +68,10 @@ public:
 	//--------------------------------------------------------------------------
 	// Accessors and Mutators
 	//--------------------------------------------------------------------------
+	clueless::PersonType getPersonType() const;
+	clueless::WeaponType getWeaponType() const;
+	clueless::RoomType getRoomType() const;
+
 	////////////////////////////////////////////////////////////////////////////
 	/// \brief
 	////////////////////////////////////////////////////////////////////////////
@@ -125,6 +129,34 @@ public:
 	RoomCard   _room;
 
 }; //end struct SolutionCardSet defn
+
+
+//------------------------------------------------------------------------------
+inline clueless::PersonType
+SolutionCardSet::getPersonType()
+const
+{
+	return _person._person;
+
+} //end routine getPersonType()
+
+
+inline clueless::WeaponType
+SolutionCardSet::getWeaponType()
+const
+{
+	return _weapon._weapon;
+
+} //end routine getWeaponType()
+
+
+inline clueless::RoomType
+SolutionCardSet::getRoomType()
+const
+{
+	return _room._room;
+
+} //end routine getRoomType()
 
 
 #endif //SolutionCardSet_h defn

@@ -379,122 +379,125 @@ const
 	std::map<Location*, unsigned int> prioritized_options;
 	std::set<Location*>::iterator opt_iter( move_options->begin() );
 
-	//if have suspected room
-	if( _notebook.haveSuspectedRoom() )
+	if( 1 < move_options->size() ) //more than one option
 	{
-		/// \todo closest "in hand" or suspected... "in hand" preferred
-
-		while( ! preferred_destination &&
-			(move_options->end() != opt_iter) )
+		//if have suspected room
+		if( _notebook.haveSuspectedRoom() )
 		{
-			if( (*opt_iter)->isRoom() )
+			/// \todo closest "in hand" or suspected... "in hand" preferred
+
+			while( ! preferred_destination &&
+				(move_options->end() != opt_iter) )
 			{
-				// 1. room in hand or suspected
-				prioritized_options[*opt_iter] =
-					(unsigned int)
-					_notebook.determineShortestPathForDestinationSuspectedOrInHand(
-						getLocation(), //current location
-						(*opt_iter)); //next step
+				if( (*opt_iter)->isRoom() )
+				{
+					// 1. room in hand or suspected
+					prioritized_options[*opt_iter] =
+						(unsigned int)
+						_notebook.determineShortestPathForDestinationSuspectedOrInHand(
+							getLocation(), //current location
+							(*opt_iter)); //next step
 
-			}
-			else //destination not room (hallway)
-			{
-				// 1. room still needing questioning
-				prioritized_options[*opt_iter] =
-					(unsigned int)
-					_notebook.determineShortestPathForDestinationSuspectedOrInHand(
-						getLocation(), //current location (probably room)
-						(*opt_iter) ); //next step on path
+				}
+				else //destination not room (hallway)
+				{
+					// 1. room still needing questioning
+					prioritized_options[*opt_iter] =
+						(unsigned int)
+						_notebook.determineShortestPathForDestinationSuspectedOrInHand(
+							getLocation(), //current location (probably room)
+							(*opt_iter) ); //next step on path
 
-									   //prioritized_options[*opt_iter] = 15;
-			}
+										   //prioritized_options[*opt_iter] = 15;
+				}
 
-			++opt_iter; //next option
+				++opt_iter; //next option
 
 
-			//if( _notebook.isRoomInHand( ((Room*)(*opt_iter))->_type ) )
-			//{
-			//	preferred_destination = *opt_iter;
-			//}
-			//else //not in hand
-			//{
-			//	++opt_iter;
-			//}
-		} //end while (more options to prioritize)
-
-	}
-	else //no suspected room
-	{
-		while( move_options->end() != opt_iter )
-		{
-			// 2: destination is room
-			if( (*opt_iter)->isRoom() )
-			{
-				// 1. room still needing questioning
-				prioritized_options[*opt_iter] =
-					(unsigned int)
-					_notebook.determineShortestPathForDestinationNeedingQuestion(
-						getLocation(), //current location
-						(*opt_iter) ); //next step
-
-				//// 3: room without counter-evidence
-				//if( ! _notebook.haveCounterEvidenceForRoom( (Room*)(*opt_iter) ) )
+				//if( _notebook.isRoomInHand( ((Room*)(*opt_iter))->_type ) )
 				//{
-				//	prioritized_options[*opt_iter] = 5;
+				//	preferred_destination = *opt_iter;
 				//}
-				//else //have counter-evidence for room
+				//else //not in hand
 				//{
-				//	// 4: in hand
-				//	if( _notebook.isRoomInHand( ((Room*)(*opt_iter))->_type ) )
-				//	{
-				//		prioritized_options[*opt_iter] = 7;
-				//	}
-				//	else //not in hand
-				//	{
-				//		prioritized_options[*opt_iter] = 10;
-				//	}
-				//} //end else (have counter-evidence for room)
-			}
-			else //destination not room (hallway)
+				//	++opt_iter;
+				//}
+			} //end while (more options to prioritize)
+
+		}
+		else //no suspected room
+		{
+			while( move_options->end() != opt_iter )
 			{
-				// 1. room still needing questioning
-				prioritized_options[*opt_iter] =
-					(unsigned int)
-					_notebook.determineShortestPathForDestinationNeedingQuestion(
-						getLocation(), //current location (probably room)
-						(*opt_iter) ); //next step on path
+				// 2: destination is room
+				if( (*opt_iter)->isRoom() )
+				{
+					// 1. room still needing questioning
+					prioritized_options[*opt_iter] =
+						(unsigned int)
+						_notebook.determineShortestPathForDestinationNeedingQuestion(
+							getLocation(), //current location
+							(*opt_iter) ); //next step
 
-				//prioritized_options[*opt_iter] = 15;
+					//// 3: room without counter-evidence
+					//if( ! _notebook.haveCounterEvidenceForRoom( (Room*)(*opt_iter) ) )
+					//{
+					//	prioritized_options[*opt_iter] = 5;
+					//}
+					//else //have counter-evidence for room
+					//{
+					//	// 4: in hand
+					//	if( _notebook.isRoomInHand( ((Room*)(*opt_iter))->_type ) )
+					//	{
+					//		prioritized_options[*opt_iter] = 7;
+					//	}
+					//	else //not in hand
+					//	{
+					//		prioritized_options[*opt_iter] = 10;
+					//	}
+					//} //end else (have counter-evidence for room)
+				}
+				else //destination not room (hallway)
+				{
+					// 1. room still needing questioning
+					prioritized_options[*opt_iter] =
+						(unsigned int)
+						_notebook.determineShortestPathForDestinationNeedingQuestion(
+							getLocation(), //current location (probably room)
+							(*opt_iter) ); //next step on path
+
+					//prioritized_options[*opt_iter] = 15;
+				}
+
+				++opt_iter; //next option
+
+			} //end while (more options to prioritize)
+
+		} //end else (no suspected room)
+
+		//determine greatest priority (lowest value) option(s)
+		unsigned int lowest_value( UINT_MAX );
+		std::map<Location*, unsigned int>::iterator pri_iter( prioritized_options.begin() );
+		for(pri_iter  = prioritized_options.begin();
+			pri_iter != prioritized_options.end();
+			++pri_iter)
+		{
+			//curr option lower value
+			if( lowest_value > pri_iter->second )
+			{
+				move_options->clear();
+
+				move_options->insert( pri_iter->first );
+			}
+			else if( lowest_value == pri_iter->second )
+			{
+				move_options->insert( pri_iter->first );
 			}
 
-			++opt_iter; //next option
+			lowest_value = std::min(lowest_value, pri_iter->second);
 
-		} //end while (more options to prioritize)
-
-	} //end else (no suspected room)
-
-	//determine greatest priority (lowest value) option(s)
-	unsigned int lowest_value( UINT_MAX );
-	std::map<Location*, unsigned int>::iterator pri_iter( prioritized_options.begin() );
-	for(pri_iter  = prioritized_options.begin();
-		pri_iter != prioritized_options.end();
-		++pri_iter)
-	{
-		//curr option lower value
-		if( lowest_value > pri_iter->second )
-		{
-			move_options->clear();
-
-			move_options->insert( pri_iter->first );
-		}
-		else if( lowest_value == pri_iter->second )
-		{
-			move_options->insert( pri_iter->first );
-		}
-
-		lowest_value = std::min(lowest_value, pri_iter->second);
-
-	} //end for (each prioritized option)
+		} //end for (each prioritized option)
+	} //end if (more than one move option supplied)
 
 	if( 1 == move_options->size() )
 	{

@@ -71,6 +71,9 @@ protected:
 	void notifyAllPlayers_playerRefutedSuggestion(clueless::PersonType refuter) const;
 	void notifyAllPlayers_playerSuggestionUnrefuted(const std::string& suggestor) const;
 
+	void notifyAllPlayers_personTokenMovedForSuggestion(clueless::PersonType person, clueless::RoomType newLocation) const;
+	void notifyAllPlayers_weaponTokenMovedForSuggestion(clueless::WeaponType weapon, clueless::RoomType newLocation) const;
+
 	void notifyAllPlayers_gameWinner(const Player* winner) const;
 	void notifyAllPlayers_falseAccuser(const Player* accuser) const;
 

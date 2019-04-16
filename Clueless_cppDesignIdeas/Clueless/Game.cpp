@@ -240,22 +240,15 @@ Game::executePlayerChoice(
 	{
 		Location* destination( nullptr );
 
-		//if only one option
-		if( 1 == move_options->size() )
-		{
-			destination = *(move_options->begin());
-		}
-		else //multiple move options
-		{
-			//consult player for preference
-			destination = player->provideMovePreference(move_options);
+		//consult player for preference
+		destination = player->provideMovePreference(move_options);
 
-			if( ! destination ) //no preference
-			{
-				std::cout << "  random move choice... ";
-				destination = _board.chooseLocation(move_options);
-			}
-		} //end else (move options)
+		if( ! destination ) //no clear preference
+		{
+			//note: may have down-selected to fewer options
+			std::cout << "  random move choice... ";
+			destination = _board.chooseLocation(move_options);
+		}
 
 		_board.movePlayerTo(player, destination);
 		player->indicateHasMovedDuringTurn();
@@ -270,6 +263,21 @@ Game::executePlayerChoice(
 		SolutionCardSet suggestion( player->buildSuggestion() );
 
 		notifyAllPlayers_playerMadeSuggestion( player->getCharacterName() );
+
+		//pull suspected person and weapon into room
+		clueless::PersonType suggested_person( suggestion.getPersonType() );
+		clueless::WeaponType suggested_weapon( suggestion.getWeaponType() );
+		clueless::RoomType suggested_room( suggestion.getRoomType() );
+
+		if( _board.movePersonTokenToRoom(suggested_person, suggested_room) );
+		{
+			notifyAllPlayers_personTokenMovedForSuggestion(suggested_person, suggested_room);
+		}
+
+		if( _board.moveWeaponTokenToRoom(suggested_weapon, suggested_room) );
+		{
+			notifyAllPlayers_weaponTokenMovedForSuggestion(suggested_weapon, suggested_room);
+		}
 
 		//offer suggestion for other players to refute
 		clueless::PersonType opponent_providing_counter_evidence( clueless::UNKNOWN_PERSON );
@@ -465,6 +473,32 @@ const
 		<< suggestor << "\'s Suggestion is unrefuted\n";
 
 } //end routine notifyAllPlayers_playerSuggestionUnrefuted()
+
+
+void
+Game::notifyAllPlayers_personTokenMovedForSuggestion(
+	clueless::PersonType character, //i - person token moved
+	clueless::RoomType new_location) //i - new location
+const
+{
+	std::cout << "\nNotice to All Players...\n"
+		<< clueless::translatePersonTypeToText( character ) << " moved to "
+		<< clueless::translateRoomTypeToText( new_location ) << " in support of suggestion\n";
+
+} //end routine notifyAllPlayers_personTokenMovedForSuggestion()
+
+
+void
+Game::notifyAllPlayers_weaponTokenMovedForSuggestion(
+	clueless::WeaponType wpn, //i - weapon token moved
+	clueless::RoomType new_location) //i - new location
+const
+{
+	std::cout << "\nNotice to All Players...\n"
+		<< clueless::translateWeaponTypeToText( wpn ) << " moved to "
+		<< clueless::translateRoomTypeToText( new_location ) << " in support of suggestion\n";
+
+} //end routine notifyAllPlayers_weaponTokenMovedForSuggestion()
 
 
 ////////////////////////////////////////////////////////////////////////////////

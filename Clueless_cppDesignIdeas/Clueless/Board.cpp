@@ -160,6 +160,60 @@ const
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns person token of type specified.
+/// \param PersonType: person type
+/// \return PersonPiece: corresponding person token
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+PersonPiece*
+Board::fetchPersonToken(
+	clueless::PersonType person) //i - person type
+const
+{
+	PersonPiece* token( nullptr );
+
+	std::map<clueless::PersonType, PersonPiece*>::const_iterator token_iter(
+		_personTokens.find(person) );
+
+	if( _personTokens.end() != token_iter ) //found token
+	{
+		token = token_iter->second;
+	}
+
+	return token;
+
+} //end routine fetchPersonToken()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Returns weapon token of type specified.
+/// \param WeaponType: weapon type
+/// \return WeaponPiece: corresponding weapon token
+/// \throw None
+/// \note  None
+////////////////////////////////////////////////////////////////////////////////
+WeaponPiece*
+Board::fetchWeaponToken(
+	clueless::WeaponType wpn) //i - weapon type
+const
+{
+	WeaponPiece* token( nullptr );
+
+	std::map<clueless::WeaponType, WeaponPiece*>::const_iterator token_iter(
+		_weaponTokens.find(wpn) );
+
+	if( _weaponTokens.end() != token_iter ) //found token
+	{
+		token = token_iter->second;
+	}
+
+	return token;
+
+} //end routine fetchWeaponToken()
+
+
+////////////////////////////////////////////////////////////////////////////////
 /// \brief Returns room of type specified.
 /// \param None
 /// \return None
@@ -745,6 +799,101 @@ Board::movePlayerTo(
 
 } //end routine movePlayerTo()
 
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Moves token to specified room.
+/// \param PersonType: character for token of interest
+/// \param RoomType: destination
+/// \return bool: move success
+/// \throw
+/// - INSUFFICIENT_DATA when cannot find corresponding token or room object.
+/// \note
+/// - Assumes destination is valid.
+////////////////////////////////////////////////////////////////////////////////
+bool
+Board::movePersonTokenToRoom(
+	clueless::PersonType character, //i - token's character
+	clueless::RoomType room) //i - destination
+{
+	bool has_token_moved( false );
+
+	PersonPiece* token( fetchPersonToken( character ) );
+	Room* destination( fetchRoom( room ) );
+
+	if( ! token  ||  ! destination )
+	{
+		std::ostringstream msg;
+		msg << "Board::movePersonTokenToRoom()\n"
+			<< "  INSUFFICIENT_DATA\n"
+			<< "  cannot find token or room object";
+		throw std::logic_error( msg.str().c_str() );
+	}
+
+	Location* curr_location( token->_location );
+
+	if( curr_location != (Location*)destination )
+	{
+		//update room occupants and game piece location
+		destination->addOccupant( token );
+		token->_location = destination;
+
+		//vacate current location
+		curr_location->recognizeOccupantLeft( token );
+
+		has_token_moved = true;
+	}
+
+	return has_token_moved;
+
+} //end routine movePersonTokenToRoom()
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Moves token to specified room.
+/// \param WeaponType: character for token of interest
+/// \param RoomType: destination
+/// \return bool: move success
+/// \throw
+/// - INSUFFICIENT_DATA when cannot find corresponding token or room object.
+/// \note
+/// - Assumes destination is valid.
+////////////////////////////////////////////////////////////////////////////////
+bool
+Board::moveWeaponTokenToRoom(
+	clueless::WeaponType wpn, //i - weapon
+	clueless::RoomType room) //i - destination
+{
+	bool has_token_moved( false );
+
+	WeaponPiece* token( fetchWeaponToken( wpn ) );
+	Room* destination( fetchRoom( room ) );
+
+	if( ! token  ||  ! destination )
+	{
+		std::ostringstream msg;
+		msg << "Board::moveWeaponTokenToRoom()\n"
+			<< "  INSUFFICIENT_DATA\n"
+			<< "  cannot find token or room object";
+		throw std::logic_error( msg.str().c_str() );
+	}
+
+	Location* curr_location( token->_location );
+
+	if( curr_location != (Location*)destination )
+	{
+		//update room occupants and game piece location
+		destination->addOccupant( token );
+		token->_location = destination;
+
+		//vacate current location
+		curr_location->recognizeOccupantLeft( token );
+
+		has_token_moved = true;
+	}
+
+	return has_token_moved;
+
+} //end routine moveWeaponTokenToRoom()
 
 
 ////////////////////////////////////////////////////////////////////////////////
