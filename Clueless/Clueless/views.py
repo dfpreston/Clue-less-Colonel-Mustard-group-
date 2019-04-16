@@ -183,7 +183,8 @@ def GameRoom(request):
         gm.update_game_status(user_ip, user_name, request.GET.get('player_status', ''))
         pm.update_player_location(request.GET.get('player_location', ''))
 
-        if request.GET.get('end_turn', '') is not '':
+        if request.GET.get('end_turn', '') is not '' or \
+           request.GET.get('player_status', '') is not '':
             gm.update_player_turn()
 
     context = {'game_id': pm.get_game_id(),
