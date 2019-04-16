@@ -65,6 +65,8 @@ def GameCustiomize(request):
         if request.GET.get('game') == 'create':
             msg = 'You have created a new game!'
 
+
+
             # Game tracker
             gm = GameManager()
             gm.delete_completed_games()  # Cleaning for testing
@@ -180,7 +182,9 @@ def GameRoom(request):
         gm.rebuke_suggestion(request.GET.get('rebuke_card', ''))
         gm.update_game_status(user_ip, user_name, request.GET.get('player_status', ''))
         pm.update_player_location(request.GET.get('player_location', ''))
-        gm.update_player_turn()
+
+        if request.GET.get('end_turn', '') is not '':
+            gm.update_player_turn()
 
     context = {'game_id': pm.get_game_id(),
                'player_turn': pm.get_is_player_turn(),
