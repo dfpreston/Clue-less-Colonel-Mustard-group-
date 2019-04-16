@@ -234,3 +234,7 @@ class GameManager:
     def delete_completed_games(self):
         if Games.objects.filter().exists():
             Games.objects.filter().delete()
+
+    def remove_player(self, check, client_ip, client_name):
+        if check is not '':
+            Players.objects.filter(client_ip=client_ip, client_name=client_name).delete()
