@@ -24,6 +24,7 @@ class PlayerManager:
         else:
             new_location = Locations.objects.filter(game=self.game_id, name=location_name)[0]
             self.player.location=new_location
+            self.player.moved=True
             self.player.save()
 
     def update_player_name(self, player_name):
@@ -77,3 +78,9 @@ class PlayerManager:
 
     def get_is_player_turn(self):
         return self.player.their_turn
+
+    def get_move_status(self):
+        return self.player.moved
+
+    def get_suggest_status(self):
+        return self.player.suggested

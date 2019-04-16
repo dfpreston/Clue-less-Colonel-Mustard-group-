@@ -188,8 +188,10 @@ def GameRoom(request):
 
     context = {'game_id': pm.get_game_id(),
                'player_turn': pm.get_is_player_turn(),
+               'player_moved': pm.get_move_status(),
                'player_location': pm.get_player_location(),
                'player_status': pm.get_player_status(),
+               'player_suggested': pm.get_suggest_status(),
                'others_locations': pm.get_other_player_locations(),
                'player_hand': pm.get_hand(),
                'available_cards': pm.get_unused_cards(),

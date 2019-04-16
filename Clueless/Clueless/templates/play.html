@@ -7,11 +7,12 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script  type="text/javascript">        
         console.log("Current data, per user:");
-        console.log("Is it Player\'s turn:", {{ player_turn | safe}});
         console.log("Game Id:", {{ game_id }});
         console.log("Is Player Game Creator:", {{ is_creator | safe }});
         console.log("Is it Player\'s turn:", {{ player_turn | safe }});
+        console.log("Did Player Move:", {{ player_moved | safe }});
         console.log("Player Location:", {{ player_location | safe }});
+        console.log("Did Player Make a Suggestion:", {{ player_suggested | safe }});
         console.log("Others Locations:", {{ others_locations | safe }})
         console.log("Player Hand:", {{ player_hand | safe}});
         console.log("All Available Cards:", {{ available_cards | safe}});
@@ -327,9 +328,14 @@
 
             let moveOptions = idToText[{{ player_location | safe }}].connections;
             moveOptions.forEach(move => {
-                var occupied = false;
+                var occupied = 0;
+                var o = {{others_locations|safe}}
 
-                if(occupied==false){
+                for(x in o){
+                    if(o[x] == move){occupied=1;}
+                }
+
+                if(occupied==0){
                     var move_list = document.getElementById("move-options");
                     var option = document.createElement("option");
                     option.text = idToText[move].name;
@@ -480,8 +486,13 @@
                     {% if player_turn|lower == 'true' %}
                     <h3>Turn Options</h3>
                     <div id="turn-options">
-                        <button class="btn btn-primary" onclick="move()">Move</button>
-                        <button class="btn btn-primary" onclick="suggest()">Make a Suggestion</button>
+                        {% if player_moved|lower == 'false'%}
+                            <button class="btn btn-primary" onclick="move()">Move</button>
+                        {% endif %}
+                        {% if player_suggested|lower == 'false'%}
+                            <button class="btn btn-primary" onclick="suggest()">Make a Suggestion</button>
+                        {% endif %}
+
                         <button class="btn btn-primary" onclick="accuse()">Make an Accusation</button>
                         <br><br>
                         <button class="btn btn-primary" onclick="rebuke()">Rebuke Suggestion</button>

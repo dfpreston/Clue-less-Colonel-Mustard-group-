@@ -135,6 +135,9 @@ class GameManager:
 
     # Game Updates
     def update_player_turn(self):
+
+        Players.objects.filter(game=self.game_id).update(moved=False)
+
         turn_order = []
 
         temp = (Games.objects.filter(id=self.game_id)[0].turn_order)\
