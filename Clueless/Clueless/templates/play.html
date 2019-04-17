@@ -285,14 +285,16 @@
             // Notify player of current location
             $("#player-location-msg").text("You are in the " + idToText[{{ player_location | safe }}].name);
 
+            var player_cards = {{player_hand|safe}};
+
             // initialize suspect, weapon, and location options
             Object.keys(idToText).forEach(id => {
-                if (id.includes("room")) {
+                if (id.includes("room") && !player_cards['Rooms'].includes(id)) {
                     addItemToList(id, "accuse-location");
-                } else if (id.includes("suspect")) {
+                } else if (id.includes("suspect") && !player_cards['Suspects'].includes(id)) {
                     addItemToList(id, "accuse-suspect");
                     addItemToList(id, "suggest-suspect");
-                } else if (id.includes("weapon")) {
+                } else if (id.includes("weapon") && !player_cards['Weapons'].includes(id)) {
                     addItemToList(id, "accuse-weapon");
                     addItemToList(id, "suggest-weapon");
                 }
@@ -483,22 +485,32 @@
             <div class="col-xs-12 col-sm-6">
                 <!-- Turn handling -->
                 <div class="is-players-turn" id="turn-options-menu">
-                    {% if player_turn|lower == 'true' %}
+
                     <h3>Turn Options</h3>
                     <div id="turn-options">
-                        {% if player_moved|lower == 'false'%}
+
+                        {% if player_moved|lower == 'false' and player_turn|lower == 'true' %}
                             <button class="btn btn-primary" onclick="move()">Move</button>
                         {% endif %}
-                        {% if player_suggested|lower == 'false'%}
+
+                        {% if player_suggested|lower == 'false' and 'room' in player_location and player_turn|lower == 'true' %}
                             <button class="btn btn-primary" onclick="suggest()">Make a Suggestion</button>
                         {% endif %}
 
+                        {% if 'Weapons' not in suggested_cards|safe and player_turn|lower == 'true' %}
                         <button class="btn btn-primary" onclick="accuse()">Make an Accusation</button>
+                        {% endif %}
+
                         <br><br>
-                        <button class="btn btn-primary" onclick="rebuke()">Rebuke Suggestion</button>
+
+                        {% if 'Weapons' in suggested_cards|safe and player_turn|lower == 'false'%}
+                            <button class="btn btn-primary" onclick="rebuke()">Rebuke Suggestion</button>
+                        {% endif %}
+
+                        {% if 'Weapons' not in suggested_cards|safe and player_turn|lower == 'true' %}
                         <button class="btn btn-primary" onclick="end_turn()">End Turn</button>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
 
                 <div class="is-players-turn" id="move-options-menu">

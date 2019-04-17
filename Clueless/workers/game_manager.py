@@ -136,7 +136,7 @@ class GameManager:
     # Game Updates
     def update_player_turn(self):
 
-        Players.objects.filter(game=self.game_id).update(moved=False)
+        Players.objects.filter(game=self.game_id).update(moved=False, suggested=False)
 
         turn_order = []
 
@@ -182,6 +182,8 @@ class GameManager:
     def update_suggested_card(self, card_name):
         if Cards.objects.filter(game=self.game_id, name=card_name).exists():
             Cards.objects.filter(game=self.game_id, name=card_name).update(suggested=True)
+
+        Players.objects.filter(game=self.game_id, their_turn=True).update(suggested=True)
 
     def rebuke_suggestion(self, card_name):
         if Cards.objects.filter(game=self.game_id, name=card_name).exists():
