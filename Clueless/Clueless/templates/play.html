@@ -299,9 +299,8 @@
                     addItemToList(id, "suggest-weapon");
                 }
             });
-
             // Listen for game updates if not player's turn
-            if( !{{player_turn}}) {
+            if(!{{player_turn}}) {
                 if(!$.isEmptyObject( {{ suggested_cards | safe}} )){
                     alert("Suggestion was made!!!");
                     alert("Players will have option to rebuke suggestion!!");
@@ -315,9 +314,20 @@
                                 location.reload();
                             }
                         });
-                    }, 3000);
+                    }, 1000);
                 }
-            };
+            }
+            if({{player_turn}} && 'Weapons' in {{suggested_cards|safe}}){
+                    setInterval(function(){
+                        $.ajax({
+                            type: "GET",
+                            url: "/play/",
+                            success: function() {
+                                location.reload();
+                            }
+                        });
+                    }, 1000);
+            }
         });
 
         function showTurnOptions() {
@@ -489,7 +499,7 @@
                     <h3>Turn Options</h3>
                     <div id="turn-options">
 
-                        {% if player_moved|lower == 'false' and player_turn|lower == 'true' %}
+                        {% if player_moved|lower == 'false' and player_turn|lower == 'true' and 'Weapons' not in suggested_cards|safe %}
                             <button class="btn btn-primary" onclick="move()">Move</button>
                         {% endif %}
 
