@@ -10,6 +10,7 @@
         console.log("Game Id:", {{ game_id }});
         console.log("Is Player Game Creator:", {{ is_creator | safe }});
         console.log("Is it Player\'s turn:", {{ player_turn | safe }});
+        console.log("Current Player Turn:", {{ curr_player_turn | safe }});
         console.log("Did Player Move:", {{ player_moved | safe }});
         console.log("Player Location:", {{ player_location | safe }});
         console.log("Did Player Make a Suggestion:", {{ player_suggested | safe }});
@@ -18,6 +19,7 @@
         console.log("All Available Cards:", {{ available_cards | safe}});
         console.log("Solution Cards:", {{ solution_cards | safe}});
         console.log("Suggested Cards:", {{ suggested_cards | safe}});
+        console.log("Rebuked Card:", {{ rebuked_card | safe}});
         console.log("Player Status: ", {{ player_status | safe }});
         console.log("Game Status: ", {{ game_status | safe }});
         console.log("Game Winner: ", {{ game_winner | safe }})
@@ -302,8 +304,38 @@
             // Listen for game updates if not player's turn
             if(!{{player_turn}}) {
                 if(!$.isEmptyObject( {{ suggested_cards | safe}} )){
-                    alert("Suggestion was made!!!");
-                    alert("Players will have option to rebuke suggestion!!");
+                    var suggestion = {{suggested_cards | safe}};
+                    var suggestor = {{curr_player_turn|safe}};
+                    var sus = idToText[suggestion['Suspects'][0]]['name'];
+                    var weapon = idToText[suggestion['Weapons'][0]]['name'];
+                    var room = idToText[suggestion['Rooms'][0]]['name'];
+
+                    var msg = "<h3>" + suggestor + " has suggested it was " + sus + "  with the " + weapon + " in the " + room + "</h3>";
+                    $("#game-info").html(msg);
+                    setInterval(function(){
+                        $.ajax({
+                            type: "GET",
+                            url: "/play/",
+                            success: function() {
+                                location.reload();
+                            }
+                        });
+                    }, 10000);
+                }
+                else if({{rebuked_card | safe}} != ''){
+                    var card = idToText[{{rebuked_card | safe}}]['name'];
+                    var msg = "<h3>Suggestion rebuked with card: " + card + "</h3>";
+                    $("#game-info").html(msg)
+
+                    setInterval(function(){
+                        $.ajax({
+                            type: "GET",
+                            url: "/play/",
+                            success: function() {
+                                location.reload();
+                            }
+                        });
+                    }, 1000);
                 }
                 else{
                     setInterval(function(){
@@ -315,6 +347,12 @@
                             }
                         });
                     }, 1000);
+                }
+            }
+            else{
+                if({{rebuked_card|safe}} != ''){
+                    var msg = "<h3>Your suggestion was rebuked with card: " + idToText[{{rebuked_card|safe}}]['name']+ "</h3>"
+                    $("#game-info").html(msg)
                 }
             }
             if({{player_turn}} && 'Weapons' in {{suggested_cards|safe}}){
@@ -397,7 +435,7 @@
                     if(card == suggestedCards[cardType]){
                         var rebuke_list = document.getElementById("rebuke-options");
                         var option = document.createElement("option");
-                        option.text = card;
+                        option.text = idToText[card]['name'];
                         rebuke_list.add(option);
                     };
                 });
@@ -433,26 +471,43 @@
 
         function makeSuggestion() {
 
-            var weapon = $("#suggest-weapon  option:selected").text();
-            var suspect = $("#suggest-suspect option:selected").text();
+            var weapon = textToId[$("#suggest-weapon  option:selected").text()];
+            var suspect = textToId[$("#suggest-suspect option:selected").text()];
             var room = {{player_location | safe }};
 
-            url = "/play/?suggest_room=" + room +
-                        "&suggest_weapon=" + textToId[weapon] +
-                        "&suggest_suspect="+ textToId[suspect];
 
-            $.ajax({
-                type: "POST",
-                url: url,
-                success: function() {
+            if(idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
+               idToText[solution_cards["Rooms"][0]]["name"] == room &&
+               idToText[solution_cards["Suspects"][0]]["name"] == suspect){
+                alert('You Won!!!');
+                url = "/play/?player_status=won";
+
+                $.ajax({
+                   type: "POST",
+                    url: url,
+                    success: function() {
+                        location.reload();
+                    }
+                });
+            }
+            else{
+                url = "/play/?suggest_room=" + room +
+                "&suggest_weapon=" + weapon +
+                "&suggest_suspect="+ suspect;
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    success: function() {
                     location.reload();
-                }
-            });
+                    }
+                });
+            }
         };
 
         function rebukeSuggestion() {
 
-            var rebuke_card = $("#rebuke-options option:selected").text();
+            var rebuke_card = textToId[$("#rebuke-options option:selected").text()];
 
             var url = "/play/?rebuke_card=" + rebuke_card;
             $.ajax({
@@ -479,11 +534,11 @@
 
     <body>
         <div class="jumbotron">
-            <div class="container">
+            <div class="container" id="game-info">
                 {% if player_turn|lower == 'true' %}
                 <h2>Your Turn</h2>
                 {% else %}
-                <h2>Player Wait</h2>
+                <h2>{{curr_player_turn | safe}} Turn</h2>
                 {% endif %}
             </div>
         </div>

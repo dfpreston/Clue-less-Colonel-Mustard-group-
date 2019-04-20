@@ -46,7 +46,7 @@ class PlayerManager:
     def get_hand(self):
         hand = {}
 
-        for card in Cards.objects.filter(game=self.game_id, player=self.player, used=False):
+        for card in Cards.objects.filter(game=self.game_id, player=self.player):
 
             if card.card_type not in hand.keys():
                 hand[card.card_type] = [card.name]
@@ -59,7 +59,6 @@ class PlayerManager:
         available = {}
 
         for card in Cards.objects.filter(game=self.game_id, used=False):
-
             if card.card_type not in available.keys():
                 available[card.card_type] = [card.name]
             else:

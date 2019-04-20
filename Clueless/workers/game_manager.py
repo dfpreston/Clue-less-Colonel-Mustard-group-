@@ -137,6 +137,7 @@ class GameManager:
     def update_player_turn(self):
 
         Players.objects.filter(game=self.game_id).update(moved=False, suggested=False)
+        Cards.objects.filter(game=self.game_id, solution=False).update(used=False)
 
         turn_order = []
 
@@ -187,6 +188,7 @@ class GameManager:
 
     def rebuke_suggestion(self, card_name):
         if Cards.objects.filter(game=self.game_id, name=card_name).exists():
+            Cards.objects.filter(game=self.game_id, solution=False).update(used=False)
             Cards.objects.filter(game=self.game_id, name=card_name).update(used=True)
             Cards.objects.filter(game=self.game_id, suggested=True).update(suggested=False)
 
@@ -213,6 +215,12 @@ class GameManager:
                 suggests[card.card_type].append(card.name)
         return suggests
 
+    def get_rebuked_card(self):
+        if Cards.objects.filter(game=self.game_id, used=True, solution=False).exists():
+            return Cards.objects.filter(game=self.game_id, used=True, solution=False)[0].name
+        else:
+            return ''
+
     def get_game_status(self):
         return (Games.objects.filter(id=self.game_id)[0]).status
 
@@ -235,6 +243,10 @@ class GameManager:
             names.append(player.name)
 
         return names
+
+    def get_curr_player_turn(self):
+        return Players.objects.filter(game=self.game_id, their_turn=True)[0].name
+
 
     def delete_completed_games(self):
         if Games.objects.filter().exists():
