@@ -239,9 +239,15 @@ class GameManager:
             return ''
 
     def get_games_pending(self):
+        for game in Games.objects.filter(status=self.game_status[0]):
+            if not Players.objects.filter(game=game).exists():
+                game.delete()
         return Games.objects.filter(status=self.game_status[0]).count()
 
     def get_games_in_progress(self):
+        for game in Games.objects.filter(status=self.game_status[1]):
+            if not Players.objects.filter(game=game).exists():
+                game.delete()
         return Games.objects.filter(status=self.game_status[1]).count()
 
     def get_player_names(self):
