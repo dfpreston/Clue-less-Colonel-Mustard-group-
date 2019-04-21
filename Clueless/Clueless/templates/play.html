@@ -12,6 +12,7 @@
         console.log("Is it Player\'s turn:", {{ player_turn | safe }});
         console.log("Current Player Turn:", {{ curr_player_turn | safe }});
         console.log("Did Player Move:", {{ player_moved | safe }});
+        console.log("Did Player Move Due to Suggestion:", {{ player_moved_suggest | safe }});
         console.log("Player Location:", {{ player_location | safe }});
         console.log("Did Player Make a Suggestion:", {{ player_suggested | safe }});
         console.log("Others Locations:", {{ others_locations | safe }})
@@ -564,7 +565,9 @@
                         {% endif %}
 
                         {% if player_suggested|lower == 'false' and 'room' in player_location and player_turn|lower == 'true' %}
-                            <button class="btn btn-primary" onclick="suggest()">Make a Suggestion</button>
+                            {% if player_moved|lower == 'true' or player_moved_suggest|lower == 'true' %}
+                                <button class="btn btn-primary" onclick="suggest()">Make a Suggestion</button>
+                            {% endif %}
                         {% endif %}
 
                         {% if 'Weapons' not in suggested_cards|safe and player_turn|lower == 'true' %}

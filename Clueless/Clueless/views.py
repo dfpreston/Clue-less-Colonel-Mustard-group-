@@ -193,6 +193,7 @@ def GameRoom(request):
                'player_turn': pm.get_is_player_turn(),
                'curr_player_turn': gm.get_curr_player_turn(),
                'player_moved': pm.get_move_status(),
+               'player_moved_suggest': pm.get_move_suggest_status(),
                'player_location': pm.get_player_location(),
                'player_status': pm.get_player_status(),
                'player_suggested': pm.get_suggest_status(),

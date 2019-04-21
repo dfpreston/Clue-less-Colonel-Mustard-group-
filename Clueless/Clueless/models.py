@@ -23,6 +23,7 @@ class Players(models.Model):
     client_name = models.CharField(max_length=200, null=True)
     status = models.CharField(max_length=50, default='ACTIVE')
     moved = models.BooleanField(default=False)
+    moved_by_suggest = models.BooleanField(default=False)
     suggested = models.BooleanField(default=False)
 
 

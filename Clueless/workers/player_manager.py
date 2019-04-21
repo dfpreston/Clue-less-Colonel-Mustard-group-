@@ -83,3 +83,6 @@ class PlayerManager:
 
     def get_suggest_status(self):
         return self.player.suggested
+
+    def get_move_suggest_status(self):
+        return self.player.moved_by_suggest
