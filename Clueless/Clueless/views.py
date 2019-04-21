@@ -179,6 +179,7 @@ def GameRoom(request):
         gm.update_suggested_card(request.GET.get('suggest_room', ''))
         gm.update_suggested_card(request.GET.get('suggest_weapon', ''))
         gm.update_suggested_card(request.GET.get('suggest_suspect', ''))
+        gm.update_suspect_suggest_location(request.GET.get('suggest_suspect_name', ''))
         gm.rebuke_suggestion(request.GET.get('rebuke_card', ''))
         gm.update_game_status(user_ip, user_name, request.GET.get('player_status', ''))
         pm.update_player_location(request.GET.get('player_location', ''))
@@ -187,6 +188,7 @@ def GameRoom(request):
            request.GET.get('player_status', '') is not '':
             gm.update_player_turn()
 
+    gm.update_suspect_suggest_location(request.GET.get('suggest_suspect_name', ''))
     context = {'game_id': pm.get_game_id(),
                'player_turn': pm.get_is_player_turn(),
                'curr_player_turn': gm.get_curr_player_turn(),

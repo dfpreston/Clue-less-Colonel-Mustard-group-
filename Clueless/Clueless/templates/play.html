@@ -293,11 +293,15 @@
             Object.keys(idToText).forEach(id => {
                 if (id.includes("room") && !player_cards['Rooms'].includes(id)) {
                     addItemToList(id, "accuse-location");
-                } else if (id.includes("suspect") && !player_cards['Suspects'].includes(id)) {
-                    addItemToList(id, "accuse-suspect");
+                } else if (id.includes("suspect")) {
+                    if(!player_cards['Suspects'].includes(id)){
+                        addItemToList(id, "accuse-suspect");
+                    }
                     addItemToList(id, "suggest-suspect");
-                } else if (id.includes("weapon") && !player_cards['Weapons'].includes(id)) {
-                    addItemToList(id, "accuse-weapon");
+                } else if (id.includes("weapon")) {
+                    if(!player_cards['Weapons'].includes(id)){
+                        addItemToList(id, "accuse-weapon");
+                    }
                     addItemToList(id, "suggest-weapon");
                 }
             });
@@ -493,7 +497,8 @@
             else{
                 url = "/play/?suggest_room=" + room +
                 "&suggest_weapon=" + weapon +
-                "&suggest_suspect="+ suspect;
+                "&suggest_suspect="+ suspect +
+                "&suggest_suspect_name="+ $("#suggest-suspect option:selected").text();
 
                 $.ajax({
                     type: "POST",

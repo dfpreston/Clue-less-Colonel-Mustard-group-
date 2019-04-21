@@ -186,6 +186,14 @@ class GameManager:
 
         Players.objects.filter(game=self.game_id, their_turn=True).update(suggested=True)
 
+    def update_suspect_suggest_location(self, suspect):
+        if Cards.objects.filter(game=self.game_id, card_type='Suspects', suggested=True).exists() and\
+           Cards.objects.filter(game=self.game_id, card_type='Rooms', suggested=True).exists():
+            room_name = Cards.objects.filter(game=self.game_id, card_type='Rooms', suggested=True)[0].name
+            location = Locations.objects.filter(game=self.game_id, name=room_name)[0]
+            if Players.objects.filter(game=self.game_id, name=suspect).exists():
+                Players.objects.filter(game=self.game_id, name=suspect).update(location=location)
+
     def rebuke_suggestion(self, card_name):
         if Cards.objects.filter(game=self.game_id, name=card_name).exists():
             Cards.objects.filter(game=self.game_id, solution=False).update(used=False)
@@ -246,7 +254,6 @@ class GameManager:
 
     def get_curr_player_turn(self):
         return Players.objects.filter(game=self.game_id, their_turn=True)[0].name
-
 
     def delete_completed_games(self):
         if Games.objects.filter().exists():
