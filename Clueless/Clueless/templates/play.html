@@ -20,7 +20,7 @@
         console.log("All Available Cards:", {{ available_cards | safe}});
         console.log("Solution Cards:", {{ solution_cards | safe}});
         console.log("Suggested Cards:", {{ suggested_cards | safe}});
-        console.log("Refuted Card:", {{ rebuked_card | safe}});
+        console.log("Refuted Card:", {{ refuted_card | safe}});
         console.log("Player Status: ", {{ player_status | safe }});
         console.log("Game Status: ", {{ game_status | safe }});
         console.log("Game Winner: ", {{ game_winner | safe }});
@@ -249,7 +249,7 @@
         }
 
         function getHallwayName(room1, room2) {
-            return "Hallway from " + room1 + " to " + room2;
+            return "Hallway between " + room1 + " and " + room2;
         }
 
         function addItemToList(item, listToAddTo) {
@@ -333,8 +333,8 @@
                         });
                     }, 10000);
                 }
-                else if({{rebuked_card | safe}} != ''){
-                    var card = idToText[{{rebuked_card | safe}}]['name'];
+                else if({{refuted_card | safe}} != ''){
+                    var card = idToText[{{refuted_card | safe}}]['name'];
                     var msg = "<h3>Suggestion refuted with card: " + card + "</h3>";
                     $("#game-info").html(msg)
 
@@ -361,8 +361,8 @@
                 }
             }
             else{
-                if({{rebuked_card|safe}} != ''){
-                    var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{rebuked_card|safe}}]['name']+ "</h3>"
+                if({{refuted_card|safe}} != ''){
+                    var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{refuted_card|safe}}]['name']+ "</h3>"
                     $("#game-info").html(msg)
                 }
             }
@@ -432,8 +432,8 @@
             $("#make-accusation-menu").show();
         }
 
-        function rebuke() {
-            $("#rebuke-options").empty();
+        function refute() {
+            $("#refute-options").empty();
 
             const playerHand = {{ player_hand | safe}};
             const suggestedCards = {{ suggested_cards | safe}};
@@ -444,15 +444,15 @@
                     //alert(suggestedCards[cardType]);
 
                     if(card == suggestedCards[cardType]){
-                        var rebuke_list = document.getElementById("rebuke-options");
+                        var refute_list = document.getElementById("refute-options");
                         var option = document.createElement("option");
                         option.text = idToText[card]['name'];
-                        rebuke_list.add(option);
+                        refute_list.add(option);
                     };
                 });
             });
             $("#turn-options-menu").hide();
-            $("#rebuke-suggestion-menu").show();
+            $("#refute-suggestion-menu").show();
         }
 
         function makeAccusation() {
@@ -517,11 +517,11 @@
             }
         };
 
-        function rebukeSuggestion() {
+        function refuteSuggestion() {
 
-            var rebuke_card = textToId[$("#rebuke-options option:selected").text()];
+            var refute_card = textToId[$("#refute-options option:selected").text()];
 
-            var url = "/play/?rebuke_card=" + rebuke_card;
+            var url = "/play/?refute_card=" + refute_card;
             $.ajax({
                 type: "POST",
                 url: url,
@@ -583,7 +583,7 @@
                         <br><br>
 
                         {% if 'Weapons' in suggested_cards|safe and player_turn|lower == 'false'%}
-                            <button class="btn btn-primary" onclick="rebuke()">Refute Suggestion</button>
+                            <button class="btn btn-primary" onclick="refute()">Refute Suggestion</button>
                         {% endif %}
 
                         {% if 'Weapons' not in suggested_cards|safe and player_turn|lower == 'true' %}
@@ -624,12 +624,12 @@
                     <button onclick="makeAccusation()">Accuse</button>
                 </div>
 
-                <div class="is-players-turn" id="rebuke-suggestion-menu">
+                <div class="is-players-turn" id="refute-suggestion-menu">
                     <h3>Make an Accusation</h3>
                     <button onclick="showTurnOptions()">Back to Turn Options</button>
                     <p>Choose Card from Hand</p>
-                    <select id="rebuke-options"></select>
-                    <button onclick="rebukeSuggestion()">Rebuke</button>
+                    <select id="refute-options"></select>
+                    <button onclick="refuteSuggestion()">Refute</button>
                 </div>
                 <!-- Player hand -->
                 <h3>Your Hand</h3>
