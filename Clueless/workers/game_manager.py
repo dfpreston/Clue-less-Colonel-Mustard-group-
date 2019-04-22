@@ -103,15 +103,16 @@ class GameManager:
                 card_counter = 0
 
     def place_players(self):
-        for location in Locations.objects.filter(game=self.game_id, type='Hallway').order_by('?'):
+        locations = {'Colonel Mustard':'hallway5',
+                     'Mrs. White':'hallway12',
+                     'Professor Plum':'hallway3',
+                     'Mrs. Peacock':'hallway8',
+                     'Mr. Green':'hallway11',
+                     'Miss Scarlet':'hallway2'}
 
-            if Players.objects.filter(game=self.game_id, location__isnull=True).exists():
-                player = Players.objects.filter(game=self.game_id, location__isnull=True)[0]
-                player.location = location
-                player.save()
-                print('Player location at game start: {}'.format(player.location.name))
-            else:
-                break
+        for player in Players.objects.filter(game=self.game_id):
+            player.location = Locations.objects.filter(game=self.game_id, name=locations[player.name])[0]
+            player.save()
 
     def set_player_order(self):
         turn_order = []

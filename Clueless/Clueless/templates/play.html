@@ -20,7 +20,7 @@
         console.log("All Available Cards:", {{ available_cards | safe}});
         console.log("Solution Cards:", {{ solution_cards | safe}});
         console.log("Suggested Cards:", {{ suggested_cards | safe}});
-        console.log("Rebuked Card:", {{ rebuked_card | safe}});
+        console.log("Refuted Card:", {{ rebuked_card | safe}});
         console.log("Player Status: ", {{ player_status | safe }});
         console.log("Game Status: ", {{ game_status | safe }});
         console.log("Game Winner: ", {{ game_winner | safe }});
@@ -335,7 +335,7 @@
                 }
                 else if({{rebuked_card | safe}} != ''){
                     var card = idToText[{{rebuked_card | safe}}]['name'];
-                    var msg = "<h3>Suggestion rebuked with card: " + card + "</h3>";
+                    var msg = "<h3>Suggestion refuted with card: " + card + "</h3>";
                     $("#game-info").html(msg)
 
                     setInterval(function(){
@@ -362,7 +362,7 @@
             }
             else{
                 if({{rebuked_card|safe}} != ''){
-                    var msg = "<h3>Your suggestion was rebuked with card: " + idToText[{{rebuked_card|safe}}]['name']+ "</h3>"
+                    var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{rebuked_card|safe}}]['name']+ "</h3>"
                     $("#game-info").html(msg)
                 }
             }
