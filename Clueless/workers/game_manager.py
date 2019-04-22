@@ -136,9 +136,16 @@ class GameManager:
     # Game Updates
     def update_player_turn(self):
 
+        if not Players.objects.filter(game=self.game_id, status='ACTIVE').exists():
+            Games.objects.filter(id=self.game_id).update(status='COMPLETED')
+            return
+
         Players.objects.filter(game=self.game_id).update(moved=False, suggested=False)
         Players.objects.filter(game=self.game_id, their_turn=True).update(moved_by_suggest=False)
         Cards.objects.filter(game=self.game_id, solution=False).update(used=False)
+
+        if Players.objects.filter(game=self.game_id, status='LOST', lost=False).exists():
+            Players.objects.filter(game=self.game_id, status='LOST', lost=False).update(lost=True)
 
         turn_order = []
 
@@ -236,6 +243,12 @@ class GameManager:
     def get_game_winner(self):
         if Players.objects.filter(game=self.game_id, status='WON'):
             return Players.objects.filter(game=self.game_id, status='WON')[0].name
+        else:
+            return ''
+
+    def get_game_loser(self):
+        if Players.objects.filter(game=self.game_id, status='LOST', lost=False).exists():
+            return Players.objects.filter(game=self.game_id, status='LOST', lost=False)[0].name
         else:
             return ''
 

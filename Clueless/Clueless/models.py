@@ -25,6 +25,7 @@ class Players(models.Model):
     moved = models.BooleanField(default=False)
     moved_by_suggest = models.BooleanField(default=False)
     suggested = models.BooleanField(default=False)
+    lost = models.BooleanField(default=False)
 
 
 class Cards(models.Model):

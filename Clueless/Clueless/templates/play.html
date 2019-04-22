@@ -23,7 +23,8 @@
         console.log("Rebuked Card:", {{ rebuked_card | safe}});
         console.log("Player Status: ", {{ player_status | safe }});
         console.log("Game Status: ", {{ game_status | safe }});
-        console.log("Game Winner: ", {{ game_winner | safe }})
+        console.log("Game Winner: ", {{ game_winner | safe }});
+        console.log("Player That Just Lost: ", {{ game_loser | safe }});
 
         var solution_cards = {{ solution_cards | safe}};
 
@@ -273,7 +274,12 @@
 
             // Notify player if they are the winner
             if( {{ game_status | safe }} == "COMPLETED"){
-                alert( {{ game_winner | safe }} +" has won the game!!");
+                if ({{ game_winner | safe }} == ''){
+                    alert('No one has won this game...')
+                }
+                else{
+                    alert( {{ game_winner | safe }} +" has won the game!!");
+                }
                 location.replace("/");
             };
 
@@ -577,7 +583,7 @@
                         <br><br>
 
                         {% if 'Weapons' in suggested_cards|safe and player_turn|lower == 'false'%}
-                            <button class="btn btn-primary" onclick="rebuke()">Rebuke Suggestion</button>
+                            <button class="btn btn-primary" onclick="rebuke()">Refute Suggestion</button>
                         {% endif %}
 
                         {% if 'Weapons' not in suggested_cards|safe and player_turn|lower == 'true' %}

@@ -38,7 +38,7 @@ class PlayerManager:
     def get_other_player_locations(self):
         other_locations = {}
 
-        for player in Players.objects.filter(game=self.game_id).exclude(client_ip=self.client_ip, client_name=self.client_name):
+        for player in Players.objects.filter(game=self.game_id, status='ACTIVE').exclude(client_ip=self.client_ip, client_name=self.client_name):
             other_locations[player.name] = player.location.name
 
         return other_locations
