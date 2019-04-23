@@ -566,7 +566,7 @@
                     <h3>Turn Options</h3>
                     <div id="turn-options">
 
-                        {% if player_moved|lower == 'false' and player_turn|lower == 'true' and 'Weapons' not in suggested_cards|safe %}
+                        {% if player_moved|lower == 'false' and player_suggested|lower == 'false' and player_turn|lower == 'true' and 'Weapons' not in suggested_cards|safe %}
                             <button class="btn btn-primary" onclick="move()">Move</button>
                         {% endif %}
 
