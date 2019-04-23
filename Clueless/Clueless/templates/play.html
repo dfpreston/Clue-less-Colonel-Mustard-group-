@@ -513,15 +513,15 @@
                     (player_hand["Suspects"].includes(suspect) || solution_cards["Suspects"].includes(suspect))){
 
                 if(solution_cards["Weapons"].includes(weapon)){
-                    var rebuke_card = weapon;
+                    var refute_card = weapon;
                 }
                 else if(solution_cards["Rooms"].includes(room)){
-                    var rebuke_card = room;
+                    var refute_card = room;
                 }
                 else if(solution_cards["Suspects"].includes(suspect)){
-                    var rebuke_card = suspect;
+                    var refute_card = suspect;
                 }
-                var url = "/play/?rebuke_card=" + rebuke_card;
+                var url = "/play/?refute_card=" + refute_card;
                 $.ajax({
                     type: "POST",
                     url: url,
