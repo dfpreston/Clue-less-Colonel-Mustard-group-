@@ -825,6 +825,8 @@ const
 				cards_shown_to_greatest_num.insert( *card_iter );
 			}
 
+			++card_iter; //next card
+
 		} //end while (consider cards)
 
 		if( ! choice )
@@ -832,7 +834,7 @@ const
 			//otherwise, randomly choose amongst better choices
 			choice = randomlyChooseCard( &cards_shown_to_greatest_num );
 		}
-	}
+	} //end else (choose amongst cards)
 
 	return choice;
 

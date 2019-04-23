@@ -108,8 +108,8 @@ Board::~Board()
 	} //end while (more person tokens)
 
 	//delete all weapon tokens
-	std::map<clueless::WeaponType, GamePiece*>::iterator wpn_iter( _weaponTokens.begin() );
-	GamePiece* curr_wpn_token( nullptr );
+	std::map<clueless::WeaponType, WeaponPiece*>::iterator wpn_iter( _weaponTokens.begin() );
+	WeaponPiece* curr_wpn_token( nullptr );
 
 	while( wpn_iter != _weaponTokens.end() )
 	{
@@ -580,8 +580,8 @@ Board::randomlyDistributeWeapons()
 	std::set<Location*>::iterator room_iter( rooms.begin() );
 	Location* chosen_room( nullptr );
 	
-	std::map<clueless::WeaponType, GamePiece*>::iterator wpn_iter( _weaponTokens.begin() );
-	GamePiece* wpn_token( nullptr );
+	std::map<clueless::WeaponType, WeaponPiece*>::iterator wpn_iter( _weaponTokens.begin() );
+	WeaponPiece* wpn_token( nullptr );
 	while( _weaponTokens.end() != wpn_iter )
 	{
 		chosen_room = chooseLocation(&rooms);

@@ -171,7 +171,11 @@ const
 {
 	turn_options->clear(); //no known options yet
 
-	if( player->isFalseAccuser() ) //false accuser
+	if( player->isGameWinner() ) //winner
+	{
+		return; //no need for further turn options
+	}
+	else if( player->isFalseAccuser() ) //false accuser
 	{
 		//lose turn
 		std::cout << "  has made false accusation => no longer active\n";
@@ -269,12 +273,12 @@ Game::executePlayerChoice(
 		clueless::WeaponType suggested_weapon( suggestion.getWeaponType() );
 		clueless::RoomType suggested_room( suggestion.getRoomType() );
 
-		if( _board.movePersonTokenToRoom(suggested_person, suggested_room) );
+		if( _board.movePersonTokenToRoom(suggested_person, suggested_room) )
 		{
 			notifyAllPlayers_personTokenMovedForSuggestion(suggested_person, suggested_room);
 		}
 
-		if( _board.moveWeaponTokenToRoom(suggested_weapon, suggested_room) );
+		if( _board.moveWeaponTokenToRoom(suggested_weapon, suggested_room) )
 		{
 			notifyAllPlayers_weaponTokenMovedForSuggestion(suggested_weapon, suggested_room);
 		}
@@ -387,6 +391,7 @@ const
 		(_players.end() != player_iter) )
 	{
 		counter_evidence = (*player_iter)->offerEvidenceCounterToSuggestion(suggestion, suggestor);
+		opponent_character = (*player_iter)->getCharacter();
 
 		++player_iter; //next player
 
@@ -401,6 +406,7 @@ const
 		(suggestor_iter != player_iter) )
 	{
 		counter_evidence = (*player_iter)->offerEvidenceCounterToSuggestion(suggestion, suggestor);
+		opponent_character = (*player_iter)->getCharacter();
 
 		++player_iter; //next player
 
