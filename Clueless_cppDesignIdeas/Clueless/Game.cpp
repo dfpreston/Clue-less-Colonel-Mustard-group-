@@ -182,7 +182,10 @@ const
 		return;
 	}
 
-	if( ! player->hasMovedDuringTurn() ) //player has not moved yet
+	//if player has not moved yet  AND
+	//          has not made suggestion
+	if( ! player->hasMovedDuringTurn() &&
+		! player->hasMadeSuggestionDuringTurn() )
 	{
 		//if possible moves found
 		if( 0 < move_options->size() )
