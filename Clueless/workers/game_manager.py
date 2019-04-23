@@ -205,7 +205,8 @@ class GameManager:
 
     def rebuke_suggestion(self, card_name):
         if Cards.objects.filter(game=self.game_id, name=card_name).exists():
-            Cards.objects.filter(game=self.game_id, solution=False).update(used=False)
+            #Cards.objects.filter(game=self.game_id, solution=False).update(used=False)
+            Cards.objects.filter(game=self.game_id).update(used=False)
             Cards.objects.filter(game=self.game_id, name=card_name).update(used=True)
             Cards.objects.filter(game=self.game_id, suggested=True).update(suggested=False)
 
@@ -233,8 +234,10 @@ class GameManager:
         return suggests
 
     def get_rebuked_card(self):
-        if Cards.objects.filter(game=self.game_id, used=True, solution=False).exists():
-            return Cards.objects.filter(game=self.game_id, used=True, solution=False)[0].name
+        #if Cards.objects.filter(game=self.game_id, used=True, solution=False).exists():
+        #    return Cards.objects.filter(game=self.game_id, used=True, solution=False)[0].name
+        if Cards.objects.filter(game=self.game_id, used=True).exists():
+            return Cards.objects.filter(game=self.game_id, used=True)[0].name
         else:
             return ''
 

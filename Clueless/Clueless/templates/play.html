@@ -481,6 +481,8 @@
         }
 
         function makeSuggestion() {
+            player_hand = {{player_hand|safe}};
+            solution_cards = {{solution_cards|safe}};
 
             var weapon = textToId[$("#suggest-weapon  option:selected").text()];
             var suspect = textToId[$("#suggest-suspect option:selected").text()];
@@ -500,6 +502,33 @@
                         location.reload();
                     }
                 });
+            }
+            else if(player_hand["Weapons"].includes(weapon) &&
+                    player_hand["Rooms"].includes(room) &&
+                    player_hand["Suspects"].includes(suspect)){
+                alert('You cannot suggest only your cards...');
+            }
+            else if((player_hand["Weapons"].includes(weapon) || solution_cards["Weapons"].includes(weapon)) &&
+                    (player_hand["Rooms"].includes(room) || solution_cards["Rooms"].includes(room)) &&
+                    (player_hand["Suspects"].includes(suspect) || solution_cards["Suspects"].includes(suspect))){
+
+                if(solution_cards["Weapons"].includes(weapon)){
+                    var rebuke_card = weapon;
+                }
+                else if(solution_cards["Rooms"].includes(room)){
+                    var rebuke_card = room;
+                }
+                else if(solution_cards["Suspects"].includes(suspect)){
+                    var rebuke_card = suspect;
+                }
+                var url = "/play/?rebuke_card=" + rebuke_card;
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    success: function(){
+                    location.reload();
+                }
+            });
             }
             else{
                 url = "/play/?suggest_room=" + room +
