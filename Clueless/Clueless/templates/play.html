@@ -10,6 +10,7 @@
         console.log("Game Id:", {{ game_id }});
         console.log("Is Player Game Creator:", {{ is_creator | safe }});
         console.log("Is it Player\'s turn:", {{ player_turn | safe }});
+        console.log("Player Name:", {{ player_name | safe }});
         console.log("Current Player Turn:", {{ curr_player_turn | safe }});
         console.log("Did Player Move:", {{ player_moved | safe }});
         console.log("Did Player Move Due to Suggestion:", {{ player_moved_suggest | safe }});
@@ -205,22 +206,28 @@
                 ]
             },
             suspect1: {
-                name: "Colonel Mustard"
+                name: "Colonel Mustard",
+                image: "{% static 'images/avatar_col_mustard.png' %}"
             },
             suspect2: {
-                name: "Miss Scarlet"
+                name: "Miss Scarlet",
+                image: "{% static 'images/avatar_ms_scarlett.png' %}"
             },
             suspect3: {
-                name: "Mr. Green"
+                name: "Mr. Green",
+                image: "{% static 'images/avatar_mr_green.png' %}"
             },
             suspect4: {
-                name: "Mrs. Peacock"
+                name: "Mrs. Peacock",
+                image: "{% static 'images/avatar_mrs_peacock.png' %}"
             },
             suspect5: {
-                name: "Mrs. White"
+                name: "Mrs. White",
+                image: "{% static 'images/avatar_mrs_white.png' %}"
             },
             suspect6: {
-                name: "Professor Plum"
+                name: "Professor Plum",
+                image: "{% static 'images/avatar_prof_plum.png' %}"
             }
         }
 
@@ -293,6 +300,13 @@
 
             // Notify player of current location
             $("#player-location-msg").text("You are in the " + idToText[{{ player_location | safe }}].name);
+
+            //Images of player icons
+            $("#player-location-img").append('<img src='+idToText[textToId[{{player_name|safe}}]].image+' class={{player_location|safe}} width=3%>');
+            others_locations = {{ others_locations | safe }};
+            Object.keys(others_locations).forEach(player => {
+                $("#player-location-img").append('<img src='+idToText[textToId[player]].image+' class='+others_locations[player]+' width=3%>');
+            });
 
             var player_cards = {{player_hand|safe}};
 
@@ -573,6 +587,143 @@
 
     </script>
 
+    <head>
+        <style>
+            .board
+            {
+                display = block;
+                top: 50%;
+                left: 50%;
+                width: 75%
+            }
+            .room1
+            {
+                position: absolute;
+                bottom: 17%;
+                left: 36.5%
+            }
+            .room2
+            {
+                position: absolute;
+                bottom: 45%;
+                left: 36.5%;
+            }
+            .room3
+            {
+                position: absolute;
+                bottom: 17%;
+                left: 16%;
+            }
+            .room4
+            {
+                position: absolute;
+                bottom: 45%;
+                left: 57%;
+            }
+            .room5
+            {
+                position: absolute;
+                bottom: 72%;
+                left: 36.5%;
+            }
+            .room6
+            {
+                position: absolute;
+                bottom: 17%;
+                left: 57.5%;
+            }
+            .room7
+            {
+                position: absolute;
+                bottom: 45%;
+                left: 16%;
+            }
+            .room8
+            {
+                position: absolute;
+                bottom: 72%;
+                left: 57%;
+            }
+            .room9
+            {
+                position: absolute;
+                bottom: 72%;
+                left: 16%;
+            }
+            .hallway1
+            {
+                position: absolute;
+                bottom: 69%;
+                left: 27%;
+            }
+            .hallway2
+            {
+                position: absolute;
+                bottom: 69%;
+                left: 47%;
+            }
+            .hallway3
+            {
+                position: absolute;
+                bottom: 54%;
+                left: 16%;
+            }
+            .hallway4
+            {
+                position: absolute;
+                bottom: 52%;
+                left: 36.5%;
+            }
+            .hallway5
+            {
+                position: absolute;
+                bottom: 53%;
+                left: 57.5%;
+            }
+            .hallway6
+            {
+                position: absolute;
+                bottom: 38.5%;
+                left: 27%;
+            }
+            .hallway7
+            {
+                position: absolute;
+                bottom: 38.5%;
+                left: 47%;
+            }
+            .hallway8
+            {
+                position: absolute;
+                bottom: 26%;
+                left: 16%;
+            }
+            .hallway9
+            {
+                position: absolute;
+                bottom: 26%;
+                left: 36.5%;
+            }
+            .hallway10
+            {
+                position: absolute;
+                bottom: 26%;
+                left: 57.5%;
+            }
+            .hallway11
+            {
+                position: absolute;
+                bottom: 12.5%;
+                left: 27%;
+            }
+            .hallway12
+            {
+                position: absolute;
+                bottom: 12.5%;
+                left: 47%;
+            }
+        </style>
+    </head>
     <body>
         <div class="jumbotron">
             <div class="container" id="game-info">
@@ -586,7 +737,8 @@
         <div class="container">
             <div class="col-xs-12 col-sm-6">
                 <h3 id="player-location-msg"></h3>
-                <img src="{% static 'images/board.png' %}" alt="game board picture" style="width:75%">
+                <img src="{% static 'images/board.png' %}" alt="game board picture" class="board">
+                <div id="player-location-img"></div>
             </div>
             <div class="col-xs-12 col-sm-6">
                 <!-- Turn handling -->

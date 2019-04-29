@@ -190,6 +190,7 @@ def GameRoom(request):
 
     gm.update_suspect_suggest_location(request.GET.get('suggest_suspect_name', ''))
     context = {'game_id': pm.get_game_id(),
+               'player_name': pm.get_player_name(),
                'player_turn': pm.get_is_player_turn(),
                'curr_player_turn': gm.get_curr_player_turn(),
                'player_moved': pm.get_move_status(),
