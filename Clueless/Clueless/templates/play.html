@@ -29,7 +29,10 @@
 
         var solution_cards = {{ solution_cards | safe}};
 
+        //NOTE: home to hallway is one-way connection
+        //      => define connection in home but not adjacent hallway
         const idToText = {
+            //weapons
             weapon1: {
                 name: "Candlestick"
             },
@@ -48,6 +51,8 @@
             weapon6: {
                 name: "Wrench"
             },
+
+            //rooms
             room1: {
                 name: "Ballroom",
                 connections: [
@@ -121,6 +126,8 @@
                     "room6"
                 ]
             },
+
+            //hallways
             hallway1: {
                 name: getHallwayName("Hall", "Study"),
                 connections: [
@@ -205,6 +212,40 @@
                     "room6"
                 ]
             },
+
+            //home spaces
+            scarlet_home:
+            {
+                name: "Scarlet home",
+                connections: [ "hallway2" ]
+            },
+            mustard_home:
+            {
+                name: "Mustard home",
+                connections: [ "hallway5" ]
+            },
+            white_home:
+            {
+                name: "White home",
+                connections: [ "hallway12" ]
+            },
+            green_home:
+            {
+                name: "Green home",
+                connections: [ "hallway11" ]
+            },
+            peacock_home:
+            {
+                name: "Peacock home",
+                connections: [ "hallway8" ]
+            },
+            plum_home:
+            {
+                name: "Plum home",
+                connections: [ "hallway3" ]
+            },
+
+            //suspects (characters)
             suspect1: {
                 name: "Colonel Mustard",
                 image: "{% static 'images/avatar_col_mustard.png' %}"
@@ -247,6 +288,12 @@
             "Library": "room7",
             "Lounge": "room8",
             "Study": "room9",
+            "Scarlet home": "scarlet_home",
+            "Mustard home": "mustard_home",
+            "White home": "white_home",
+            "Green home": "green_home",
+            "Peacock home": "peacock_home",
+            "Plum home": "plum_home",
             "Colonel Mustard": "suspect1",
             "Miss Scarlet": "suspect2",
             "Mr. Green": "suspect3",
