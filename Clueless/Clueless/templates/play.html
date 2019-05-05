@@ -32,6 +32,30 @@
         //NOTE: home to hallway is one-way connection
         //      => define connection in home but not adjacent hallway
         const idToText = {
+            suspect1: {
+                name: "Colonel Mustard",
+                image: "{% static 'images/avatar_col_mustard.png' %}"
+            },
+            suspect2: {
+                name: "Miss Scarlet",
+                image: "{% static 'images/avatar_ms_scarlett.png' %}"
+            },
+            suspect3: {
+                name: "Mr. Green",
+                image: "{% static 'images/avatar_mr_green.png' %}"
+            },
+            suspect4: {
+                name: "Mrs. Peacock",
+                image: "{% static 'images/avatar_mrs_peacock.png' %}"
+            },
+            suspect5: {
+                name: "Mrs. White",
+                image: "{% static 'images/avatar_mrs_white.png' %}"
+            },
+            suspect6: {
+                name: "Professor Plum",
+                image: "{% static 'images/avatar_prof_plum.png' %}"
+            },
             //weapons
             weapon1: {
                 name: "Candlestick"
@@ -59,7 +83,8 @@
                     "hallway9", 
                     "hallway11",
                     "hallway12"
-                ]
+                ],
+                image: "{% static 'images/room1.jpg' %}"
             },
             room2: {
                 name: "Billiard Room",
@@ -68,7 +93,8 @@
                     "hallway6",
                     "hallway7",
                     "hallway9"
-                ]
+                ],
+                image: "{% static 'images/room2.jpg' %}"
             },
             room3: {
                 name: "Conservatory",
@@ -76,7 +102,8 @@
                     "hallway8",
                     "hallway11",
                     "room8"
-                ]
+                ],
+                image: "{% static 'images/room3.jpg' %}"
             },
             room4: {
                 name: "Dining Room",
@@ -84,7 +111,8 @@
                     "hallway5",
                     "hallway7",
                     "hallway10"
-                ]
+                ],
+                image: "{% static 'images/room4.jpg' %}"
             },
             room5: {
                 name: "Hall",
@@ -92,7 +120,8 @@
                     "hallway1",
                     "hallway2",
                     "hallway4"
-                ]
+                ],
+                image: "{% static 'images/room5.jpg' %}"
             },
             room6: {
                 name: "Kitchen",
@@ -100,7 +129,8 @@
                     "hallway10",
                     "hallway12",
                     "room9"
-                ]
+                ],
+                image: "{% static 'images/room6.jpg' %}"
             },
             room7: {
                 name: "Library",
@@ -108,7 +138,8 @@
                     "hallway3",
                     "hallway6",
                     "hallway8"
-                ]
+                ],
+                image: "{% static 'images/room7.jpg' %}"
             },
             room8: {
                 name: "Lounge",
@@ -116,7 +147,8 @@
                     "hallway2",
                     "hallway5",
                     "room3"
-                ]
+                ],
+                image: "{% static 'images/room8.jpg' %}"
             },
             room9: {
                 name: "Study",
@@ -124,7 +156,8 @@
                     "hallway1",
                     "hallway3",
                     "room6"
-                ]
+                ],
+                image: "{% static 'images/room9.jpg' %}"
             },
 
             //hallways
@@ -133,84 +166,96 @@
                 connections: [
                     "room5",
                     "room9"
-                ]
+                ],
+                image: "{% static 'images/hallway-h.jpg' %}"
             },
             hallway2: {
                 name: getHallwayName("Hall", "Lounge"),
                 connections: [
                     "room5",
                     "room8"
-                ]
+                ],
+                image: "{% static 'images/hallway-h.jpg' %}"
             },
             hallway3: {
                 name: getHallwayName("Study", "Library"),
                 connections: [
                     "room7",
                     "room9"
-                ]
+                ],
+                image: "{% static 'images/hallway-v.jpg' %}"
             },
             hallway4: {
                 name: getHallwayName("Hall", "Billiard Room"),
                 connections: [
                     "room5",
                     "room2"
-                ]
+                ],
+                image: "{% static 'images/hallway-v.jpg' %}"
             },
             hallway5: {
                 name: getHallwayName("Lounge", "Dining Room"),
                 connections: [
                     "room8",
                     "room4"
-                ]
+                ],
+                image: "{% static 'images/hallway-v.jpg' %}"
             },
             hallway6: {
                 name: getHallwayName("Billiard Room", "Library"),
                 connections: [
                     "room2",
                     "room7"
-                ]
+                ],
+                image: "{% static 'images/hallway-h.jpg' %}"
             },
             hallway7: {
                 name: getHallwayName("Billiard Room", "Dining Room"),
                 connections: [
                     "room2",
                     "room4"
-                ]
+                ],
+                image: "{% static 'images/hallway-h.jpg' %}"
             },
             hallway8: {
                 name: getHallwayName("Library", "Conservatory"),
                 connections: [
                     "room7",
                     "room3"
-                ]
+                ],
+                image: "{% static 'images/hallway-v.jpg' %}"
             },
             hallway9: {
                 name: getHallwayName("Billiard Room", "Ballroom"),
                 connections: [
                     "room2",
                     "room1"
-                ]
+                ],
+                image: "{% static 'images/hallway-v.jpg' %}"
             },
             hallway10: {
                 name: getHallwayName("Dining Room", "Kitchen"),
                 connections: [
                     "room4",
                     "room6"
-                ]
+                ],
+                image: "{% static 'images/hallway-v.jpg' %}"
             },
             hallway11: {
                 name: getHallwayName("Conservatory", "Ballroom"),
                 connections: [
                     "room3",
                     "room1"
-                ]
+                ],
+                image: "{% static 'images/hallway-h.jpg' %}"
             },
             hallway12: {
                 name: getHallwayName("Ballroom", "Kitchen"),
                 connections: [
                     "room1",
                     "room6"
-                ]
+                ],
+                image: "{% static 'images/hallway-h.jpg' %}"
             },
 
             //home spaces
@@ -243,32 +288,6 @@
             {
                 name: "Plum home",
                 connections: [ "hallway3" ]
-            },
-
-            //suspects (characters)
-            suspect1: {
-                name: "Colonel Mustard",
-                image: "{% static 'images/avatar_col_mustard.png' %}"
-            },
-            suspect2: {
-                name: "Miss Scarlet",
-                image: "{% static 'images/avatar_ms_scarlett.png' %}"
-            },
-            suspect3: {
-                name: "Mr. Green",
-                image: "{% static 'images/avatar_mr_green.png' %}"
-            },
-            suspect4: {
-                name: "Mrs. Peacock",
-                image: "{% static 'images/avatar_mrs_peacock.png' %}"
-            },
-            suspect5: {
-                name: "Mrs. White",
-                image: "{% static 'images/avatar_mrs_white.png' %}"
-            },
-            suspect6: {
-                name: "Professor Plum",
-                image: "{% static 'images/avatar_prof_plum.png' %}"
             }
         }
 
@@ -303,7 +322,7 @@
         }
 
         function getHallwayName(room1, room2) {
-            return "Hallway between " + room1 + " and " + room2;
+            return "hallway between the " + room1 + " and the " + room2;
         }
 
         function addItemToList(item, listToAddTo) {
@@ -314,7 +333,43 @@
             list.add(option);
         }
 
+        function addCardToNotebook(cardType, card) {
+            $("#notebook").find("tbody").append(
+                "<tr id='" + card + "'>" + 
+                    "<td>" + cardType + "</td>" + 
+                    "<td>" + idToText[card].name + "</td>" + 
+                    '<td title="Evidence not yet found"><input type="checkbox" disabled/></td>' +
+                "</tr>"
+            );
+        }
+
+        function addImageToBoard(card, isRoom) {
+            let locId;
+            if (isRoom) {
+                locId = "#r" + card.substring(4); 
+            } else {
+                locId = "#h" + card.substring(7);
+            }
+            $(locId).append(
+                "<img src="+idToText[card].image + " />"
+            );
+        }
+
         $(document).ready(function() {
+            // prepare the detective notebook and game board
+            Object.keys(idToText).forEach(card => {
+                if (card.includes("suspect")) {
+                   addCardToNotebook("Suspect", card);
+                } else if (card.includes("weapon")) {
+                    addCardToNotebook("Weapon", card);
+                } else if (card.includes("room")) {
+                    addCardToNotebook("Room", card);
+                    addImageToBoard(card, true);
+                } else {
+                    addImageToBoard(card, false);
+                }
+            });
+
             // construct player's hand
             playerHand = {{ player_hand | safe}};
 
@@ -323,6 +378,8 @@
                     $("#player-hand").append(
                         "<li>" + idToText[card].name + "</li>"
                     );
+                    $("#" + card).find("input").prop("checked", true);
+                    $("#" + card).find("input").attr("title", "Source: my hand");
                 });
             });
 
@@ -331,7 +388,7 @@
                 if ({{ game_winner | safe }} == ''){
                     alert('No one has won this game...')
                 }
-                else{
+                else {
                     alert( {{ game_winner | safe }} +" has won the game!!");
                 }
                 location.replace("/");
@@ -348,14 +405,25 @@
             // Notify player of current location
             $("#player-location-msg").text("You are in the " + idToText[{{ player_location | safe }}].name);
 
-            //Images of player icons
-            $("#player-location-img").append('<img src='+idToText[textToId[{{player_name|safe}}]].image+' class={{player_location|safe}} width=3%>');
-            others_locations = {{ others_locations | safe }};
-            Object.keys(others_locations).forEach(player => {
-                $("#player-location-img").append('<img src='+idToText[textToId[player]].image+' class='+others_locations[player]+' width=3%>');
+            // Images of player icons
+            let currPlayerLoc = {{player_location|safe}};
+            const locationId = currPlayerLoc.includes("room") ?
+                "#r" + currPlayerLoc.substring(4) :
+                "#h" + currPlayerLoc.substring(7);
+            console.log("current location: " + currPlayerLoc);
+            $(locationId).append(
+                    '<img src=' + idToText[textToId[{{player_name|safe}}]].image + ' class="player-token" width=5%>'
+                );
+            let otherPlayerLocations = {{ others_locations | safe }};
+            Object.keys(otherPlayerLocations).forEach(player => {
+                let currPlayerLoc = otherPlayerLocations[player];
+                const locationId = currPlayerLoc[player].includes("room") ?
+                    "#r" + currPlayerLoc.substring(4) :
+                    "#h" + currPlayerLoc.substring(7);
+                $(locationId).append('<img src='+idToText[textToId[player]].image + ' class="player-token" width=5%>');
             });
 
-            var player_cards = {{player_hand|safe}};
+            var player_cards = {{player_hand | safe}};
 
             // initialize suspect, weapon, and location options
             Object.keys(idToText).forEach(id => {
@@ -397,7 +465,7 @@
                 else if({{refuted_card | safe}} != ''){
                     var card = idToText[{{refuted_card | safe}}]['name'];
                     var msg = "<h3>Suggestion refuted with card: " + card + "</h3>";
-                    $("#game-info").html(msg)
+                    $("#game-info").html(msg);
 
                     setInterval(function(){
                         $.ajax({
@@ -423,8 +491,12 @@
             }
             else{
                 if({{refuted_card|safe}} != ''){
-                    var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{refuted_card|safe}}]['name']+ "</h3>"
-                    $("#game-info").html(msg)
+                    var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{refuted_card|safe}}]['name']+ "</h3>";
+                    $("#game-info").html(msg);
+
+                    // Update detective notebook
+                    $("#" + card).find("input").prop("checked", true);
+                    $("#" + card).find("input").attr("title", "Source: refuted suggestion");
                 }
             }
             if({{player_turn}} && 'Weapons' in {{suggested_cards|safe}}){
@@ -636,138 +708,33 @@
 
     <head>
         <style>
-            .board
-            {
-                display = block;
-                top: 50%;
-                left: 50%;
-                width: 75%
+            #board-container {
+                position: relative;
             }
-            .room1
-            {
-                position: absolute;
-                bottom: 17%;
-                left: 36.5%
+            .board {
+                float: left;
             }
-            .room2
-            {
-                position: absolute;
-                bottom: 45%;
-                left: 36.5%;
+            .board img {
+                max-height: 150px;
             }
-            .room3
-            {
-                position: absolute;
-                bottom: 17%;
-                left: 16%;
+            .horizontal {
+                width: 50px;
+                margin-top: 50px;
             }
-            .room4
-            {
-                position: absolute;
-                bottom: 45%;
-                left: 57%;
+            .vertical {
+                height: 50px;
+                margin-left: 50px;
             }
-            .room5
-            {
-                position: absolute;
-                bottom: 72%;
-                left: 36.5%;
+            .col-2 {
+                margin-left: 150px;
             }
-            .room6
-            {
-                position: absolute;
-                bottom: 17%;
-                left: 57.5%;
+            .col-3 {
+                margin-left: 150px;
             }
-            .room7
-            {
+            .player-token {
                 position: absolute;
-                bottom: 45%;
-                left: 16%;
-            }
-            .room8
-            {
-                position: absolute;
-                bottom: 72%;
-                left: 57%;
-            }
-            .room9
-            {
-                position: absolute;
-                bottom: 72%;
-                left: 16%;
-            }
-            .hallway1
-            {
-                position: absolute;
-                bottom: 69%;
-                left: 27%;
-            }
-            .hallway2
-            {
-                position: absolute;
-                bottom: 69%;
-                left: 47%;
-            }
-            .hallway3
-            {
-                position: absolute;
-                bottom: 54%;
-                left: 16%;
-            }
-            .hallway4
-            {
-                position: absolute;
-                bottom: 52%;
-                left: 36.5%;
-            }
-            .hallway5
-            {
-                position: absolute;
-                bottom: 53%;
-                left: 57.5%;
-            }
-            .hallway6
-            {
-                position: absolute;
-                bottom: 38.5%;
-                left: 27%;
-            }
-            .hallway7
-            {
-                position: absolute;
-                bottom: 38.5%;
-                left: 47%;
-            }
-            .hallway8
-            {
-                position: absolute;
-                bottom: 26%;
-                left: 16%;
-            }
-            .hallway9
-            {
-                position: absolute;
-                bottom: 26%;
-                left: 36.5%;
-            }
-            .hallway10
-            {
-                position: absolute;
-                bottom: 26%;
-                left: 57.5%;
-            }
-            .hallway11
-            {
-                position: absolute;
-                bottom: 12.5%;
-                left: 27%;
-            }
-            .hallway12
-            {
-                position: absolute;
-                bottom: 12.5%;
-                left: 47%;
+                border: 2px solid white;
+                z-index: 1;
             }
         </style>
     </head>
@@ -782,14 +749,45 @@
             </div>
         </div>
         <div class="container">
-            <div class="col-xs-12 col-sm-6">
+            <div class="col-xs-12 col-sm-8">
                 <h3 id="player-location-msg"></h3>
-                <img src="{% static 'images/board.png' %}" alt="game board picture" class="board">
-                <div id="player-location-img"></div>
-            </div>
-            <div class="col-xs-12 col-sm-6">
+
+                <div id="board-container">
+                    <div class="col-xs-12">
+                        <div class="board room" id="r9"></div>
+                        <div class="board horizontal" id="h1"></div>
+                        <div class="board room" id="r5"></div>
+                        <div class="board horizontal" id="h2"></div>
+                        <div class="board room" id="r8"></div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="board vertical" id="h3"></div>
+                        <div class="board vertical col-2" id="h4"></div>
+                        <div class="board vertical col-3" id="h5"></div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="board room" id="r7"></div>
+                        <div class="board horizontal" id="h6"></div>
+                        <div class="board room" id="r2"></div>
+                        <div class="board horizontal" id="h7"></div>
+                        <div class="board room" id="r4"></div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="board vertical" id="h8"></div>
+                        <div class="board vertical col-2" id="h9"></div>
+                        <div class="board vertical col-3" id="h10"></div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="board room" id="r3"></div>
+                        <div class="board horizontal" id="h11"></div>
+                        <div class="board room" id="r1"></div>
+                        <div class="board horizontal" id="h12"></div>
+                        <div class="board room" id="r6"></div>
+                    </div>
+                </div>
+
                 <!-- Turn handling -->
-                <div class="is-players-turn" id="turn-options-menu">
+                <row class="is-players-turn" id="turn-options-menu">
 
                     <h3>Turn Options</h3>
                     <div id="turn-options">
@@ -818,51 +816,78 @@
                         <button class="btn btn-primary" onclick="end_turn()">End Turn</button>
                         {% endif %}
                     </div>
-                </div>
+                </row>
 
-                <div class="is-players-turn" id="move-options-menu">
+                <row class="is-players-turn" id="move-options-menu">
                     <h3>Move Options</h3>
-                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <button class="btn btn-primary" onclick="showTurnOptions()">Back to Turn Options</button>
                     <br><br>
-                    <select id="move-options"></select>
-                    <button onclick="movePlayer()">Move</button>
-                    </ul>
-                </div>
+                    <div class="form-group">
+                        <label for="sel1">Pick a location:</label>
+                        <select class="form-control" id="move-options"></select>
+                    </div>
+                    <button class="btn btn-primary" onclick="movePlayer()">Move</button>
+                </row>
 
-                <div class="is-players-turn" id="make-suggestion-menu">
+                <row class="is-players-turn" id="make-suggestion-menu">
                     <h3>Make a Suggestion</h3>
-                    <button onclick="showTurnOptions()">Back to Turn Options</button>
-                    <p>Choose one Weapon</p>
-                    <select id="suggest-weapon"></select>
-                    <p>Choose one Suspect</p>
-                    <select id="suggest-suspect"></select>
-                    <button onclick="makeSuggestion()">Suggest</button>
-                </div>
+                    <button class="btn btn-primary" onclick="showTurnOptions()">Back to Turn Options</button>
+                    <div class="form-group">
+                        <label for="suggest-weapon">Choose one Weapon:</label>
+                        <select class="form-control" id="suggest-weapon"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="suggest-suspect">Choose one Suspect:</label>
+                        <select class="form-control" id="suggest-suspect"></select>
+                    </div>
+                    <button class="btn btn-primary" onclick="makeSuggestion()">Suggest</button>
+                </row>
 
-                <div class="is-players-turn" id="make-accusation-menu">
+                <row class="is-players-turn" id="make-accusation-menu">
                     <h3>Make an Accusation</h3>
-                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <button class="btn btn-primary" onclick="showTurnOptions()">Back to Turn Options</button>
+                    <div class="form-group">
+                        <label for="accuse-weapon">Choose one Weapon:</label>
+                        <select class="form-control" id="accuse-weapon"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="accuse-suspect">Choose one Suspect:</label>
+                        <select class="form-control" id="accuse-suspect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="accuse-location">Choose one Room:</label>
+                        <select class="form-control" id="accuse-location"></select>
+                    </div>
+                    <button class="btn btn-primary" onclick="makeAccusation()">Accuse</button>
                     <p><em>NOTE: if you make an incorrect Accusation, you automatically lose the game.</em></p>
-                    <p>Choose one Weapon</p>
-                    <select id="accuse-weapon"></select>
-                    <p>Choose one Suspect</p>
-                    <select id="accuse-suspect"></select>
-                    <p>Choose one Room</p>
-                    <select id="accuse-location"></select>
-                    <button onclick="makeAccusation()">Accuse</button>
-                </div>
+                </row>
 
-                <div class="is-players-turn" id="refute-suggestion-menu">
-                    <h3>Make an Accusation</h3>
+                <row class="is-players-turn" id="refute-suggestion-menu">
+                    <h3>Refute a Suggestion</h3>
                     <button onclick="showTurnOptions()">Back to Turn Options</button>
-                    <p>Choose Card from Hand</p>
-                    <select id="refute-options"></select>
-                    <button onclick="refuteSuggestion()">Refute</button>
-                </div>
+                    <div class="form-group">
+                        <label for="accuse-suspect">Choose a card from your hand:</label>
+                        <select class="form-control" id="refute-options"></select>
+                    </div>
+                    <button class="btn btn-primary" onclick="refuteSuggestion()">Refute</button>
+                </row>
+
                 <!-- Player hand -->
                 <h3>Your Hand</h3>
-                <ul id="player-hand">
+                <ul id="player-hand" style="columns: 3;">
                 </ul>
+            </div>
+            <div class="col-xs-12 col-sm-4" id="notebook-container">
+                <h3>Detective Notebook</h3>
+                <table class="table" id="notebook">
+                    <thead>
+                        <th>Evidence Type</th>
+                        <th>Evidence</th>
+                        <th>Seen?</th>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
         </div>
     </body>
