@@ -78,7 +78,6 @@ class GameManager:
         for card_type in self.cards:
             solution_card = Cards.objects.filter(game=self.game_id, card_type=card_type).order_by('?')[0]
             solution_card.solution = True
-            solution_card.used = True
             solution_card.save()
 
         # 'Shuffle' deck and hand cards out
@@ -245,8 +244,6 @@ class GameManager:
         return suggests
 
     def get_refuted_card(self):
-        #if Cards.objects.filter(game=self.game_id, used=True, solution=False).exists():
-        #    return Cards.objects.filter(game=self.game_id, used=True, solution=False)[0].name
         if Cards.objects.filter(game=self.game_id, used=True).exists():
             return Cards.objects.filter(game=self.game_id, used=True)[0].name
         else:
