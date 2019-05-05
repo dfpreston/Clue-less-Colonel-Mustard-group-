@@ -22,8 +22,8 @@ class GameManager:
                       'Hallway':['hallway1', 'hallway2', 'hallway3', 'hallway4',
                                  'hallway5', 'hallway6', 'hallway7', 'hallway8',
                                  'hallway9', 'hallway10', 'hallway11', 'hallway12'],
-                      'Home':['scarlet_home', 'mustard_home', 'white_home',
-                              'green_home', 'peacock_home', 'plum_home']}
+                      'StartSpace':['scarlet_start', 'mustard_start', 'white_start',
+                              'green_start', 'peacock_start', 'plum_start']}
         self.cards = {'Weapons':['weapon1', 'weapon2', 'weapon3', 'weapon4', 'weapon5', 'weapon6'],
                       'Suspects':['suspect1', 'suspect2', 'suspect3','suspect4', 'suspect5', 'suspect6'],
                       'Rooms':['room1', 'room2', 'room3', 'room4', 'room5', 'room6', 'room7', 'room8', 'room9']}
@@ -103,15 +103,15 @@ class GameManager:
                 player_counter += 1
                 card_counter = 0
 
-    ## @brief: Initializes character token location to associated home space.
+    ## @brief: Initializes character token location to associated starting space.
     ## @param: game manager
     def place_players(self):
-        locations = { 'Miss Scarlet': 'scarlet_home',
-                      'Colonel Mustard': 'mustard_home',
-                      'Mrs. White': 'white_home',
-                      'Mr. Green': 'green_home',
-                      'Mrs. Peacock': 'peacock_home',
-                      'Professor Plum': 'plum_home' }
+        locations = { 'Miss Scarlet': 'scarlet_start',
+                      'Colonel Mustard': 'mustard_start',
+                      'Mrs. White': 'white_start',
+                      'Mr. Green': 'green_start',
+                      'Mrs. Peacock': 'peacock_start',
+                      'Professor Plum': 'plum_start' }
 
         for player in Players.objects.filter(game=self.game_id):
             player.location = Locations.objects.filter(game=self.game_id, name=locations[player.name])[0]

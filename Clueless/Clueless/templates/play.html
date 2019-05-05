@@ -29,8 +29,8 @@
 
         var solution_cards = {{ solution_cards | safe}};
 
-        //NOTE: home to hallway is one-way connection
-        //      => define connection in home but not adjacent hallway
+        //NOTE: starting space to hallway is one-way connection
+        //      => define connection in starting space but not adjacent hallway
         const idToText = {
             suspect1: {
                 name: "Colonel Mustard",
@@ -258,35 +258,35 @@
                 image: "{% static 'images/hallway-h.jpg' %}"
             },
 
-            //home spaces
-            scarlet_home:
+            //starting spaces
+            scarlet_start:
             {
-                name: "Scarlet home",
+                name: "Scarlet starting space",
                 connections: [ "hallway2" ]
             },
-            mustard_home:
+            mustard_start:
             {
-                name: "Mustard home",
+                name: "Mustard starting space",
                 connections: [ "hallway5" ]
             },
-            white_home:
+            white_start:
             {
-                name: "White home",
+                name: "White starting space",
                 connections: [ "hallway12" ]
             },
-            green_home:
+            green_start:
             {
-                name: "Green home",
+                name: "Green starting space",
                 connections: [ "hallway11" ]
             },
-            peacock_home:
+            peacock_start:
             {
-                name: "Peacock home",
+                name: "Peacock starting space",
                 connections: [ "hallway8" ]
             },
-            plum_home:
+            plum_start:
             {
-                name: "Plum home",
+                name: "Plum starting space",
                 connections: [ "hallway3" ]
             }
         }
@@ -307,12 +307,12 @@
             "Library": "room7",
             "Lounge": "room8",
             "Study": "room9",
-            "Scarlet home": "scarlet_home",
-            "Mustard home": "mustard_home",
-            "White home": "white_home",
-            "Green home": "green_home",
-            "Peacock home": "peacock_home",
-            "Plum home": "plum_home",
+            "Scarlet starting space": "scarlet_start",
+            "Mustard starting space": "mustard_start",
+            "White starting space": "white_start",
+            "Green starting space": "green_start",
+            "Peacock starting space": "peacock_start",
+            "Plum starting space": "plum_start",
             "Colonel Mustard": "suspect1",
             "Miss Scarlet": "suspect2",
             "Mr. Green": "suspect3",
