@@ -21,11 +21,13 @@
         console.log("All Available Cards:", {{ available_cards | safe}});
         console.log("Solution Cards:", {{ solution_cards | safe}});
         console.log("Suggested Cards:", {{ suggested_cards | safe}});
-        console.log("Refuted Card:", {{ refuted_card | safe}});
+        console.log("Current Refuter: ", {{ curr_refuter | safe}});
+        console.log("Is Unable to Refute: ", {{ is_unable_to_refute | safe}});
+        console.log("Refuted Card: ", {{ refuted_card | safe}});
         console.log("Player Status: ", {{ player_status | safe }});
         console.log("Game Status: ", {{ game_status | safe }});
         console.log("Game Winner: ", {{ game_winner | safe }});
-        console.log("Player That Just Lost: ", {{ game_loser | safe }});
+        console.log("Player Who Just Lost: ", {{ game_loser | safe }});
 
         var solution_cards = {{ solution_cards | safe}};
 
@@ -396,7 +398,21 @@
                 }
                 else if({{refuted_card | safe}} != ''){
                     var card = idToText[{{refuted_card | safe}}]['name'];
-                    var msg = "<h3>Suggestion refuted with card: " + card + "</h3>";
+                    var msg = "<h3>You refuted Suggestion with card: " + card + "</h3>";
+                    $("#game-info").html(msg)
+
+                    setInterval(function(){
+                        $.ajax({
+                            type: "GET",
+                            url: "/play/",
+                            success: function() {
+                                location.reload();
+                            }
+                        });
+                    }, 5000);
+                }
+                else if({{is_unable_to_refute | safe}} != ''){
+                    var msg = "<h3>You found no counter-evidence for Suggestion</h3>";
                     $("#game-info").html(msg)
 
                     setInterval(function(){
@@ -421,9 +437,14 @@
                     }, 5000);
                 }
             }
-            else{
+            else{ //is player's turn
                 if({{refuted_card|safe}} != ''){
-                    var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{refuted_card|safe}}]['name']+ "</h3>"
+                    var msg = "<h3>" + idToText[{{curr_refuter}}]['name'] + " refutes your Suggestion with card: " + idToText[{{refuted_card|safe}}]['name']+ "</h3>"
+                    $("#game-info").html(msg)
+                }
+                else //opponent unable to provide counter-evidence
+                {
+                    var msg = "<h3>" + idToText[{{curr_refuter}}]['name'] + " unable to provide counter-evidence" + "</h3>"
                     $("#game-info").html(msg)
                 }
             }
@@ -512,8 +533,13 @@
                     };
                 });
             });
+
             $("#turn-options-menu").hide();
-            $("#refute-suggestion-menu").show();
+
+            if( refute_list.isEmptyObject() )
+                $("#no-counterEvidence-menu").show()
+            else
+                $("#refute-suggestion-menu").show();
         }
 
         function makeAccusation() {
@@ -620,6 +646,21 @@
                 }
             });
         };
+
+        /// \brief: Post knowledge that current refuter is unable to provide
+        ///         counter-evidence to current player's suggestion
+        function indicateLackCounterEvidence()
+        {
+            var url = "/play/?is_unable_to_refute=" + 'true';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                success: function(){
+                    location.reload();
+                }
+            });
+        }; //end function indicateLackCounterEvidence()
 
         function end_turn(){
             var url = "/play/?end_turn=true";
@@ -805,12 +846,12 @@
                         {% endif %}
 
                         {% if 'Weapons' not in suggested_cards|safe and player_turn|lower == 'true' %}
-                        <button class="btn btn-primary" onclick="accuse()">Make an Accusation</button>
+                            <button class="btn btn-primary" onclick="accuse()">Make an Accusation</button>
                         {% endif %}
 
                         <br><br>
 
-                        {% if 'Weapons' in suggested_cards|safe and player_turn|lower == 'false'%}
+                        {% if 'Weapons' in suggested_cards|safe and is_curr_refuter|lower == 'true'%}
                             <button class="btn btn-primary" onclick="refute()">Refute Suggestion</button>
                         {% endif %}
 
@@ -853,12 +894,22 @@
                 </div>
 
                 <div class="is-players-turn" id="refute-suggestion-menu">
-                    <h3>Make an Accusation</h3>
-                    <button onclick="showTurnOptions()">Back to Turn Options</button>
+                    <h3>Respond to Suggestion</h3>
+
                     <p>Choose Card from Hand</p>
                     <select id="refute-options"></select>
                     <button onclick="refuteSuggestion()">Refute</button>
                 </div>
+
+
+                <div class="is-players-turn" id="no-counterEvidence-menu">
+                    <h3>Respond to Suggestion</h3>
+
+                    <p><em>No cards from Suggestion found in your hand.</em></p>
+
+                    <button onclick="indicateLackCounterEvidence()">No Counter-Evidence in Hand</button>
+                </div>
+
                 <!-- Player hand -->
                 <h3>Your Hand</h3>
                 <ul id="player-hand">

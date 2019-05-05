@@ -141,9 +141,12 @@ class GameManager:
     # Game Updates
     def update_player_turn(self):
 
+        # if no active players, exit game
         if not Players.objects.filter(game=self.game_id, status='ACTIVE').exists():
             Games.objects.filter(id=self.game_id).update(status='COMPLETED')
             return
+
+        # otherwise, at least one active player
 
         Players.objects.filter(game=self.game_id).update(moved=False, suggested=False)
         Players.objects.filter(game=self.game_id, their_turn=True).update(moved_by_suggest=False)
@@ -152,6 +155,7 @@ class GameManager:
         if Players.objects.filter(game=self.game_id, status='LOST', lost=False).exists():
             Players.objects.filter(game=self.game_id, status='LOST', lost=False).update(lost=True)
 
+        # determine order of play
         turn_order = []
 
         temp = (Games.objects.filter(id=self.game_id)[0].turn_order)\
@@ -213,6 +217,9 @@ class GameManager:
             Cards.objects.filter(game=self.game_id).update(used=False)
             Cards.objects.filter(game=self.game_id, name=card_name).update(used=True)
             Cards.objects.filter(game=self.game_id, suggested=True).update(suggested=False)
+
+    # def lack_of_counter_evidence(self):
+        ## @todo Add logic to handle lack of counter evidence
 
     # Game info returns
     def get_solution_cards(self):
@@ -282,6 +289,9 @@ class GameManager:
 
     def get_curr_player_turn(self):
         return Players.objects.filter(game=self.game_id, their_turn=True)[0].name
+
+    def get_curr_refuter(self):
+        return Players.objects.filter(game=self.game_id, is_curr_refuter=True)[0].name
 
     def delete_completed_games(self):
         if Games.objects.filter().exists():

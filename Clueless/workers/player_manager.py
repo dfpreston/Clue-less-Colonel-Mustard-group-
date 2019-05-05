@@ -86,3 +86,6 @@ class PlayerManager:
 
     def get_move_suggest_status(self):
         return self.player.moved_by_suggest
+
+    def get_is_curr_refuter(self):
+        return self.player.is_curr_refuter
