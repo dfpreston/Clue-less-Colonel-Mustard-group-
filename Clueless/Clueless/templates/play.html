@@ -386,10 +386,10 @@
             // Notify player if they are the winner
             if( {{ game_status | safe }} == "COMPLETED"){
                 if ({{ game_winner | safe }} == ''){
-                    alert('No one has won this game...')
+                    alert('No one has won this game...\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 }
                 else {
-                    alert( {{ game_winner | safe }} +" has won the game!!");
+                    alert( {{ game_winner | safe }} +' has won the game!!\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 }
                 location.replace("/");
             };
@@ -596,11 +596,11 @@
             if(idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
                idToText[solution_cards["Rooms"][0]]["name"] == room &&
                idToText[solution_cards["Suspects"][0]]["name"] == suspect){
-                alert('You Won!!!');
+                alert('You Won!!!\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 url = "/play/?player_status=won";
             }
             else{
-                alert('You lost...');
+                alert('You lost...\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 url = "/play/?player_status=lost";
             };
 
