@@ -411,8 +411,8 @@
                 "#r" + currPlayerLoc.substring(4) :
                 "#h" + currPlayerLoc.substring(7);
             console.log("current location: " + currPlayerLoc);
-            $(locationId).append(
-                    '<img src=' + idToText[textToId[{{player_name|safe}}]].image + ' class="player-token" width=5%>'
+            $(locationId).prepend(
+                    '<img src=' + idToText[textToId[{{player_name|safe}}]].image + ' class="player-token">'
                 );
             let otherPlayerLocations = {{ others_locations | safe }};
             Object.keys(otherPlayerLocations).forEach(player => {
@@ -420,7 +420,7 @@
                 const locationId = currPlayerLoc[player].includes("room") ?
                     "#r" + currPlayerLoc.substring(4) :
                     "#h" + currPlayerLoc.substring(7);
-                $(locationId).append('<img src='+idToText[textToId[player]].image + ' class="player-token" width=5%>');
+                $(locationId).prepend('<img src='+idToText[textToId[player]].image + ' class="player-token">');
             });
 
             var player_cards = {{player_hand | safe}};
@@ -735,6 +735,7 @@
                 position: absolute;
                 border: 2px solid white;
                 z-index: 1;
+                width: 30px;
             }
         </style>
     </head>
