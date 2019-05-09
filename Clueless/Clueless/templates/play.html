@@ -26,6 +26,7 @@
         console.log("Game Status: ", {{ game_status | safe }});
         console.log("Game Winner: ", {{ game_winner | safe }});
         console.log("Player That Just Lost: ", {{ game_loser | safe }});
+        console.log("Weapon Locations: ", {{ weapon_locations | safe }});
 
         var solution_cards = {{ solution_cards | safe}};
 
@@ -58,22 +59,28 @@
             },
             //weapons
             weapon1: {
-                name: "Candlestick"
+                name: "Candlestick",
+                image: "{% static 'images/weapon_candlestick.png' %}"
             },
             weapon2: {
-                name: "Knife"
+                name: "Knife",
+                image: "{% static 'images/weapon_knife.png' %}"
             },
             weapon3: {
-                name: "Lead Pipe"
+                name: "Lead Pipe",
+                image: "{% static 'images/weapon_lead_pipe.png' %}"
             },
             weapon4: {
-                name: "Revolver"
+                name: "Revolver",
+                image: "{% static 'images/weapon_revolver.png' %}"
             },
             weapon5: {
-                name: "Rope"
+                name: "Rope",
+                image: "{% static 'images/weapon_rope.png' %}"
             },
             weapon6: {
-                name: "Wrench"
+                name: "Wrench",
+                image: "{% static 'images/weapon_wrench.png' %}"
             },
 
             //rooms
@@ -407,21 +414,31 @@
 
             // Images of player icons
             let currPlayerLoc = {{player_location|safe}};
-            const locationId = currPlayerLoc.includes("room") ?
+            let locationId = currPlayerLoc.includes("room") ?
                 "#r" + currPlayerLoc.substring(4) :
                 "#h" + currPlayerLoc.substring(7);
             console.log("current location: " + currPlayerLoc);
             $(locationId).prepend(
                     '<img src=' + idToText[textToId[{{player_name|safe}}]].image + ' class="player-token">'
                 );
-            let otherPlayerLocations = {{ others_locations | safe }};
+            var otherPlayerLocations = {{ others_locations | safe }};
             Object.keys(otherPlayerLocations).forEach(player => {
                 let currPlayerLoc = otherPlayerLocations[player];
-                const locationId = currPlayerLoc[player].includes("room") ?
+                let locationId = currPlayerLoc[player].includes("room") ?
                     "#r" + currPlayerLoc.substring(4) :
                     "#h" + currPlayerLoc.substring(7);
-                $(locationId).prepend('<img src='+idToText[textToId[player]].image + ' class="player-token">');
+                $(locationId).prepend('<img src="'+idToText[textToId[player]].image + '" class="player-token">');
             });
+
+            // Images of weapon icons
+            var weaponLocations = {{ weapon_locations | safe }};
+            Object.keys(weaponLocations).forEach(weapon => {
+                let currWeaponLoc = weaponLocations[weapon];
+                let locationId = currWeaponLocation.substring(4);
+                $(locationId).prepend('<img src='+idToText[weapon].image + ' class="weapon-token">');
+            });
+
+
 
             var player_cards = {{player_hand | safe}};
 
@@ -621,7 +638,6 @@
             var suspect = textToId[$("#suggest-suspect option:selected").text()];
             var room = {{player_location | safe }};
 
-
             if(idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
                idToText[solution_cards["Rooms"][0]]["name"] == room &&
                idToText[solution_cards["Suspects"][0]]["name"] == suspect){
@@ -659,9 +675,9 @@
                     type: "POST",
                     url: url,
                     success: function(){
-                    location.reload();
-                }
-            });
+                        location.reload();
+                    }
+                })
             }
             else{
                 url = "/play/?suggest_room=" + room +
@@ -736,6 +752,16 @@
                 border: 2px solid white;
                 z-index: 1;
                 width: 30px;
+                margin-left: 10px;
+                margin-top: 10px;
+            }
+            .weapon-token {
+                position: absolute;
+                border: 2px solid black;
+                z-index: 1;
+                width: 30px;
+                margin-top: 50%;
+                margin-left: 10px;
             }
         </style>
     </head>
