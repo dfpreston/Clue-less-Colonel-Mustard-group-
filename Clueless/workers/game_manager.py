@@ -46,8 +46,11 @@ class GameManager:
                 Locations.objects.create(game=self.game_id, name=room, type=t)
 
     def create_weapons(self):
+        rooms = Locations.objects.filter(game=self.game_id, type='Room').order_by('?')
+        i = 0
         for weapon in self.weapons:
-            Weapons.objects.create(game=self.game_id, name=weapon)
+            Weapons.objects.create(game=self.game_id, name=weapon, location=rooms[i])
+            i += 1
 
     def add_player(self, client_ip, client_name, is_creator):
 

@@ -454,11 +454,10 @@
             // Images of weapon icons
             var weaponLocations = {{ weapon_locations | safe }};
             Object.keys(weaponLocations).forEach(weapon => {
-                let currWeaponLoc = weaponLocations[weapon];
-                let locationId = currWeaponLocation.substring(4);
-                $(locationId).prepend('<img src='+idToText[weapon].image + ' class="weapon-token">');
+                let currWeaponLocation = weaponLocations[weapon];
+                let locationId = "#r" + currWeaponLocation.substring(4);
+                $(locationId).prepend('<img src="'+idToText[weapon].image + '" class="weapon-token">');
             });
-
 
 
             var player_cards = {{player_hand | safe}};
@@ -781,7 +780,7 @@
                 border: 2px solid black;
                 z-index: 1;
                 width: 30px;
-                margin-top: 50%;
+                margin-top: 90px;
                 margin-left: 10px;
             }
             .cards {
