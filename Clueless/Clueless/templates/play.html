@@ -451,7 +451,7 @@
             var otherPlayerLocations = {{ others_locations | safe }};
             Object.keys(otherPlayerLocations).forEach(player => {
                 let currPlayerLoc = otherPlayerLocations[player];
-                let locationId = currPlayerLoc[player].includes("room") ?
+                let locationId = currPlayerLoc.includes("room") ?
                     "#r" + currPlayerLoc.substring(4) + "c" :
                     "#h" + currPlayerLoc.substring(7);
                 $(locationId).prepend('<div class="column"><img src="'+idToText[textToId[player]].image + '" class="player token"></div>');
