@@ -742,14 +742,28 @@
             });
         };
 
+        function getSolutionMessage() {
+            let solution = "<p>It was " + idToText[solution_cards["Suspects"][0]]["name"] + " in the " + idToText[solution_cards["Rooms"][0]]["name"] + " with the " + idToText[solution_cards["Weapons"][0]]["name"] + ".</p>";
+            solution +=
+                "<div class='row'>" + 
+                    "<div class='col-xs-4'>" +
+                        "<img class='card' src=" + idToText[solution_cards["Suspects"][0]].cardPic + "/>" +
+                    "</div>" +
+                    "<div class='col-xs-4'>" +
+                        "<img class='card' src=" + idToText[solution_cards["Rooms"][0]].cardPic + "/>" +
+                    "</div>" +
+                    "<div class='col-xs-4'>" +
+                        "<img class='card' src=" + idToText[solution_cards["Weapons"][0]].cardPic + "/>" +
+                    "</div>" +
+                "</div>";
+            return solution;
+        }
+
         //show solution set at end of the game
         function showSolutionSet(gameWinner) {
+        	var solutionString = "<p>" + gameWinner + " has won the game!</p>" + getSolutionMessage();
 
-        	var solutionString = gameWinner + " has won the game!<br>";
-        	solutionString += 'It was ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"];
-
-        	document.getElementById("modalBody").innerHTML = solutionString + "<div class='row'><img class='card' src=" + idToText[solution_cards["Suspects"][0]].cardPic + "></div>" + "<div class='column'><img class='card' src=" + idToText[solution_cards["Rooms"][0]].cardPic + "></div>" + "<div class='column'><img class='card' src=" + idToText[solution_cards["Weapons"][0]].cardPic + "></div>";
-
+        	document.getElementById("modalBody").innerHTML = solutionString;
         	$("#endgameButton").show();
         	$("#closeModal").hide();
         	$("#solutionContainer").show();
@@ -758,12 +772,9 @@
 
     	//show solution to loser
     	function showLoserSet() {
+        	var solutionString = "<p>You have lost the game!</p>" + getSolutionMessage();
 
-        	var solutionString = "You have lost the game!<br>";
-        	solutionString += 'It was ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"];
-
-        	document.getElementById("modalBody").innerHTML = solutionString + "<img class='card' src=" + idToText[solution_cards["Suspects"][0]].cardPic + ">" + "<img class='card' src=" + idToText[solution_cards["Rooms"][0]].cardPic + ">" + "<img class='card' src=" + idToText[solution_cards["Weapons"][0]].cardPic + ">";
-
+        	document.getElementById("modalBody").innerHTML = solutionString;
         	$("#endgameButton").hide();
         	$("#closeModal").show();
         	$("#solutionContainer").show();
@@ -1055,31 +1066,24 @@
             </div>
         </div>
 
-                <!-- modal div -->
+        <!-- modal div -->
         <div class="container" id="solutionContainer">
-        <h2>Game Over!!</h2>
+            <div class="modal fade" id="solutionModal" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                	    <div class="modal-header">
+                	    	<h4 class="modal-title">Game Over!</h4>
+                	    </div>
+                	    <div class="modal-body" id="modalBody"></div>
+                	    <div class="modal-footer">
+                      		<button type="button" onclick="endGame()" id="endgameButton" class="btn btn-default">End game</button>
+                      		<button type="button" onclick="loserUpdate()" id="closeModal" class="btn btn-default" data-dismiss="modal">Close</button>
+                      	</div>
+                	</div>
+               	</div>
+           	</div>
+       	</div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="solutionModal" role="dialog">
-        <div class="modal-dialog">
-
-        <!-- Modal content-->
-        <div class="modal-content">
-    	    <div class="modal-header">
-    	    	<button type="button" class="close" data-dismiss="modal">&times;</button>
-    	    	<h4 class="modal-title">Game Over!</h4>
-    	    </div>
-    	    <div class="modal-body" id="modalBody">
-    	    	<p>Some text in the modal.</p>
-    	    </div>
-    	    <div class="modal-footer">
-          		<button type="button" onclick="endGame()" id="endgameButton" class="btn btn-default" data-dismiss="modal">End game</button>
-          		<button type="button" onclick="loserUpdate()" id="closeModal" class="btn btn-default" data-dismiss="modal">Close</button>
-          	</div>
-        	</div>
-       	</div>
-       	</div>
-       	</div>
     </body>
 
     <!-- Bootstrap CSS -->
