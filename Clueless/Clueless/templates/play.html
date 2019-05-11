@@ -442,27 +442,27 @@
             // Images of player icons
             let currPlayerLoc = {{player_location|safe}};
             let locationId = currPlayerLoc.includes("room") ?
-                "#r" + currPlayerLoc.substring(4) :
+                "#r" + currPlayerLoc.substring(4) + "c" :
                 "#h" + currPlayerLoc.substring(7);
             console.log("current location: " + currPlayerLoc);
             $(locationId).prepend(
-                    '<img src=' + idToText[textToId[{{player_name|safe}}]].image + ' class="player-token">'
+                    '<div class="column"><img src=' + idToText[textToId[{{player_name|safe}}]].image + ' class="player token"></div>'
                 );
             var otherPlayerLocations = {{ others_locations | safe }};
             Object.keys(otherPlayerLocations).forEach(player => {
                 let currPlayerLoc = otherPlayerLocations[player];
                 let locationId = currPlayerLoc[player].includes("room") ?
-                    "#r" + currPlayerLoc.substring(4) :
+                    "#r" + currPlayerLoc.substring(4) + "c" :
                     "#h" + currPlayerLoc.substring(7);
-                $(locationId).prepend('<img src="'+idToText[textToId[player]].image + '" class="player-token">');
+                $(locationId).prepend('<div class="column"><img src="'+idToText[textToId[player]].image + '" class="player token"></div>');
             });
 
             // Images of weapon icons
             var weaponLocations = {{ weapon_locations | safe }};
             Object.keys(weaponLocations).forEach(weapon => {
                 let currWeaponLocation = weaponLocations[weapon];
-                let locationId = "#r" + currWeaponLocation.substring(4);
-                $(locationId).prepend('<img src="'+idToText[weapon].image + '" class="weapon-token">');
+                let locationId = "#r" + currWeaponLocation.substring(4) + "w";
+                $(locationId).prepend('<div class="column"><img src="'+idToText[weapon].image + '" class="weapon token"></div>');
             });
 
 
@@ -807,6 +807,7 @@
             }
             .board {
                 float: left;
+                overflow: hidden;
             }
             .board img {
                 max-height: 150px;
@@ -825,20 +826,27 @@
             .col-3 {
                 margin-left: 150px;
             }
-            .player-token {
+            .token {
                 position: absolute;
-                border: 2px solid white;
+                border-radius: 0.5em;
                 z-index: 1;
-                width: 30px;
-                margin-left: 10px;
-                margin-top: 10px;
             }
-            .weapon-token {
-                position: absolute;
+            .weapon {
                 border: 2px solid black;
-                z-index: 1;
+                margin-top: 110px;
+                margin-left: 10px;
+                width: 25px;
+            }
+            .player {
+                border: 2px solid white;
+                margin-left: 5px;
+                margin-top: 10px;
                 width: 30px;
-                margin-top: 90px;
+            }
+            .column {
+                float: left;
+                width: 10%;
+                padding: 1px;
                 margin-left: 10px;
             }
             .cards {
@@ -852,7 +860,6 @@
             .cardWrapper:last-child, .cardWrapper:hover {
                 overflow: visible;
             }
-
             .card {
                 width: 10em;
                 min-width: 10em;
@@ -884,11 +891,20 @@
 
                 <div id="board-container">
                     <div class="col-xs-12">
-                        <div class="board room" id="r9"></div>
+                        <div class="board room" id="r9">
+                            <div class="row" id="r9c"></div>
+                            <div class="row" id="r9w"></div>
+                        </div>
                         <div class="board horizontal" id="h1"></div>
-                        <div class="board room" id="r5"></div>
+                        <div class="board room" id="r5">
+                            <div class="row" id="r5c"></div>
+                            <div class="row" id="r5w"></div>
+                        </div>
                         <div class="board horizontal" id="h2"></div>
-                        <div class="board room" id="r8"></div>
+                        <div class="board room" id="r8">
+                            <div class="row" id="r8c"></div>
+                            <div class="row" id="r8w"></div>
+                        </div>
                     </div>
                     <div class="col-xs-12">
                         <div class="board vertical" id="h3"></div>
@@ -896,11 +912,20 @@
                         <div class="board vertical col-3" id="h5"></div>
                     </div>
                     <div class="col-xs-12">
-                        <div class="board room" id="r7"></div>
+                        <div class="board room" id="r7">
+                            <div class="board room row" id="r7c"></div>
+                            <div class="board room row" id="r7w"></div>
+                        </div>
                         <div class="board horizontal" id="h6"></div>
-                        <div class="board room" id="r2"></div>
+                        <div class="board room" id="r2">
+                            <div class="row" id="r2c"></div>
+                            <div class="row" id="r2w"></div>
+                        </div>
                         <div class="board horizontal" id="h7"></div>
-                        <div class="board room" id="r4"></div>
+                        <div class="board room" id="r4">
+                            <div class="row" id="r4c"></div>
+                            <div class="row" id="r4w"></div>
+                        </div>
                     </div>
                     <div class="col-xs-12">
                         <div class="board vertical" id="h8"></div>
@@ -908,11 +933,20 @@
                         <div class="board vertical col-3" id="h10"></div>
                     </div>
                     <div class="col-xs-12">
-                        <div class="board room" id="r3"></div>
+                        <div class="board room" id="r3">
+                            <div class="row" id="r3c"></div>
+                            <div class="row" id="r3w"></div>
+                        </div>
                         <div class="board horizontal" id="h11"></div>
-                        <div class="board room" id="r1"></div>
+                        <div class="board room" id="r1">
+                            <div class="row" id="r1c"></div>
+                            <div class="row" id="r1w"></div>
+                        </div>
                         <div class="board horizontal" id="h12"></div>
-                        <div class="board room" id="r6"></div>
+                        <div class="board room" id="r6">
+                            <div class="row" id="r6c"></div>
+                            <div class="row" id="r6w"></div>
+                        </div>
                     </div>
                 </div>
 
