@@ -564,12 +564,14 @@
             $("#move-options").empty();
 
             let moveOptions = idToText[{{ player_location | safe }}].connections;
-            moveOptions.forEach(move => {
-                var occupied = 0;
-                var o = {{others_locations|safe}}
-
-                for(x in o){
-                    if(o[x] == move){occupied=1;}
+            moveOptions.forEach(moveOpt => {
+                // only check occupied hallways, not rooms
+                let occupied = 0;
+                if (moveOpt.includes("hall")) {
+                    var otherLocs = {{others_locations|safe}}
+                    for(x in otherLocs){
+                        if(otherLocs[x] == moveOpt) occupied=1;
+                    }
                 }
 
                 if(occupied==0){
