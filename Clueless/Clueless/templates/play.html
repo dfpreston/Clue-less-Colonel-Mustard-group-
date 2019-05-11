@@ -384,10 +384,10 @@
         }
 
         $(document).ready(function() {
-        	
+
         	//hide solution
         	$("#solutionContainer").hide();
-        	
+
             // prepare the detective notebook and game board
             Object.keys(idToText).forEach(card => {
                 if (card.includes("suspect")) {
@@ -647,7 +647,7 @@
                 //alert('You lost...\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 //url = "/play/?player_status=lost";
                 showLoserSet();
-                 
+
             };
 
         }
@@ -741,61 +741,61 @@
                 }
             });
         };
-        
+
         //show solution set at end of the game
         function showSolutionSet(gameWinner) {
-        	
+
         	var solutionString = gameWinner + " has won the game!<br>";
         	solutionString += 'It was ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"];
 
         	document.getElementById("modalBody").innerHTML = solutionString + "<div class='row'><img class='card' src=" + idToText[solution_cards["Suspects"][0]].cardPic + "></div>" + "<div class='column'><img class='card' src=" + idToText[solution_cards["Rooms"][0]].cardPic + "></div>" + "<div class='column'><img class='card' src=" + idToText[solution_cards["Weapons"][0]].cardPic + "></div>";
-        	
+
         	$("#endgameButton").show();
         	$("#closeModal").hide();
         	$("#solutionContainer").show();
         	$("#solutionModal").modal();
     	}
-    	
+
     	//show solution to loser
     	function showLoserSet() {
-    		
+
         	var solutionString = "You have lost the game!<br>";
         	solutionString += 'It was ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"];
-        	
+
         	document.getElementById("modalBody").innerHTML = solutionString + "<img class='card' src=" + idToText[solution_cards["Suspects"][0]].cardPic + ">" + "<img class='card' src=" + idToText[solution_cards["Rooms"][0]].cardPic + ">" + "<img class='card' src=" + idToText[solution_cards["Weapons"][0]].cardPic + ">";
-        	
+
         	$("#endgameButton").hide();
         	$("#closeModal").show();
         	$("#solutionContainer").show();
         	$("#solutionModal").modal();
     	}
-    	
+
     	//end game method
     	function endGame() {
-    		
+
     		url = "/play/?player_status=won";
-    		
+
     		$.ajax({
                 type: "POST",
                 url: url,
                 success: function() {
                     location.reload();
                 }
-            }); 
+            });
     	}
-    	
+
     	//end game method
     	function loserUpdate() {
-    		
+
     		url = "/play/?player_status=lost";
-    		
+
     		$.ajax({
                 type: "POST",
                 url: url,
                 success: function() {
                     location.reload();
                 }
-            }); 
+            });
     	}
 
     </script>
@@ -1054,15 +1054,15 @@
                 </table>
             </div>
         </div>
-        
+
                 <!-- modal div -->
         <div class="container" id="solutionContainer">
         <h2>Game Over!!</h2>
- 
+
         <!-- Modal -->
         <div class="modal fade" id="solutionModal" role="dialog">
         <div class="modal-dialog">
-    
+
         <!-- Modal content-->
         <div class="modal-content">
     	    <div class="modal-header">
