@@ -104,7 +104,7 @@
                 <h3>Waiting for other players to join the game...</h3>
                 <p>Only the game creator can start the game, if there are 2-6 people waiting</p>
                 <form action="/play">
-                    <input class="btn btn-primary" type="submit" value="Start Game" />
+                    <input class="btn btn-primary" id="start-button" type="submit" value="Start Game" />
                 </form>
                 <button class="btn btn-primary" onclick="leaveGame()">Leave Game</button>
             </div>
@@ -130,6 +130,13 @@
         console.log("All Players:", {{ all_names | safe }});
         console.log("Game Status:", {{ game_status | safe }});
 
+        $(document).ready(function() {
+            const players = {{ all_names | safe }};
+            if (players.length < 3 || players.length > 6) {
+                $("#start-button").addClass("disabled");
+                $("#start-button").attr("title", "You must have 3-6 players to start the game");
+            }
+        });
         //if("{{ game_status | safe }}" == "IN_PROGRESS"){
         //    location.replace("/play/");
         //};
