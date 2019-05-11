@@ -28,54 +28,73 @@
         console.log("Game Status: ", {{ game_status | safe }});
         console.log("Game Winner: ", {{ game_winner | safe }});
         console.log("Player Who Just Lost: ", {{ game_loser | safe }});
+        console.log("Weapon Locations: ", {{ weapon_locations | safe }});
 
         var solution_cards = {{ solution_cards | safe}};
 
-        //NOTE: home to hallway is one-way connection
-        //      => define connection in home but not adjacent hallway
+        //NOTE: starting space to hallway is one-way connection
+        //      => define connection in starting space but not adjacent hallway
         const idToText = {
             suspect1: {
                 name: "Colonel Mustard",
-                image: "{% static 'images/avatar_col_mustard.png' %}"
+                image: "{% static 'images/avatar_col_mustard.png' %}",
+                cardPic: "{% static 'images/suspect1card.jpg' %}"
             },
             suspect2: {
                 name: "Miss Scarlet",
-                image: "{% static 'images/avatar_ms_scarlett.png' %}"
+                image: "{% static 'images/avatar_ms_scarlett.png' %}",
+                cardPic: "{% static 'images/suspect2card.jpg' %}"
             },
             suspect3: {
                 name: "Mr. Green",
-                image: "{% static 'images/avatar_mr_green.png' %}"
+                image: "{% static 'images/avatar_mr_green.png' %}",
+                cardPic: "{% static 'images/suspect3card.jpg' %}"
             },
             suspect4: {
                 name: "Mrs. Peacock",
-                image: "{% static 'images/avatar_mrs_peacock.png' %}"
+                image: "{% static 'images/avatar_mrs_peacock.png' %}",
+                cardPic: "{% static 'images/suspect4card.jpg' %}"
             },
             suspect5: {
                 name: "Mrs. White",
-                image: "{% static 'images/avatar_mrs_white.png' %}"
+                image: "{% static 'images/avatar_mrs_white.png' %}",
+                cardPic: "{% static 'images/suspect5card.jpg' %}"
             },
             suspect6: {
                 name: "Professor Plum",
-                image: "{% static 'images/avatar_prof_plum.png' %}"
+                image: "{% static 'images/avatar_prof_plum.png' %}",
+                cardPic: "{% static 'images/suspect6card.jpg' %}"
             },
             //weapons
             weapon1: {
-                name: "Candlestick"
+                name: "Candlestick",
+                image: "{% static 'images/weapon_candlestick.png' %}",
+                cardPic: "{% static 'images/weapon1card.jpg' %}"
             },
             weapon2: {
-                name: "Knife"
+                name: "Knife",
+                image: "{% static 'images/weapon_knife.png' %}",
+                cardPic: "{% static 'images/weapon2card.jpg' %}"
             },
             weapon3: {
-                name: "Lead Pipe"
+                name: "Lead Pipe",
+                image: "{% static 'images/weapon_lead_pipe.png' %}",
+                cardPic: "{% static 'images/weapon3card.jpg' %}"
             },
             weapon4: {
-                name: "Revolver"
+                name: "Revolver",
+                image: "{% static 'images/weapon_revolver.png' %}",
+                cardPic: "{% static 'images/weapon4card.jpg' %}"
             },
             weapon5: {
-                name: "Rope"
+                name: "Rope",
+                image: "{% static 'images/weapon_rope.png' %}",
+                cardPic: "{% static 'images/weapon5card.jpg' %}"
             },
             weapon6: {
-                name: "Wrench"
+                name: "Wrench",
+                image: "{% static 'images/weapon_wrench.png' %}",
+                cardPic: "{% static 'images/weapon6card.jpg' %}"
             },
 
             //rooms
@@ -86,7 +105,8 @@
                     "hallway11",
                     "hallway12"
                 ],
-                image: "{% static 'images/room1.jpg' %}"
+                image: "{% static 'images/room1.jpg' %}",
+                cardPic: "{% static 'images/room1card.jpg' %}"
             },
             room2: {
                 name: "Billiard Room",
@@ -96,7 +116,8 @@
                     "hallway7",
                     "hallway9"
                 ],
-                image: "{% static 'images/room2.jpg' %}"
+                image: "{% static 'images/room2.jpg' %}",
+                cardPic: "{% static 'images/room2card.jpg' %}"
             },
             room3: {
                 name: "Conservatory",
@@ -105,7 +126,8 @@
                     "hallway11",
                     "room8"
                 ],
-                image: "{% static 'images/room3.jpg' %}"
+                image: "{% static 'images/room3.jpg' %}",
+                cardPic: "{% static 'images/room3card.jpg' %}"
             },
             room4: {
                 name: "Dining Room",
@@ -114,7 +136,8 @@
                     "hallway7",
                     "hallway10"
                 ],
-                image: "{% static 'images/room4.jpg' %}"
+                image: "{% static 'images/room4.jpg' %}",
+                cardPic: "{% static 'images/room4card.jpg' %}"
             },
             room5: {
                 name: "Hall",
@@ -123,7 +146,8 @@
                     "hallway2",
                     "hallway4"
                 ],
-                image: "{% static 'images/room5.jpg' %}"
+                image: "{% static 'images/room5.jpg' %}",
+                cardPic: "{% static 'images/room5card.jpg' %}"
             },
             room6: {
                 name: "Kitchen",
@@ -132,7 +156,8 @@
                     "hallway12",
                     "room9"
                 ],
-                image: "{% static 'images/room6.jpg' %}"
+                image: "{% static 'images/room6.jpg' %}",
+                cardPic: "{% static 'images/room6card.jpg' %}"
             },
             room7: {
                 name: "Library",
@@ -141,7 +166,8 @@
                     "hallway6",
                     "hallway8"
                 ],
-                image: "{% static 'images/room7.jpg' %}"
+                image: "{% static 'images/room7.jpg' %}",
+                cardPic: "{% static 'images/room7card.jpg' %}"
             },
             room8: {
                 name: "Lounge",
@@ -150,7 +176,8 @@
                     "hallway5",
                     "room3"
                 ],
-                image: "{% static 'images/room8.jpg' %}"
+                image: "{% static 'images/room8.jpg' %}",
+                cardPic: "{% static 'images/room8card.jpg' %}"
             },
             room9: {
                 name: "Study",
@@ -159,7 +186,8 @@
                     "hallway3",
                     "room6"
                 ],
-                image: "{% static 'images/room9.jpg' %}"
+                image: "{% static 'images/room9.jpg' %}",
+                cardPic: "{% static 'images/room9card.jpg' %}"
             },
 
             //hallways
@@ -260,35 +288,35 @@
                 image: "{% static 'images/hallway-h.jpg' %}"
             },
 
-            //home spaces
-            scarlet_home:
+            //starting spaces
+            scarlet_start:
             {
-                name: "Scarlet home",
+                name: "Scarlet starting space",
                 connections: [ "hallway2" ]
             },
-            mustard_home:
+            mustard_start:
             {
-                name: "Mustard home",
+                name: "Mustard starting space",
                 connections: [ "hallway5" ]
             },
-            white_home:
+            white_start:
             {
-                name: "White home",
+                name: "White starting space",
                 connections: [ "hallway12" ]
             },
-            green_home:
+            green_start:
             {
-                name: "Green home",
+                name: "Green starting space",
                 connections: [ "hallway11" ]
             },
-            peacock_home:
+            peacock_start:
             {
-                name: "Peacock home",
+                name: "Peacock starting space",
                 connections: [ "hallway8" ]
             },
-            plum_home:
+            plum_start:
             {
-                name: "Plum home",
+                name: "Plum starting space",
                 connections: [ "hallway3" ]
             }
         }
@@ -309,12 +337,12 @@
             "Library": "room7",
             "Lounge": "room8",
             "Study": "room9",
-            "Scarlet home": "scarlet_home",
-            "Mustard home": "mustard_home",
-            "White home": "white_home",
-            "Green home": "green_home",
-            "Peacock home": "peacock_home",
-            "Plum home": "plum_home",
+            "Scarlet starting space": "scarlet_start",
+            "Mustard starting space": "mustard_start",
+            "White starting space": "white_start",
+            "Green starting space": "green_start",
+            "Peacock starting space": "peacock_start",
+            "Plum starting space": "plum_start",
             "Colonel Mustard": "suspect1",
             "Miss Scarlet": "suspect2",
             "Mr. Green": "suspect3",
@@ -358,6 +386,10 @@
         }
 
         $(document).ready(function() {
+
+        	//hide solution
+        	$("#solutionContainer").hide();
+
             // prepare the detective notebook and game board
             Object.keys(idToText).forEach(card => {
                 if (card.includes("suspect")) {
@@ -378,7 +410,7 @@
             Object.keys(playerHand).forEach(cardType => {
                 playerHand[cardType].forEach(card => {
                     $("#player-hand").append(
-                        "<li>" + idToText[card].name + "</li>"
+                        "<div class='cardWrapper'><img class='card' src=" + idToText[card].cardPic + "></div>"
                     );
                     $("#" + card).find("input").prop("checked", true);
                     $("#" + card).find("input").attr("title", "Source: my hand");
@@ -388,10 +420,12 @@
             // Notify player if they are the winner
             if( {{ game_status | safe }} == "COMPLETED"){
                 if ({{ game_winner | safe }} == ''){
-                    alert('No one has won this game...')
+                	showSolutionSet("No one");
+                    //alert('No one has won this game...\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 }
                 else {
-                    alert( {{ game_winner | safe }} +" has won the game!!");
+                	showSolutionSet({{player_name | safe}});
+                    //alert( {{ game_winner | safe }} +' has won the game!!\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 }
                 location.replace("/");
             };
@@ -409,21 +443,30 @@
 
             // Images of player icons
             let currPlayerLoc = {{player_location|safe}};
-            const locationId = currPlayerLoc.includes("room") ?
-                "#r" + currPlayerLoc.substring(4) :
+            let locationId = currPlayerLoc.includes("room") ?
+                "#r" + currPlayerLoc.substring(4) + "c" :
                 "#h" + currPlayerLoc.substring(7);
             console.log("current location: " + currPlayerLoc);
-            $(locationId).append(
-                    '<img src=' + idToText[textToId[{{player_name|safe}}]].image + ' class="player-token" width=5%>'
+            $(locationId).prepend(
+                    '<div class="column"><img src=' + idToText[textToId[{{player_name|safe}}]].image + ' class="player token"></div>'
                 );
-            let otherPlayerLocations = {{ others_locations | safe }};
+            var otherPlayerLocations = {{ others_locations | safe }};
             Object.keys(otherPlayerLocations).forEach(player => {
                 let currPlayerLoc = otherPlayerLocations[player];
-                const locationId = currPlayerLoc[player].includes("room") ?
-                    "#r" + currPlayerLoc.substring(4) :
+                let locationId = currPlayerLoc.includes("room") ?
+                    "#r" + currPlayerLoc.substring(4) + "c" :
                     "#h" + currPlayerLoc.substring(7);
-                $(locationId).append('<img src='+idToText[textToId[player]].image + ' class="player-token" width=5%>');
+                $(locationId).prepend('<div class="column"><img src="'+idToText[textToId[player]].image + '" class="player token"></div>');
             });
+
+            // Images of weapon icons
+            var weaponLocations = {{ weapon_locations | safe }};
+            Object.keys(weaponLocations).forEach(weapon => {
+                let currWeaponLocation = weaponLocations[weapon];
+                let locationId = "#r" + currWeaponLocation.substring(4) + "w";
+                $(locationId).prepend('<div class="column"><img src="'+idToText[weapon].image + '" class="weapon token"></div>');
+            });
+
 
             var player_cards = {{player_hand | safe}};
 
@@ -622,21 +665,17 @@
             if(idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
                idToText[solution_cards["Rooms"][0]]["name"] == room &&
                idToText[solution_cards["Suspects"][0]]["name"] == suspect){
-                alert('You Won!!!');
-                url = "/play/?player_status=won";
+                //alert('You Won!!!\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
+                //url = "/play/?player_status=won";
+                showSolutionSet({{player_name | safe}});
             }
             else{
-                alert('You lost...');
-                url = "/play/?player_status=lost";
+                //alert('You lost...\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
+                //url = "/play/?player_status=lost";
+                showLoserSet();
+
             };
 
-            $.ajax({
-                type: "POST",
-                url: url,
-                success: function() {
-                    location.reload();
-                }
-            });
         }
 
         function makeSuggestion() {
@@ -646,7 +685,6 @@
             var weapon = textToId[$("#suggest-weapon  option:selected").text()];
             var suspect = textToId[$("#suggest-suspect option:selected").text()];
             var room = {{player_location | safe }};
-
 
             if(idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
                idToText[solution_cards["Rooms"][0]]["name"] == room &&
@@ -745,6 +783,73 @@
             });
         };
 
+        function getSolutionMessage() {
+            let solution = "<p>It was " + idToText[solution_cards["Suspects"][0]]["name"] + " in the " + idToText[solution_cards["Rooms"][0]]["name"] + " with the " + idToText[solution_cards["Weapons"][0]]["name"] + ".</p>";
+            solution +=
+                "<div class='row'>" + 
+                    "<div class='col-xs-4'>" +
+                        "<img class='card' src=" + idToText[solution_cards["Suspects"][0]].cardPic + "/>" +
+                    "</div>" +
+                    "<div class='col-xs-4'>" +
+                        "<img class='card' src=" + idToText[solution_cards["Rooms"][0]].cardPic + "/>" +
+                    "</div>" +
+                    "<div class='col-xs-4'>" +
+                        "<img class='card' src=" + idToText[solution_cards["Weapons"][0]].cardPic + "/>" +
+                    "</div>" +
+                "</div>";
+            return solution;
+        }
+
+        //show solution set at end of the game
+        function showSolutionSet(gameWinner) {
+        	var solutionString = "<p>" + gameWinner + " has won the game!</p>" + getSolutionMessage();
+
+        	document.getElementById("modalBody").innerHTML = solutionString;
+        	$("#endgameButton").show();
+        	$("#closeModal").hide();
+        	$("#solutionContainer").show();
+        	$("#solutionModal").modal();
+    	}
+
+    	//show solution to loser
+    	function showLoserSet() {
+        	var solutionString = "<p>You have lost the game!</p>" + getSolutionMessage();
+
+        	document.getElementById("modalBody").innerHTML = solutionString;
+        	$("#endgameButton").hide();
+        	$("#closeModal").show();
+        	$("#solutionContainer").show();
+        	$("#solutionModal").modal();
+    	}
+
+    	//end game method
+    	function endGame() {
+
+    		url = "/play/?player_status=won";
+
+    		$.ajax({
+                type: "POST",
+                url: url,
+                success: function() {
+                    location.reload();
+                }
+            });
+    	}
+
+    	//end game method
+    	function loserUpdate() {
+
+    		url = "/play/?player_status=lost";
+
+    		$.ajax({
+                type: "POST",
+                url: url,
+                success: function() {
+                    location.reload();
+                }
+            });
+    	}
+
     </script>
 
     <head>
@@ -754,6 +859,7 @@
             }
             .board {
                 float: left;
+                overflow: hidden;
             }
             .board img {
                 max-height: 150px;
@@ -772,10 +878,52 @@
             .col-3 {
                 margin-left: 150px;
             }
-            .player-token {
+            .token {
                 position: absolute;
-                border: 2px solid white;
+                border-radius: 0.5em;
                 z-index: 1;
+            }
+            .weapon {
+                border: 2px solid black;
+                margin-top: 110px;
+                margin-left: 10px;
+                width: 25px;
+            }
+            .player {
+                border: 2px solid white;
+                margin-left: 5px;
+                margin-top: 10px;
+                width: 30px;
+            }
+            .column {
+                float: left;
+                width: 10%;
+                padding: 1px;
+                margin-left: 10px;
+            }
+            .cards {
+                display: flex;
+                align-content: center;
+                max-width: 40em;
+            }
+            .cardWrapper {
+                overflow: hidden;
+            }
+            .cardWrapper:last-child, .cardWrapper:hover {
+                overflow: visible;
+            }
+            .card {
+                width: 10em;
+                min-width: 10em;
+                height: 16em;
+                border-radius: 0.5em;
+                border: solid #AAA 1px;
+                padding: 0.25em;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
             }
         </style>
     </head>
@@ -795,11 +943,20 @@
 
                 <div id="board-container">
                     <div class="col-xs-12">
-                        <div class="board room" id="r9"></div>
+                        <div class="board room" id="r9">
+                            <div class="row" id="r9c"></div>
+                            <div class="row" id="r9w"></div>
+                        </div>
                         <div class="board horizontal" id="h1"></div>
-                        <div class="board room" id="r5"></div>
+                        <div class="board room" id="r5">
+                            <div class="row" id="r5c"></div>
+                            <div class="row" id="r5w"></div>
+                        </div>
                         <div class="board horizontal" id="h2"></div>
-                        <div class="board room" id="r8"></div>
+                        <div class="board room" id="r8">
+                            <div class="row" id="r8c"></div>
+                            <div class="row" id="r8w"></div>
+                        </div>
                     </div>
                     <div class="col-xs-12">
                         <div class="board vertical" id="h3"></div>
@@ -807,11 +964,20 @@
                         <div class="board vertical col-3" id="h5"></div>
                     </div>
                     <div class="col-xs-12">
-                        <div class="board room" id="r7"></div>
+                        <div class="board room" id="r7">
+                            <div class="board room row" id="r7c"></div>
+                            <div class="board room row" id="r7w"></div>
+                        </div>
                         <div class="board horizontal" id="h6"></div>
-                        <div class="board room" id="r2"></div>
+                        <div class="board room" id="r2">
+                            <div class="row" id="r2c"></div>
+                            <div class="row" id="r2w"></div>
+                        </div>
                         <div class="board horizontal" id="h7"></div>
-                        <div class="board room" id="r4"></div>
+                        <div class="board room" id="r4">
+                            <div class="row" id="r4c"></div>
+                            <div class="row" id="r4w"></div>
+                        </div>
                     </div>
                     <div class="col-xs-12">
                         <div class="board vertical" id="h8"></div>
@@ -819,11 +985,20 @@
                         <div class="board vertical col-3" id="h10"></div>
                     </div>
                     <div class="col-xs-12">
-                        <div class="board room" id="r3"></div>
+                        <div class="board room" id="r3">
+                            <div class="row" id="r3c"></div>
+                            <div class="row" id="r3w"></div>
+                        </div>
                         <div class="board horizontal" id="h11"></div>
-                        <div class="board room" id="r1"></div>
+                        <div class="board room" id="r1">
+                            <div class="row" id="r1c"></div>
+                            <div class="row" id="r1w"></div>
+                        </div>
                         <div class="board horizontal" id="h12"></div>
-                        <div class="board room" id="r6"></div>
+                        <div class="board room" id="r6">
+                            <div class="row" id="r6c"></div>
+                            <div class="row" id="r6w"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -925,8 +1100,8 @@
 
                 <!-- Player hand -->
                 <h3>Your Hand</h3>
-                <ul id="player-hand" style="columns: 3;">
-                </ul>
+                <div id="player-hand" class="cards">
+                </div>
             </div>
             <div class="col-xs-12 col-sm-4" id="notebook-container">
                 <h3>Detective Notebook</h3>
@@ -941,6 +1116,25 @@
                 </table>
             </div>
         </div>
+
+        <!-- modal div -->
+        <div class="container" id="solutionContainer">
+            <div class="modal fade" id="solutionModal" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                	    <div class="modal-header">
+                	    	<h4 class="modal-title">Game Over!</h4>
+                	    </div>
+                	    <div class="modal-body" id="modalBody"></div>
+                	    <div class="modal-footer">
+                      		<button type="button" onclick="endGame()" id="endgameButton" class="btn btn-default">End game</button>
+                      		<button type="button" onclick="loserUpdate()" id="closeModal" class="btn btn-default" data-dismiss="modal">Close</button>
+                      	</div>
+                	</div>
+               	</div>
+           	</div>
+       	</div>
+
     </body>
 
     <!-- Bootstrap CSS -->

@@ -1,4 +1,4 @@
-from Clueless.models import Games, Cards, Players, Locations
+from Clueless.models import Games, Cards, Players, Locations, Weapons
 
 
 class PlayerManager:

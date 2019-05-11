@@ -1,7 +1,7 @@
 import random
 import math
 
-from Clueless.models import Games, Cards, Players, Locations
+from Clueless.models import Games, Cards, Players, Locations, Weapons
 
 
 class GameManager:
@@ -22,12 +22,13 @@ class GameManager:
                       'Hallway':['hallway1', 'hallway2', 'hallway3', 'hallway4',
                                  'hallway5', 'hallway6', 'hallway7', 'hallway8',
                                  'hallway9', 'hallway10', 'hallway11', 'hallway12'],
-                      'Home':['scarlet_home', 'mustard_home', 'white_home',
-                              'green_home', 'peacock_home', 'plum_home']}
+                      'StartSpace':['scarlet_start', 'mustard_start', 'white_start',
+                              'green_start', 'peacock_start', 'plum_start']}
         self.cards = {'Weapons':['weapon1', 'weapon2', 'weapon3', 'weapon4', 'weapon5', 'weapon6'],
                       'Suspects':['suspect1', 'suspect2', 'suspect3','suspect4', 'suspect5', 'suspect6'],
                       'Rooms':['room1', 'room2', 'room3', 'room4', 'room5', 'room6', 'room7', 'room8', 'room9']}
         self.game_status = ['PENDING', 'IN_PROGRESS', 'COMPLETED']
+        self.weapons = ['weapon1', 'weapon2', 'weapon3', 'weapon4', 'weapon5', 'weapon6']
 
     # Game initialization
     def create_new_game(self):
@@ -43,6 +44,13 @@ class GameManager:
         for t in self.rooms:
             for room in self.rooms[t]:
                 Locations.objects.create(game=self.game_id, name=room, type=t)
+
+    def create_weapons(self):
+        rooms = Locations.objects.filter(game=self.game_id, type='Room').order_by('?')
+        i = 0
+        for weapon in self.weapons:
+            Weapons.objects.create(game=self.game_id, name=weapon, location=rooms[i])
+            i += 1
 
     def add_player(self, client_ip, client_name, is_creator):
 
@@ -69,6 +77,7 @@ class GameManager:
         self.create_new_game()
         self.create_deck()
         self.create_locations()
+        self.create_weapons()
         self.add_player(client_ip=client_ip, client_name=client_name, is_creator=True)
 
     # Game Start
@@ -103,15 +112,15 @@ class GameManager:
                 player_counter += 1
                 card_counter = 0
 
-    ## @brief: Initializes character token location to associated home space.
+    ## @brief: Initializes character token location to associated starting space.
     ## @param: game manager
     def place_players(self):
-        locations = { 'Miss Scarlet': 'scarlet_home',
-                      'Colonel Mustard': 'mustard_home',
-                      'Mrs. White': 'white_home',
-                      'Mr. Green': 'green_home',
-                      'Mrs. Peacock': 'peacock_home',
-                      'Professor Plum': 'plum_home' }
+        locations = { 'Miss Scarlet': 'scarlet_start',
+                      'Colonel Mustard': 'mustard_start',
+                      'Mrs. White': 'white_start',
+                      'Mr. Green': 'green_start',
+                      'Mrs. Peacock': 'peacock_start',
+                      'Professor Plum': 'plum_start' }
 
         for player in Players.objects.filter(game=self.game_id):
             player.location = Locations.objects.filter(game=self.game_id, name=locations[player.name])[0]
@@ -206,9 +215,15 @@ class GameManager:
         if Cards.objects.filter(game=self.game_id, card_type='Suspects', suggested=True).exists() and\
            Cards.objects.filter(game=self.game_id, card_type='Rooms', suggested=True).exists():
             room_name = Cards.objects.filter(game=self.game_id, card_type='Rooms', suggested=True)[0].name
+            weapon = Cards.objects.filter(game=self.game_id, card_type='Weapons', suggested=True)[0].name
             location = Locations.objects.filter(game=self.game_id, name=room_name)[0]
+            Weapons.objects.filter(game=self.game_id, name=weapon).update(location=location)
             if Players.objects.filter(game=self.game_id, name=suspect).exists():
                 Players.objects.filter(game=self.game_id, name=suspect).update(location=location, moved_by_suggest=True)
+
+    def update_weapon_suggest_location(self, weapon_name, location_name):
+        new_location = Locations.objects.filter(game=self.game_id, name=location_name)[0]
+        Weapons.objects.filter(game=self.game_id, name=weapon_name).update(location=new_location)
 
     def refute_suggestion(self, card_name):
         if Cards.objects.filter(game=self.game_id, name=card_name).exists():
@@ -287,8 +302,17 @@ class GameManager:
     def get_curr_player_turn(self):
         return Players.objects.filter(game=self.game_id, their_turn=True)[0].name
 
+
     def get_curr_refuter(self):
         return Players.objects.filter(game=self.game_id, is_curr_refuter=True)[0].name
+
+
+    def get_weapon_locations(self):
+        weapon_locations = {}
+        for weapon in Weapons.objects.filter(game=self.game_id):
+            if weapon.location != None:
+                weapon_locations[weapon.name] = weapon.location.name
+        return weapon_locations
 
     def delete_completed_games(self):
         if Games.objects.filter().exists():
