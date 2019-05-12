@@ -136,8 +136,8 @@ class GameManager:
         Games.objects.filter(id=self.game_id).update(turn_order=turn_order)
 
         # initialize current refuter to second player in turn order
-        #Games.objects.filter(id=self.game_id).update(curr_refuter=turn_order[1])
-        #Players.objects.filter(id=turn_order[1]).update(is_curr_refuter=True)
+        Games.objects.filter(id=self.game_id).update(curr_refuter=turn_order[1])
+        Players.objects.filter(id=turn_order[1]).update(is_curr_refuter=True)
 
     def start_game(self):
 
@@ -194,14 +194,15 @@ class GameManager:
 
         # reset current refuter to player following current player (clear indicator from prev player)
         # NOTE: may set to same as last refuter so clear first and then populate
-        old_refuter_id = Players.objects.filter(game_id=self.game_id, is_curr_refuter=True)[0].id
+        if Players.objects.filter(game=self.game_id, is_curr_refuter=True).exists():
+            old_refuter_id = Players.objects.filter(game_id=self.game_id, is_curr_refuter=True)[0].id
+            Players.objects.filter(id=old_refuter_id).update(is_curr_refuter=False)
 
         if len(turn_order)-1 == turn_order.index(next_id):
             new_refuter_id = turn_order[0]
         else:
             new_refuter_id = turn_order[turn_order.index(next_id)+1]
 
-        Players.objects.filter(id=old_refuter_id).update(is_curr_refuter=False)
         Players.objects.filter(id=new_refuter_id).update(is_curr_refuter=True)
 
         # Skip players that lost
@@ -321,7 +322,10 @@ class GameManager:
 
 
     def get_curr_refuter(self):
-        return Players.objects.filter(game=self.game_id, is_curr_refuter=True)[0].name
+        if Players.objects.filter(game=self.game_id, is_curr_refuter=True).exists():
+            return Players.objects.filter(game=self.game_id, is_curr_refuter=True)[0].name
+        else:
+            return
 
 
     def get_weapon_locations(self):

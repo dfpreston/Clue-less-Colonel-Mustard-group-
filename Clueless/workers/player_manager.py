@@ -78,9 +78,6 @@ class PlayerManager:
     def get_is_player_turn(self):
         return self.player.their_turn
 
-    def get_is_player_curr_refuter(self):
-        return self.player.is_curr_refuter
-
     def get_move_status(self):
         return self.player.moved
 
@@ -92,3 +89,6 @@ class PlayerManager:
 
     def get_is_curr_refuter(self):
         return self.player.is_curr_refuter
+
+    def get_is_unable_to_refute(self):
+        return self.player.is_unable_to_refute
