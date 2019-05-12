@@ -253,6 +253,20 @@ class GameManager:
     # def lack_of_counter_evidence(self):
         ## @todo Add logic to handle lack of counter evidence
 
+    def update_refuter(self):
+        if Players.objects.filter(game=self.game_id, is_curr_refuter=True).exists():
+            prev_refuter_id = Players.objects.filter(game_id=self.game_id, is_curr_refuter=True)[0].id
+            Players.objects.filter(id=prev_refuter_id).update(is_curr_refuter=False)
+        else:
+            prev_refuter_id = turn_order[0]
+
+        if len(turn_order)-1 == turn_order.index(prev_refuter_id):
+            new_refuter_id = turn_order[0]
+        else:
+            new_refuter_id = turn_order[turn_order.index(next_id)+1]
+
+        Players.objects.filter(id=new_refuter_id).update(is_curr_refuter=True)
+
     # Game info returns
     def get_solution_cards(self):
         solution = {}
