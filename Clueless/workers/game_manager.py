@@ -236,7 +236,7 @@ class GameManager:
             location = Locations.objects.filter(game=self.game_id, name=room_name)[0]
             Weapons.objects.filter(game=self.game_id, name=weapon).update(location=location)
             if Players.objects.filter(game=self.game_id, name=suspect).exists() and\
-                    Players.objects.filter(game=self.game_id, name=suspect, location=location).exists():
+                    not Players.objects.filter(game=self.game_id, name=suspect, location=location).exists():
                 Players.objects.filter(game=self.game_id, name=suspect).update(location=location, moved_by_suggest=True)
 
     def update_weapon_suggest_location(self, weapon_name, location_name):
@@ -298,10 +298,13 @@ class GameManager:
             return ''
 
     def get_games_pending(self):
+        game_ids = []
         for game in Games.objects.filter(status=self.game_status[0]):
             if not Players.objects.filter(game=game).exists():
                 game.delete()
-        return Games.objects.filter(status=self.game_status[0]).count()
+            else:
+                game_ids.append(game.id)
+        return game_ids
 
     def get_games_in_progress(self):
         for game in Games.objects.filter(status=self.game_status[1]):
@@ -336,7 +339,7 @@ class GameManager:
         return weapon_locations
 
     def delete_completed_games(self):
-        if Games.objects.filter().exists():
+        if Games.objects.filter(status="COMPLETE").exists():
             Games.objects.filter().delete()
 
     def remove_player(self, check, client_ip, client_name):

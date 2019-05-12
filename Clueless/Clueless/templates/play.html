@@ -717,7 +717,14 @@
                 else if(solution_cards["Suspects"].includes(suspect)){
                     var refute_card = suspect;
                 }
-                var url = "/play/?refute_card=" + refute_card;
+                //var url = "/play/?refute_card=" + refute_card;
+
+                url = "/play/?suggest_room=" + room +
+                "&suggest_weapon=" + weapon +
+                "&suggest_suspect="+ suspect +
+                "&suggest_suspect_name="+ $("#suggest-suspect option:selected").text() +
+                "&refute_card=" + refute_card;
+
                 $.ajax({
                     type: "POST",
                     url: url,
@@ -787,13 +794,13 @@
             solution +=
                 "<div class='row'>" + 
                     "<div class='col-xs-4'>" +
-                        "<img class='card' src=" + idToText[solution_cards["Suspects"][0]].cardPic + "/>" +
+                        "<img class='card' src='" + idToText[solution_cards["Suspects"][0]].cardPic + "'/>" +
                     "</div>" +
                     "<div class='col-xs-4'>" +
-                        "<img class='card' src=" + idToText[solution_cards["Rooms"][0]].cardPic + "/>" +
+                        "<img class='card' src='" + idToText[solution_cards["Rooms"][0]].cardPic + "'/>" +
                     "</div>" +
                     "<div class='col-xs-4'>" +
-                        "<img class='card' src=" + idToText[solution_cards["Weapons"][0]].cardPic + "/>" +
+                        "<img class='card' src='" + idToText[solution_cards["Weapons"][0]].cardPic + "'/>" +
                     "</div>" +
                 "</div>";
             return solution;

@@ -9,13 +9,13 @@
 
         <div class="container">
             <div class="row">
-                <div class="col-xs-12" id="new-game">
+                <div class="col-xs-6">
             	    <h4>Start a new investigation</h4>
             	    <input class="btn btn-primary" type="button" value="Create Game" onclick="location.href='/customize/?game=create';" />
         	    </div>
-                <div class="col-xs-12" id="join-game">
-            	    <h4>Join an existing investigation <small>({{ games_pending | safe }} open)</small></h4>
-            	    <input class="btn btn-primary" type="button" value="Join Game" onclick="location.href='/customize/?game=join';" />
+                <div class="col-xs-6">
+            	    <h4>Join an existing investigation <small>({{ game_number | safe }} open)</small></h4>
+                    <div id="open-games"></div>
                 </div>
             </div>
         </div>
@@ -34,16 +34,22 @@
         console.log("Open games:", {{ games_pending | safe }});
         console.log("Games In Progress:", {{ games_in_progress | safe }});
 
-        $(document).ready(function() {
-            const openGames = {{ games_pending | safe }};
-            if (openGames === 0) {
-                $("#new-game").show();
-                $("#join-game").hide();
-            } else {
-                $("#new-game").hide();
-                $("#join-game").show();
-            }
-        });
+
+        var games = {{games_pending|safe}};
+
+        for(game in games){
+            var game_list = document.getElementById('open-games');
+            var button = document.createElement("button");
+            button.id='btn_' + games[game];
+            button.innerText = "Join Game " + games[game];
+            button.className = 'btn btn-primary'
+            button.onclick = function(){
+                location.href='/customize/?game=join&game_id='+games[game];
+            };
+            game_list.appendChild(button);
+        }
+
+
     </script>
 
 {% endblock %}
