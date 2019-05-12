@@ -538,7 +538,7 @@
                 if({{refuted_card|safe}} != ''){
                     var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{refuted_card|safe}}]['name'] + "</h3>";
                     $("#game-info").html(msg);
-
+                    const card = {{refuted_card|safe}};
                     // Update detective notebook
                     $("#" + card).find("input").prop("checked", true);
                     $("#" + card).find("input").attr("title", "Source: refuted suggestion");
