@@ -5,6 +5,7 @@ class Games(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=200, default='')
     turn_order = models.CharField(max_length=200, default='')
+    curr_refuter = models.ForeignKey('Players', on_delete=models.CASCADE, null=True)
 
 
 class Locations(models.Model):

@@ -552,11 +552,8 @@
             }
             else{ //is player's turn
                 if({{refuted_card|safe}} != ''){
-<<<<<<< HEAD
-                    var msg = "<h3>" + idToText[{{curr_refuter}}]['name] + " refutes your Suggestion with card: " + idToText[{{refuted_card|safe}}]['name']+ "</h3>";
-=======
-                    var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{refuted_card|safe}}]['name'] + "</h3>";
->>>>>>> master
+                    var msg = "<h3>" + idToText[{{curr_refuter|safe}}]['name'] + " refutes your Suggestion with card: " + idToText[{{refuted_card|safe}}]['name'] + "</h3>";
+
                     $("#game-info").html(msg);
                     const card = {{refuted_card|safe}};
                     // Update detective notebook
@@ -565,7 +562,7 @@
                 }
                 else //opponent unable to provide counter-evidence
                 {
-                    var msg = "<h3>" + idToText[{{curr_refuter}}]['name'] + " unable to provide counter-evidence" + "</h3>"
+                    var msg = "<h3>" + idToText[{{curr_refuter|safe}}]['name'] + " unable to provide counter-evidence" + "</h3>"
                     $("#game-info").html(msg)
                 }
             }
@@ -1081,24 +1078,28 @@
                 </row>
 
                 <row class="is-players-turn" id="refute-suggestion-menu">
-                    <h3>Respond to Suggestion</h3>
-                    <button onclick="showTurnOptions()">Back to Turn Options</button>
-                    <div class="form-group">
-                        <label for="accuse-suspect">Choose a card from your hand:</label>
-                        <select class="form-control" id="refute-options"></select>
-                    </div>
-                    <button class="btn btn-primary" onclick="refuteSuggestion()">Refute</button>
+                    {% if is_curr_refuter|lower == 'true' %}
+                        <h3>Respond to Suggestion</h3>
+                        <button onclick="showTurnOptions()">Back to Turn Options</button>
+
+                        <div class="form-group">
+                            <label for="refute-card">Choose a card from your hand:</label>
+                            <select class="form-control" id="refute-options"></select>
+                        </div>
+                        <button class="btn btn-primary" onclick="refuteSuggestion()">Refute</button>
+                    {% endif %}
                 </row>
 
 
+                <row class="is-players-turn" id="no-counterEvidence-menu">
+                    {% if is_curr_refuter|lower == 'true' %}
+                        <h3>Respond to Suggestion</h3>
 
-                <div class="is-players-turn" id="no-counterEvidence-menu">
-                    <h3>Respond to Suggestion</h3>
+                        <p><em>No cards from Suggestion found in your hand.</em></p>
 
-                    <p><em>No cards from Suggestion found in your hand.</em></p>
-
-                    <button onclick="indicateLackCounterEvidence()">No Counter-Evidence in Hand</button>
-                </div>
+                        <button class="btn btn-primary" onclick="indicateLackCounterEvidence()">No Counter-Evidence in Hand</button>
+                    {% endif %}
+                </row>
 
                 <!-- Player hand -->
                 <h3>Your Hand</h3>

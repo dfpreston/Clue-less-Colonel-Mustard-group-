@@ -135,6 +135,10 @@ class GameManager:
         Players.objects.filter(id=turn_order[0]).update(their_turn=True)
         Games.objects.filter(id=self.game_id).update(turn_order=turn_order)
 
+        # initialize current refuter to second player in turn order
+        #Games.objects.filter(id=self.game_id).update(curr_refuter=turn_order[1])
+        #Players.objects.filter(id=turn_order[1]).update(is_curr_refuter=True)
+
     def start_game(self):
 
         # Randomly picks solution cards and player hands
@@ -187,6 +191,18 @@ class GameManager:
         Players.objects.filter(id=next_id).update(their_turn=True)
 
         print(turn_order.index(curr_id))
+
+        # reset current refuter to player following current player (clear indicator from prev player)
+        # NOTE: may set to same as last refuter so clear first and then populate
+        old_refuter_id = Players.objects.filter(game_id=self.game_id, is_curr_refuter=True)[0].id
+
+        if len(turn_order)-1 == turn_order.index(next_id):
+            new_refuter_id = turn_order[0]
+        else:
+            new_refuter_id = turn_order[turn_order.index(next_id)+1]
+
+        Players.objects.filter(id=old_refuter_id).update(is_curr_refuter=False)
+        Players.objects.filter(id=new_refuter_id).update(is_curr_refuter=True)
 
         # Skip players that lost
         if Players.objects.filter(id=next_id)[0].status == 'LOST' and Players.objects.filter(game=self.game_id).count()>1:
