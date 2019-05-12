@@ -138,7 +138,7 @@
         console.log("Current data, per user:");
         console.log("Message:", {{ msg | safe }});
         console.log("Game ID:", {{ game_id | safe }});
-        console.log("Is Player Game Creator:", );
+        console.log("Is Player Game Creator:", {{ is_creator | safe }});
         console.log("All Players:", {{ all_names | safe }});
         console.log("Game Status:", {{ game_status | safe }});
 
