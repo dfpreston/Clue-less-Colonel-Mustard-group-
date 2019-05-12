@@ -9,11 +9,11 @@
 
         <div class="container">
             <div class="row">
-                <div class="col-xs-12" id="new-game">
+                <div class="col-xs-6">
             	    <h4>Start a new investigation</h4>
             	    <input class="btn btn-primary" type="button" value="Create Game" onclick="location.href='/customize/?game=create';" />
         	    </div>
-                <div class="col-xs-12" id="join-game">
+                <div class="col-xs-6">
             	    <h4>Join an existing investigation <small>({{ games_pending | safe }} open)</small></h4>
             	    <input class="btn btn-primary" type="button" value="Join Game" onclick="location.href='/customize/?game=join';" />
                 </div>
@@ -33,17 +33,6 @@
         console.log("Current data, per user:");
         console.log("Open games:", {{ games_pending | safe }});
         console.log("Games In Progress:", {{ games_in_progress | safe }});
-
-        $(document).ready(function() {
-            const openGames = {{ games_pending | safe }};
-            if (openGames === 0) {
-                $("#new-game").show();
-                $("#join-game").hide();
-            } else {
-                $("#new-game").hide();
-                $("#join-game").show();
-            }
-        });
     </script>
 
 {% endblock %}
