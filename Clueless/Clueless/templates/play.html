@@ -422,7 +422,7 @@
                     //alert('No one has won this game...\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 }
                 else {
-                	showSolutionSet({{player_name | safe}});
+                	showSolutionSet({{ game_winner | safe }});
                     //alert( {{ game_winner | safe }} +' has won the game!!\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 }
                 location.replace("/");
@@ -643,7 +643,7 @@
             if (idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
               idToText[solution_cards["Rooms"][0]]["name"] == room &&
               idToText[solution_cards["Suspects"][0]]["name"] == suspect) {
-                showSolutionSet({{player_name | safe}});
+                showWinnerSet();
             } else {
                 showLoserSet();
             };
@@ -785,7 +785,19 @@
         	$("#solutionContainer").show();
         	$("#solutionModal").modal();
     	}
+    	
+    	//show solution to loser
+    	function showWinnerSet() {
+        	var solutionString = "<p>You have won the game!</p>" + getSolutionMessage();
 
+        	document.getElementById("modalBody").innerHTML = solutionString;
+        	$("#endgameButton").hide();
+        	$("#closeModal").show();
+        	$("#solutionContainer").show();
+        	$("#solutionModal").modal();
+    	}
+
+    	
     	//end game method
     	function endGame() {
 
@@ -803,16 +815,16 @@
     	//end game method
     	function loserUpdate() {
 
-    		url = "/play/?player_status=lost";
+    			url = "/play/?player_status=lost";
 
-    		$.ajax({
-                type: "POST",
-                url: url,
-                success: function() {
-                    location.reload();
-                }
-            });
-    	}
+    			$.ajax({
+    					type: "POST",
+    					url: url,
+           	     success: function() {
+           	     	 location.reload();
+           	     }
+           	    });
+           	}
 
     </script>
 
