@@ -27,7 +27,8 @@ def Home(request):
         gm = GameManager()
 
         context = {'games_pending':gm.get_games_pending(),
-                   'games_in_progress':gm.get_games_in_progress()}
+                   'games_in_progress':gm.get_games_in_progress(),
+                   'game_number': len(gm.get_games_pending())}
 
         for key in context.keys():
             context[key] = json.dumps(context[key])
@@ -54,18 +55,12 @@ def GameCustiomize(request):
         user_ip = request.META.get('REMOTE_ADDR')
     user_name = request.META.get('HTTP_USER_AGENT')
 
-
-    #for k in (request.META).keys():
-    #    print('{}: {}'.format(k, request.META.get(k)))
-
     # GET Request
     if request.method == 'GET':
 
         # User create new game
         if request.GET.get('game') == 'create':
             msg = 'You have created a new game!'
-
-
 
             # Game tracker
             gm = GameManager()
@@ -77,13 +72,17 @@ def GameCustiomize(request):
 
         # User joins pending game
         elif request.GET.get('game') == 'join':
+
+            if not request.GET.get('game_id'):
+                return redirect('/')
+
             if not Games.objects.filter(status='PENDING').exists():
                 return redirect('/')
 
             msg = 'You have joined an existing game!'
 
             # Game tracker
-            gm = GameManager(game_id=Games.objects.filter(status='PENDING')[0])
+            gm = GameManager(game_id=Games.objects.filter(id=int(request.GET.get('game_id')))[0])
 
             if len(gm.get_player_names()) > 6:
                 return redirect('/')

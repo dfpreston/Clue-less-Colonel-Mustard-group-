@@ -274,10 +274,13 @@ class GameManager:
             return ''
 
     def get_games_pending(self):
+        game_ids = []
         for game in Games.objects.filter(status=self.game_status[0]):
             if not Players.objects.filter(game=game).exists():
                 game.delete()
-        return Games.objects.filter(status=self.game_status[0]).count()
+            else:
+                game_ids.append(game.id)
+        return game_ids
 
     def get_games_in_progress(self):
         for game in Games.objects.filter(status=self.game_status[1]):
@@ -304,7 +307,7 @@ class GameManager:
         return weapon_locations
 
     def delete_completed_games(self):
-        if Games.objects.filter().exists():
+        if Games.objects.filter(status="COMPLETE").exists():
             Games.objects.filter().delete()
 
     def remove_player(self, check, client_ip, client_name):
