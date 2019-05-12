@@ -135,9 +135,14 @@ class GameManager:
         Players.objects.filter(id=turn_order[0]).update(their_turn=True)
         Games.objects.filter(id=self.game_id).update(turn_order=turn_order)
 
-        # initialize current refuter to second player in turn order
-        Games.objects.filter(id=self.game_id).update(curr_refuter=turn_order[1])
-        Players.objects.filter(id=turn_order[1]).update(is_curr_refuter=True)
+        if 1 < len(turn_order):
+            # initialize current refuter to second player in turn order
+            Games.objects.filter(id=self.game_id).update(curr_refuter=turn_order[1])
+            Players.objects.filter(id=turn_order[1]).update(is_curr_refuter=True)
+        else:
+            # I'm my own refuter?
+            Games.objects.filter(id=self.game_id).update(curr_refuter=turn_order[0])
+            Players.objects.filter(id=turn_order[0]).update(is_curr_refuter=True)            
 
     def start_game(self):
 
