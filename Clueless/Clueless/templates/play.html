@@ -472,15 +472,17 @@
 
             // initialize suspect, weapon, and location options
             Object.keys(idToText).forEach(id => {
-                if (id.includes("room") && !player_cards['Rooms'].includes(id)) {
-                    addItemToList(id, "accuse-location");
+                if (id.includes("room")) {
+                    if ("Rooms" in player_cards && !player_cards['Rooms'].includes(id)) {
+                        addItemToList(id, "accuse-location");
+                    }
                 } else if (id.includes("suspect")) {
-                    if(!player_cards['Suspects'].includes(id)){
+                    if("Suspects" in player_cards && !player_cards['Suspects'].includes(id)){
                         addItemToList(id, "accuse-suspect");
                     }
                     addItemToList(id, "suggest-suspect");
                 } else if (id.includes("weapon")) {
-                    if(!player_cards['Weapons'].includes(id)){
+                    if("Weapons" in player_cards && !player_cards['Weapons'].includes(id)){
                         addItemToList(id, "accuse-weapon");
                     }
                     addItemToList(id, "suggest-weapon");
@@ -550,9 +552,13 @@
             }
             else{ //is player's turn
                 if({{refuted_card|safe}} != ''){
+<<<<<<< HEAD
                     var msg = "<h3>" + idToText[{{curr_refuter}}]['name] + " refutes your Suggestion with card: " + idToText[{{refuted_card|safe}}]['name']+ "</h3>";
+=======
+                    var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{refuted_card|safe}}]['name'] + "</h3>";
+>>>>>>> master
                     $("#game-info").html(msg);
-
+                    const card = {{refuted_card|safe}};
                     // Update detective notebook
                     $("#" + card).find("input").prop("checked", true);
                     $("#" + card).find("input").attr("title", "Source: refuted suggestion");
@@ -563,16 +569,16 @@
                     $("#game-info").html(msg)
                 }
             }
-            if({{player_turn}} && 'Weapons' in {{suggested_cards|safe}}){
-                    setInterval(function(){
-                        $.ajax({
-                            type: "GET",
-                            url: "/play/",
-                            success: function() {
-                                location.reload();
-                            }
-                        });
-                    }, 5000);
+            if({{player_turn}} && 'Weapons' in {{suggested_cards|safe}}) {
+                setInterval(function() {
+                    $.ajax({
+                        type: "GET",
+                        url: "/play/",
+                        success: function() {
+                            location.reload();
+                        }
+                    });
+                }, 5000);
             }
         });
 
@@ -585,18 +591,20 @@
             $("#move-options").empty();
 
             let moveOptions = idToText[{{ player_location | safe }}].connections;
-            moveOptions.forEach(move => {
-                var occupied = 0;
-                var o = {{others_locations|safe}}
-
-                for(x in o){
-                    if(o[x] == move){occupied=1;}
+            moveOptions.forEach(moveOpt => {
+                // only check occupied hallways, not rooms
+                let occupied = 0;
+                if (moveOpt.includes("hall")) {
+                    var otherLocs = {{others_locations|safe}}
+                    for(x in otherLocs){
+                        if(otherLocs[x] == moveOpt) occupied=1;
+                    }
                 }
 
-                if(occupied==0){
+                if (occupied == 0) {
                     var move_list = document.getElementById("move-options");
                     var option = document.createElement("option");
-                    option.text = idToText[move].name;
+                    option.text = idToText[moveOpt].name;
                     move_list.add(option);
                 }
             });
@@ -662,18 +670,12 @@
             var room = $("#accuse-location option:selected").text();
             var suspect = $("#accuse-suspect option:selected").text();
 
-            if(idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
-               idToText[solution_cards["Rooms"][0]]["name"] == room &&
-               idToText[solution_cards["Suspects"][0]]["name"] == suspect){
-                //alert('You Won!!!\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
-                //url = "/play/?player_status=won";
+            if (idToText[solution_cards["Weapons"][0]]["name"] == weapon &&
+              idToText[solution_cards["Rooms"][0]]["name"] == room &&
+              idToText[solution_cards["Suspects"][0]]["name"] == suspect) {
                 showSolutionSet({{player_name | safe}});
-            }
-            else{
-                //alert('You lost...\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
-                //url = "/play/?player_status=lost";
+            } else {
                 showLoserSet();
-
             };
 
         }
@@ -1125,7 +1127,19 @@
                 	    <div class="modal-header">
                 	    	<h4 class="modal-title">Game Over!</h4>
                 	    </div>
-                	    <div class="modal-body" id="modalBody"></div>
+                	    <div class="modal-body" id="modalBody">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <img class="card" alt="solution suspect picture" id="solution-suspect-card" />
+                                </div>
+                                <div class="col-xs-4">
+                                    <img class="card" alt="solution room picture" id="solution-room-card" />
+                                </div>
+                                <div class='col-xs-4'>
+                                    <img class="card" alt="solution weapon picture" id="solution-weapon-card" />
+                                </div>
+                            </div>
+                        </div>
                 	    <div class="modal-footer">
                       		<button type="button" onclick="endGame()" id="endgameButton" class="btn btn-default">End game</button>
                       		<button type="button" onclick="loserUpdate()" id="closeModal" class="btn btn-default" data-dismiss="modal">Close</button>

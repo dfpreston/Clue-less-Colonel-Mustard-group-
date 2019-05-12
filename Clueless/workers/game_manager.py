@@ -218,7 +218,8 @@ class GameManager:
             weapon = Cards.objects.filter(game=self.game_id, card_type='Weapons', suggested=True)[0].name
             location = Locations.objects.filter(game=self.game_id, name=room_name)[0]
             Weapons.objects.filter(game=self.game_id, name=weapon).update(location=location)
-            if Players.objects.filter(game=self.game_id, name=suspect).exists():
+            if Players.objects.filter(game=self.game_id, name=suspect).exists() and\
+                    Players.objects.filter(game=self.game_id, name=suspect, location=location).exists():
                 Players.objects.filter(game=self.game_id, name=suspect).update(location=location, moved_by_suggest=True)
 
     def update_weapon_suggest_location(self, weapon_name, location_name):
