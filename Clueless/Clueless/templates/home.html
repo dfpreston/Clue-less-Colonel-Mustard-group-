@@ -43,10 +43,14 @@
             button.id='btn_' + games[game];
             button.innerText = "Join Game " + games[game];
             button.className = 'btn btn-primary'
-            button.onclick = function(){
-                location.href='/customize/?game=join&game_id='+games[game];
-            };
+            button.id = games[game];
+            button.value = games[game];
+            button.onclick = function(){game_redirect(this);}
             game_list.appendChild(button);
+        }
+
+        function game_redirect(elm){
+            location.href='/customize/?game=join&game_id='+elm.id;
         }
 
 

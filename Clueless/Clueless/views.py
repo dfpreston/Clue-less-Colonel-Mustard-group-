@@ -82,7 +82,8 @@ def GameCustiomize(request):
             msg = 'You have joined an existing game!'
 
             # Game tracker
-            gm = GameManager(game_id=Games.objects.filter(id=int(request.GET.get('game_id')))[0])
+            game = Games.objects.filter(id=int(request.GET.get('game_id')))[0]
+            gm = GameManager(game_id=game)
 
             if len(gm.get_player_names()) > 6:
                 return redirect('/')
@@ -93,8 +94,6 @@ def GameCustiomize(request):
             msg = 'Room has been updated with new info!'
             pm = PlayerManager(client_ip=user_ip, client_name=user_name)
             gm = GameManager(game_id=pm.get_game_id())
-
-
 
     # Post Request
     elif request.method == 'POST':
@@ -109,8 +108,6 @@ def GameCustiomize(request):
             gm.remove_player(check=player_leave, client_ip=user_ip, client_name=user_name)
             return redirect('/')
         pm.update_player_name(player_token)
-
-
 
     # PLAYER STATUS TESTING
     pm = PlayerManager(client_ip=user_ip, client_name=user_name)

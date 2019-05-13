@@ -36,7 +36,7 @@ class PlayerManager:
                 .update(location=new_location)
 
     def update_player_name(self, player_name):
-        if not Players.objects.filter(name=player_name).exists():
+        if not Players.objects.filter(game=self.game_id, name=player_name).exists():
             self.player.name=player_name
             self.player.save()
 
