@@ -202,10 +202,12 @@ class GameManager:
         if player_status == '':
             return
         if player_status == 'lost':
-            player = Players.objects.filter(game=self.game_id, client_ip=client_ip, client_name=client_name)[0]
-            player.update(status='LOST')
+            player = Players.objects.filter(game=self.game_id, client_ip=client_ip, client_name=client_name)\
+                .update(status='LOST')[0]
             start_loc = Locations.objects.filter(game=self.game_id, name=self.startlocations[player.name])[0]
             Suspects.objects.filter(game=self.game_id, name=self.suspects[player.name]).update(location=start_loc)
+            player.location = start_loc
+            player.save()
 
         if player_status == 'won':
             Players.objects.filter(game=self.game_id, client_ip=client_ip, client_name=client_name)\
