@@ -426,7 +426,7 @@
                 	showSolutionSet({{player_name | safe}});
                     //alert( {{ game_winner | safe }} +' has won the game!!\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 }
-                location.replace("/");
+                //location.replace("/");
             };
 
             // Player's turn options
@@ -791,6 +791,7 @@
                     location.reload();
                 }
             });
+            location.replace("/");
     	}
 
     	//end game method
