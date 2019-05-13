@@ -207,7 +207,8 @@ def GameRoom(request):
                'game_status': gm.get_game_status(),
                'game_winner': gm.get_game_winner(),
                'game_loser': gm.get_game_loser(),
-               'weapon_locations': gm.get_weapon_locations()}
+               'weapon_locations': gm.get_weapon_locations(),
+               'suspect_locations': gm.get_suspect_locations()}
 
     for key in context.keys():
         context[key] = json.dumps(context[key])

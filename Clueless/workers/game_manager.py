@@ -1,7 +1,7 @@
 import random
 import math
 
-from Clueless.models import Games, Cards, Players, Locations, Weapons
+from Clueless.models import Games, Cards, Players, Locations, Weapons, Suspects
 
 
 class GameManager:
@@ -22,13 +22,25 @@ class GameManager:
                       'Hallway':['hallway1', 'hallway2', 'hallway3', 'hallway4',
                                  'hallway5', 'hallway6', 'hallway7', 'hallway8',
                                  'hallway9', 'hallway10', 'hallway11', 'hallway12'],
-                      'StartSpace':['scarlet_start', 'mustard_start', 'white_start',
-                              'green_start', 'peacock_start', 'plum_start']}
+                      'StartSpace':['mustard_start', 'scarlet_start', 'green_start',
+                              'peacock_start', 'white_start', 'plum_start']}
         self.cards = {'Weapons':['weapon1', 'weapon2', 'weapon3', 'weapon4', 'weapon5', 'weapon6'],
                       'Suspects':['suspect1', 'suspect2', 'suspect3','suspect4', 'suspect5', 'suspect6'],
                       'Rooms':['room1', 'room2', 'room3', 'room4', 'room5', 'room6', 'room7', 'room8', 'room9']}
         self.game_status = ['PENDING', 'IN_PROGRESS', 'COMPLETED']
         self.weapons = ['weapon1', 'weapon2', 'weapon3', 'weapon4', 'weapon5', 'weapon6']
+        self.suspects = {"Colonel Mustard": "suspect1",
+                         "Miss Scarlet": "suspect2",
+                         "Mr. Green": "suspect3",
+                         "Mrs. Peacock": "suspect4",
+                         "Mrs. White": "suspect5",
+                         "Professor Plum": "suspect6"}
+        self.startlocations = {'Miss Scarlet': 'scarlet_start',
+                     'Colonel Mustard': 'mustard_start',
+                     'Mrs. White': 'white_start',
+                     'Mr. Green': 'green_start',
+                     'Mrs. Peacock': 'peacock_start',
+                     'Professor Plum': 'plum_start'}
 
     # Game initialization
     def create_new_game(self):
@@ -51,6 +63,10 @@ class GameManager:
         for weapon in self.weapons:
             Weapons.objects.create(game=self.game_id, name=weapon, location=rooms[i])
             i += 1
+
+    def create_suspects(self):
+        for (suspect, location) in zip(self.cards['Suspects'], self.rooms['StartSpace']):
+            Suspects.objects.create(game=self.game_id, name=suspect, location=Locations.objects.filter(game=self.game_id, type='StartSpace', name=location)[0])
 
     def add_player(self, client_ip, client_name, is_creator):
 
@@ -78,6 +94,7 @@ class GameManager:
         self.create_deck()
         self.create_locations()
         self.create_weapons()
+        self.create_suspects()
         self.add_player(client_ip=client_ip, client_name=client_name, is_creator=True)
 
     # Game Start
@@ -115,15 +132,8 @@ class GameManager:
     ## @brief: Initializes character token location to associated starting space.
     ## @param: game manager
     def place_players(self):
-        locations = { 'Miss Scarlet': 'scarlet_start',
-                      'Colonel Mustard': 'mustard_start',
-                      'Mrs. White': 'white_start',
-                      'Mr. Green': 'green_start',
-                      'Mrs. Peacock': 'peacock_start',
-                      'Professor Plum': 'plum_start' }
-
         for player in Players.objects.filter(game=self.game_id):
-            player.location = Locations.objects.filter(game=self.game_id, name=locations[player.name])[0]
+            player.location = Locations.objects.filter(game=self.game_id, name=self.startlocations[player.name])[0]
             player.save()
 
     def set_player_order(self):
@@ -192,8 +202,10 @@ class GameManager:
         if player_status == '':
             return
         if player_status == 'lost':
-            Players.objects.filter(game=self.game_id, client_ip=client_ip, client_name=client_name)\
-                           .update(status='LOST')
+            player = Players.objects.filter(game=self.game_id, client_ip=client_ip, client_name=client_name)[0]
+            player.update(status='LOST')
+            start_loc = Locations.objects.filter(game=self.game_id, name=self.startlocations[player.name])[0]
+            Suspects.objects.filter(game=self.game_id, name=self.suspects[player.name]).update(location=start_loc)
 
         if player_status == 'won':
             Players.objects.filter(game=self.game_id, client_ip=client_ip, client_name=client_name)\
@@ -214,6 +226,7 @@ class GameManager:
             weapon = Cards.objects.filter(game=self.game_id, card_type='Weapons', suggested=True)[0].name
             location = Locations.objects.filter(game=self.game_id, name=room_name)[0]
             Weapons.objects.filter(game=self.game_id, name=weapon).update(location=location)
+            Suspects.objects.filter(game=self.game_id, name=self.suspects[suspect]).update(location=location)
             if Players.objects.filter(game=self.game_id, name=suspect).exists() and\
                     not Players.objects.filter(game=self.game_id, name=suspect, location=location).exists():
                 Players.objects.filter(game=self.game_id, name=suspect).update(location=location, moved_by_suggest=True)
@@ -305,6 +318,15 @@ class GameManager:
             if weapon.location != None:
                 weapon_locations[weapon.name] = weapon.location.name
         return weapon_locations
+
+    def get_suspect_locations(self):
+        suspect_locations = {}
+        for suspect in Suspects.objects.filter(game=self.game_id):
+            if suspect.location != None:
+                suspect_locations[suspect.name] = suspect.location.name
+            else:
+                suspect_locations[suspect.name] = ''
+        return suspect_locations
 
     def delete_completed_games(self):
         if Games.objects.filter(status="COMPLETE").exists():

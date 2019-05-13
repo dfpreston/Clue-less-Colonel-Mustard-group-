@@ -1,4 +1,4 @@
-from Clueless.models import Games, Cards, Players, Locations, Weapons
+from Clueless.models import Games, Cards, Players, Locations, Weapons, Suspects
 
 
 class PlayerManager:
@@ -14,6 +14,12 @@ class PlayerManager:
         self.client_name = client_name
         self.player = Players.objects.filter(client_ip=client_ip, client_name=client_name)[0]
         self.game_id = self.player.game
+        self.suspects = {"Colonel Mustard": "suspect1",
+                         "Miss Scarlet": "suspect2",
+                         "Mr. Green": "suspect3",
+                         "Mrs. Peacock": "suspect4",
+                         "Mrs. White": "suspect5",
+                         "Professor Plum": "suspect6"}
 
     def get_player_location(self):
         return self.player.location.name
@@ -26,6 +32,8 @@ class PlayerManager:
             self.player.location=new_location
             self.player.moved=True
             self.player.save()
+            Suspects.objects.filter(game=self.game_id, name=self.suspects[self.player.name])\
+                .update(location=new_location)
 
     def update_player_name(self, player_name):
         if not Players.objects.filter(name=player_name).exists():

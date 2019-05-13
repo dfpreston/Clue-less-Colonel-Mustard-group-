@@ -27,6 +27,7 @@
         console.log("Game Winner: ", {{ game_winner | safe }});
         console.log("Player That Just Lost: ", {{ game_loser | safe }});
         console.log("Weapon Locations: ", {{ weapon_locations | safe }});
+        console.log("Suspect Location: ", {{ suspect_locations | safe }});
 
         var solution_cards = {{ solution_cards | safe}};
 
@@ -439,22 +440,14 @@
             // Notify player of current location
             $("#player-location-msg").text("You are in the " + idToText[{{ player_location | safe }}].name);
 
-            // Images of player icons
-            let currPlayerLoc = {{player_location|safe}};
-            let locationId = currPlayerLoc.includes("room") ?
-                "#r" + currPlayerLoc.substring(4) + "c" :
-                "#h" + currPlayerLoc.substring(7);
-            console.log("current location: " + currPlayerLoc);
-            $(locationId).prepend(
-                    '<div class="column"><img src=' + idToText[textToId[{{player_name|safe}}]].image + ' class="player token"></div>'
-                );
-            var otherPlayerLocations = {{ others_locations | safe }};
-            Object.keys(otherPlayerLocations).forEach(player => {
-                let currPlayerLoc = otherPlayerLocations[player];
-                let locationId = currPlayerLoc.includes("room") ?
-                    "#r" + currPlayerLoc.substring(4) + "c" :
-                    "#h" + currPlayerLoc.substring(7);
-                $(locationId).prepend('<div class="column"><img src="'+idToText[textToId[player]].image + '" class="player token"></div>');
+            // Images of suspect icons
+            var suspectLocations = {{ suspect_locations | safe }};
+            Object.keys(suspectLocations).forEach(suspect => {
+                let currSuspectLocation = suspectLocations[suspect];
+                let locationId = currSuspectLocation.includes("room") ?
+                    "#r" + currSuspectLocation.substring(4) + "c" :
+                    "#h" + currSuspectLocation.substring(7);
+                $(locationId).prepend('<div class="column"><img src="'+idToText[suspect].image + '" class="player token"></div>');
             });
 
             // Images of weapon icons

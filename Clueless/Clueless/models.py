@@ -19,6 +19,12 @@ class Weapons(models.Model):
     location = models.ForeignKey('Locations', on_delete=models.CASCADE, null=True)
 
 
+class Suspects(models.Model):
+    game = models.ForeignKey('Games', on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=200, default='')
+    location = models.ForeignKey('Locations', on_delete=models.CASCADE, null=True)
+
+
 class Players(models.Model):
     game = models.ForeignKey('Games', on_delete=models.CASCADE, null=True)
     location = models.ForeignKey('Locations', on_delete=models.CASCADE, null=True)
