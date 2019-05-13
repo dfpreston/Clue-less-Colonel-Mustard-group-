@@ -552,7 +552,7 @@
             }
             else{ //is player's turn
                 if({{refuted_card|safe}} != ''){
-                    var msg = "<h3>" + idToText[{{curr_refuter|safe}}]['name'] + " refutes your Suggestion with card: " + idToText[{{refuted_card|safe}}]['name'] + "</h3>";
+                    var msg = "<h3>" + {{curr_refuter|safe}} + " refutes your Suggestion with card: " + idToText[{{refuted_card|safe}}]['name'] + "</h3>";
 
                     $("#game-info").html(msg);
                     const card = {{refuted_card|safe}};
@@ -562,7 +562,7 @@
                 }
                 else //opponent unable to provide counter-evidence
                 {
-                    var msg = "<h3>" + idToText[{{curr_refuter|safe}}]['name'] + " unable to provide counter-evidence" + "</h3>"
+                    var msg = "<h3>" + {{curr_refuter|safe}} + " unable to provide counter-evidence" + "</h3>"
                     $("#game-info").html(msg)
                 }
             }
