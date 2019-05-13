@@ -1,13 +1,15 @@
 {% load static from staticfiles %}
 {% block content %}
 
+
     <body>
+        <audio controls id="my_audio"src="{% static 'music/Clue-Theme.mp3' %}" type="audio/mp3"></audio>
         <div class="jumbotron">
             <div class="container">
                 <h2>Entry Way</h2>
             </div>
         </div>
-        <div class="container">
+        <div class="container" id="thisdiv">
             <div class="row">
                 <h3>Hello {{player_name | safe }}</h3>
                 <p>The victim: John Boddy, 37, millionaire inventor of sliced bread</p>
@@ -157,7 +159,8 @@
                     location.replace("/customize/");
                 }
                 else{
-                    location.reload();
+                    //location.reload();
+                    $('#thisdiv').load(' #thisdiv');
                 }
             }, 5000);
 
@@ -171,7 +174,8 @@
                         location.replace("/customize/");
                     }
                     else{
-                        location.reload();
+                        //location.reload();
+                        $('#thisdiv').load(' #thisdiv');
                     }
                 }
             });
