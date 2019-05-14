@@ -420,11 +420,9 @@
             if( {{ game_status | safe }} == "COMPLETED"){
                 if ({{ game_winner | safe }} == ''){
                 	showSolutionSet("No one");
-                    //alert('No one has won this game...\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 }
                 else {
                 	showSolutionSet({{player_name | safe}});
-                    //alert( {{ game_winner | safe }} +' has won the game!!\nSolution set is: ' + idToText[solution_cards["Suspects"][0]]["name"] + ' in the ' + idToText[solution_cards["Rooms"][0]]["name"] + ' with the ' + idToText[solution_cards["Weapons"][0]]["name"]);
                 }
                 //location.replace("/");
             };
@@ -665,14 +663,14 @@
                     }
                 });
             }
-            else if(player_hand["Weapons"].includes(weapon) &&
-                    player_hand["Rooms"].includes(room) &&
-                    player_hand["Suspects"].includes(suspect)){
+            else if("Weapons" in player_cards && player_hand["Weapons"].includes(weapon) &&
+                    "Rooms" in player_cards && player_hand["Rooms"].includes(room) &&
+                    "Suspects" in player_cards && player_hand["Suspects"].includes(suspect)){
                 alert('You cannot suggest only your cards...');
             }
-            else if((player_hand["Weapons"].includes(weapon) || solution_cards["Weapons"].includes(weapon)) &&
-                    (player_hand["Rooms"].includes(room) || solution_cards["Rooms"].includes(room)) &&
-                    (player_hand["Suspects"].includes(suspect) || solution_cards["Suspects"].includes(suspect))){
+            else if((("Weapons" in player_cards && player_hand["Weapons"].includes(weapon)) || solution_cards["Weapons"].includes(weapon)) &&
+                    (("Rooms" in player_cards && player_hand["Rooms"].includes(room)) || solution_cards["Rooms"].includes(room)) &&
+                    (("Suspects" in player_cards && player_hand["Suspects"].includes(suspect)) || solution_cards["Suspects"].includes(suspect))){
 
                 if(solution_cards["Weapons"].includes(weapon)){
                     var refute_card = weapon;
