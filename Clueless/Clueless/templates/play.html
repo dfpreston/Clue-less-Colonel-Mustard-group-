@@ -499,8 +499,22 @@
                     }, 10000);
                 }
                 else if({{refuted_card | safe}} != ''){
-                    var card = idToText[{{refuted_card | safe}}]['name'];
+                    var s = {{solution_cards|safe}}
+                    var r = {{refuted_card | safe}}
+                    var solution = 0;
+
+                    for(card in s){
+                        if(s[card]==r){solution = 1;}
+                    }
+
+                    if(solution == 1){
+                        var msg = "<h3>No counter evidence found</h3>"
+                    }
+                    else{
+                        var card = idToText[{{refuted_card | safe}}]['name'];
                     var msg = "<h3>Suggestion refuted with card: " + card + "</h3>";
+                    }
+
                     $("#game-info").html(msg);
 
                     setInterval(function(){
@@ -527,7 +541,22 @@
             }
             else{
                 if({{refuted_card|safe}} != ''){
-                    var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{refuted_card|safe}}]['name'] + "</h3>";
+
+                    var s = {{solution_cards|safe}}
+                    var r = {{refuted_card | safe}}
+                    var solution = 0;
+
+                    for(foo in s){
+                        if(s[foo]==r){solution = 1;}
+                    }
+
+                    if(solution == 1){
+                        var msg = "<h3>No counter evidence found</h3>"
+                    }
+                    else{
+                        var msg = "<h3>Your suggestion was refuted with card: " + idToText[{{refuted_card|safe}}]['name'] + "</h3>";
+                    }
+
                     $("#game-info").html(msg);
                     const card = {{refuted_card|safe}};
                     // Update detective notebook
@@ -663,14 +692,14 @@
                     }
                 });
             }
-            else if("Weapons" in player_cards && player_hand["Weapons"].includes(weapon) &&
-                    "Rooms" in player_cards && player_hand["Rooms"].includes(room) &&
-                    "Suspects" in player_cards && player_hand["Suspects"].includes(suspect)){
+            else if("Weapons" in player_hand && player_hand["Weapons"].includes(weapon) &&
+                    "Rooms" in player_hand && player_hand["Rooms"].includes(room) &&
+                    "Suspects" in player_hand && player_hand["Suspects"].includes(suspect)){
                 alert('You cannot suggest only your cards...');
             }
-            else if((("Weapons" in player_cards && player_hand["Weapons"].includes(weapon)) || solution_cards["Weapons"].includes(weapon)) &&
-                    (("Rooms" in player_cards && player_hand["Rooms"].includes(room)) || solution_cards["Rooms"].includes(room)) &&
-                    (("Suspects" in player_cards && player_hand["Suspects"].includes(suspect)) || solution_cards["Suspects"].includes(suspect))){
+            else if((("Weapons" in player_hand && player_hand["Weapons"].includes(weapon)) || solution_cards["Weapons"].includes(weapon)) &&
+                    (("Rooms" in player_hand && player_hand["Rooms"].includes(room)) || solution_cards["Rooms"].includes(room)) &&
+                    (("Suspects" in player_hand && player_hand["Suspects"].includes(suspect)) || solution_cards["Suspects"].includes(suspect))){
 
                 if(solution_cards["Weapons"].includes(weapon)){
                     var refute_card = weapon;

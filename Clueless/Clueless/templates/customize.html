@@ -143,6 +143,7 @@
         console.log("Is Player Game Creator:", {{ is_creator | safe }});
         console.log("All Players:", {{ all_names | safe }});
         console.log("Game Status:", {{ game_status | safe }});
+        console.log("Game Creator:", {{ game_creator | safe }});
 
         $(document).ready(function() {
             const isCreator = {{ is_creator | safe }};

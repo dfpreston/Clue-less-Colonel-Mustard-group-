@@ -175,16 +175,17 @@ def GameRoom(request):
         gm.update_suggested_card(request.GET.get('suggest_room', ''))
         gm.update_suggested_card(request.GET.get('suggest_weapon', ''))
         gm.update_suggested_card(request.GET.get('suggest_suspect', ''))
-        gm.update_suspect_suggest_location(request.GET.get('suggest_suspect_name', ''))
+
+        if request.GET.get('suggest_suspect_name', '') != '':
+            gm.update_suspect_suggest_location(request.GET.get('suggest_suspect_name', ''))
         gm.refute_suggestion(request.GET.get('refute_card', ''))
         gm.update_game_status(user_ip, user_name, request.GET.get('player_status', ''))
         pm.update_player_location(request.GET.get('player_location', ''))
 
-        if request.GET.get('end_turn', '') is not '' or \
-           request.GET.get('player_status', '') is not '':
+        if request.GET.get('end_turn', '') is not '' or request.GET.get('player_status', '') is not '':
             gm.update_player_turn()
 
-    gm.update_suspect_suggest_location(request.GET.get('suggest_suspect_name', ''))
+    #gm.update_suspect_suggest_location(request.GET.get('suggest_suspect_name', ''))
     context = {'game_id': pm.get_game_id(),
                'player_name': pm.get_player_name(),
                'player_turn': pm.get_is_player_turn(),
