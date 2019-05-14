@@ -370,6 +370,10 @@
                     '<td title="Evidence not yet found"><input type="checkbox" disabled/></td>' +
                 "</tr>"
             );
+            if (document.cookie.includes(card)) {
+                $("#" + card).find("input").prop("checked", true);
+                $("#" + card).find("input").attr("title", "Source: refuted suggestion");
+            }
         }
 
         function addImageToBoard(card, isRoom) {
@@ -389,7 +393,8 @@
         	//hide solution
         	$("#solutionContainer").hide();
 
-            // prepare the detective notebook and game board
+            // prepare the detective notebook and game board            
+            console.log("current cookies: ", document.cookie);
             Object.keys(idToText).forEach(card => {
                 if (card.includes("suspect")) {
                    addCardToNotebook("Suspect", card);
@@ -561,6 +566,7 @@
                     const card = {{refuted_card|safe}};
                     // Update detective notebook
                     $("#" + card).find("input").prop("checked", true);
+                    document.cookie = card + "=true;";
                     $("#" + card).find("input").attr("title", "Source: refuted suggestion");
                 }
             }
@@ -784,6 +790,17 @@
             return solution;
         }
 
+        function clearOutCookies() {
+            var cookies = document.cookie.split(";");
+
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                var eqPos = cookie.indexOf("=");
+                var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            }
+        }
+
         //show solution set at end of the game
         function showSolutionSet(gameWinner) {
         	var solutionString = "<p>" + gameWinner + " has won the game!</p>" + getSolutionMessage();
@@ -793,6 +810,7 @@
         	$("#closeModal").hide();
         	$("#solutionContainer").show();
         	$("#solutionModal").modal();
+            clearOutCookies();
     	}
 
     	//show solution to loser
