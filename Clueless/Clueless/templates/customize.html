@@ -148,6 +148,12 @@
         $(document).ready(function() {
             const isCreator = {{ is_creator | safe }};
             if (!isCreator) $("#start-button").hide();
+            
+            const players = {{ all_names | safe }};
+            if (players.length < 3 || players.length > 6) {
+                $("#start-button").addClass("disabled");
+                $("#start-button").attr("title", "You must have 3-6 players to start the game");
+            }
         });
 
         if(location.href.includes("game=")){
